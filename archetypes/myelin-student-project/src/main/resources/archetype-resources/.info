@@ -1,0 +1,4 @@
+# Student information will go here if necessary
+STUDENT_NUMBER=${student-number}
+STUDENT_NAME=${student-name}
+COURSE_NUMBER=${course-number}

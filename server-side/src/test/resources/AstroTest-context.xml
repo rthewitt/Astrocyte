@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sws="http://www.springframework.org/schema/web-services"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/web-services http://www.springframework.org/schema/web-services/web-services-2.0.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <!-- TODO Make absolutely sure that you're setting these test contexts up correctly!! -->
+    <!--  TODO understand why util, etc was necessary in older config files, but no longer.  Have namespaces been merged? -->
+    
+    <context:component-scan base-package="com.mpi.astro"/>
+    <context:annotation-config/>
+    <mvc:annotation-driven />
+    <tx:annotation-driven/>
+    
+    <bean id="serverProps" class="com.mpi.astro.util.PropertiesUtil">
+		<property name="locations">
+		    <list>
+		        <value>classpath:db.properties</value>
+		        <value>classpath:myelin.properties</value>
+		    </list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</bean>
+    
+
+    <!-- Can probably be safely removed from test -->
+    <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+        <property name="resourceLoaderPath" value="/WEB-INF/resources/templates/velocity/" />
+    </bean>
+    
+    <!-- Was unable to add a secondary straightforward url resolver, but it should definitely work.  Research -->
+
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/resources/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="cache" value="true" />
+		<property name="prefix" value="" />
+		<property name="order" value="1"/>
+		<property name="suffix" value=".vm" />
+	</bean>
+	
+	<bean id="alphaGame" class="com.mpi.astro.model.arcade.impl.JavaGame">
+	    <property name="appName" value="com.alpha.game.Alpha Game" />
+	    <property name="artifact" value="alpha-game-1.0-SNAPSHOT.jar" />
+	    <property name="author" value="Fierfek" />
+	    <property name="javaVersion" value="1.6" />
+	     <property name="mainClass" value="com.alpha.game.Alpha" />
+	     <property name="thumbNail" value="http://www.freevectorgraphics.org/d/file/201103/81b147bb0534b59dded39b95f5bbd267.png" />
+	     <property name="title" value="Alpha" />
+	     <property name="vendor" value="Myelin Price Interactive" />
+	</bean>
+
+   <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+   
+   <!--  EDU -->
+   
+   <bean id="studentDao" class="com.mpi.astro.dao.StudentDao" />
+   <bean id="studentService" class="com.mpi.astro.service.edu.StudentService" />
+   
+   <!-- DataSource -->
+		
+	
+	<bean id="testDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="url" value="jdbc:hsqldb:mem:test-db" />
+		<property name="username" value="sa" />
+		<property name="password" value="" />
+	</bean>
+	
+	<!-- EntityManager is the JPA spec, which offers the general functionality that the Hibernate Session object offers.  Hibernate Sessions are
+	cast (or more accurately wrapped) as EntityManagers, and so the SessionFactory described later is Hibernate specific, whereas the EntityManagerFactory
+	below is the JPA way of doing things.  Prefer to use JPA, as the session can always be unwrapped if I need Hibernate specific functionality. -->
+	<!-- Note that I am changing the transactionManager implementation now that this exists, instead of just removing dataSource. -->
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="testPU"/>
+		<property name="dataSource" ref="testDataSource"/>
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.HSQLDialect" />
+			</bean>
+		</property>		
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+	    <property name="entityManagerFactory" ref="entityManagerFactory"/>
+	    <property name="dataSource" ref="testDataSource" />
+	</bean>
+	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+
+</beans>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>com.myelin.client</groupId>
+      <artifactId>glial.parent</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
+   </parent>
+
+<!-- TODO remove unnecessary dependencies -->
+<!-- TODO clean parent / module pom relationships -->
+
+    <name>Glial</name>
+    <groupId>com.myelin.client</groupId>
+    <artifactId>glial</artifactId>
+    <packaging>war</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <description>Client for interacting with project/lessons/tutorials and Myelin server media</description>
+    <url>--ADD--</url>
+    
+	<properties>
+		<slf4j.version>1.5.10</slf4j.version>
+		<jgit.version>2.0.0.201206130900-r</jgit.version>
+	</properties>
+
+    
+     <developers>
+		<developer>
+			<id>rthewitt</id>
+			<name>Ryan Hewitt</name>
+			<roles>
+				<role>Technical Lead</role>
+				<role>Software Architect</role>
+			</roles>
+			<email>rthewitt.devel@gmail.com</email>
+			<organization>Myelin Price Interactive</organization>
+			<url>http://www.myelinprice.com</url>
+		</developer>
+		<developer>
+			<id>fierfek</id>
+			<name>Brennan</name>
+			<roles>
+				<role>Game Developer</role>
+			</roles>
+			<email>geekssw@yahoo.com</email>
+			<organization>Cerritos College</organization>
+			<url>http://www.cerritos.edu</url>
+		</developer>
+	</developers>
+	
+   <repositories>
+      <repository>
+         <id>jgit-repository</id>
+         <url>http://download.eclipse.org/jgit/maven</url>
+      </repository>
+   </repositories>
+
+<!-- Glial and Astrocyte may be submodules of larger project -->
+<!--	
+	<scm>
+		<connection>scm:git:git@github.com:rthewitt/glial.git</connection>
+		<url>scm:git:git@github.com:rthewitt/glial.git</url>
+		<developerConnection>scm:git:git@github.com:rthewitt/glial.git</developerConnection>
+	</scm>
+-->
+    
+    <dependencies>
+        
+  	 <dependency>
+    	  <groupId>org.eclipse.jgit</groupId>
+      	<artifactId>org.eclipse.jgit</artifactId>
+      	<version>${jgit.version}</version>
+      	<scope>compile</scope>
+  	</dependency>
+        
+        <!-- Testing -->
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>4.8.2</version>
+         <scope>test</scope>
+      </dependency>
+      
+        
+        <!-- logging -->
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>jcl-over-slf4j</artifactId>
+         <version>${slf4j.version}</version>
+         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <version>${slf4j.version}</version>
+         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+         <groupId>log4j</groupId>
+         <artifactId>log4j</artifactId>
+         <version>1.2.15</version>
+         <exclusions>
+            <exclusion>
+               <groupId>com.sun.jdmk</groupId>
+               <artifactId>jmxtools</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>com.sun.jmx</groupId>
+               <artifactId>jmxri</artifactId>
+            </exclusion>
+         </exclusions>
+         <scope>runtime</scope>
+      </dependency>
+        
+        <!-- Dynamic JNLP, Java files for archetype and possibly profile pages -->
+<!--
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.7</version>
+		</dependency>
+-->
+		
+		<!-- Database specific -->
+		
+<!--
+		<dependency>
+         <groupId>commons-dbcp</groupId>
+         <artifactId>commons-dbcp</artifactId>
+         <version>20030825.184428</version>
+         <type>jar</type>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>commons-pool</groupId>
+         <artifactId>commons-pool</artifactId>
+         <version>20030825.183949</version>
+         <type>jar</type>
+         <scope>compile</scope>
+      </dependency>
+-->
+
+      <!-- Adding persistence for games and student list -->
+
+<!--
+      <dependency>
+         <groupId>javax.validation</groupId>
+         <artifactId>validation-api</artifactId>
+         <version>1.0.0.GA</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-validator</artifactId>
+         <version>4.0.0.GA</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-entitymanager</artifactId>
+         <version>3.6.0.Final</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>hsqldb</groupId>
+         <artifactId>hsqldb</artifactId>
+         <version>1.8.0.10</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.hibernate.javax.persistence</groupId>
+         <artifactId>hibernate-jpa-2.0-api</artifactId>
+         <version>1.0.0.Final</version>
+         <scope>compile</scope>
+      </dependency>
+-->
+            
+        
+        <dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>jstl</artifactId>
+		<version>1.1.2</version>
+	</dependency>
+ 
+	<dependency>
+		<groupId>taglibs</groupId>
+		<artifactId>standard</artifactId>
+		<version>1.1.2</version>
+	</dependency>
+        
+    <dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>servlet-api</artifactId>
+		<version>2.5</version>
+		<scope>provided</scope>
+	</dependency>
+	
+    </dependencies>
+    
+    
+    <build>
+        <finalName>Glial</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>tomcat-maven-plugin</artifactId>
+                <version>1.1</version>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

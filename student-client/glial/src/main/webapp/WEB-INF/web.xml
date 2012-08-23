@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+
+    <display-name>Glial</display-name>
+
+<!--
+   <context-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>/WEB-INF/spring/root-context.xml</param-value>
+   </context-param>
+
+
+   <listener>
+      <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+   </listener>
+-->
+    
+   <!-- NOTE: This may not work with Jetty version -->
+<!--
+	<servlet-mapping>
+		<servlet-name>jsp</servlet-name>
+		<url-pattern>/WEB-INF/resources/jsp/*</url-pattern>
+	</servlet-mapping> -->
+
+   <!-- NOTE: This may not work with Jetty version -->
+	
+	<!-- Tomcat should catch the above patter with an existing jsp servlet.  When I move containers, I may need this -->
+	<!-- <servlet>
+		<servlet-name>jsp</servlet-name> -->
+		<!-- Do not rely on the class below, investigate your own. -->
+		<!-- <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+	</servlet> -->
+	
+
+    <servlet>
+   	 <servlet-name>glial</servlet-name>
+	    <servlet-class>com.myelin.client.controller.JGitController</servlet-class>
+	    <load-on-startup>1</load-on-startup>
+  	</servlet>
+
+    <servlet-mapping>
+        <servlet-name>glial</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>

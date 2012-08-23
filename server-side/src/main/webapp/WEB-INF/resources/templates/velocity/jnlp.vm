@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" code-base="http://${localhost}/alpha-game/" href="$fileName" >
+    <application-desc
+         name="$game.appName"
+         main-class="$game.mainClass">
+     </application-desc>
+    <information>
+        <title>$game.title</title>
+        <vendor>$game.author</vendor>
+        <icon href="$game.thumbNail"/>
+        <offline-allowed/>
+    </information>
+    <resources>
+        <!-- Application Resources -->
+        <j2se version="$game.javaVersion" href="http://java.sun.com/products/autodl/j2se"/>
+        <jar href="http://${location}/alpha-game/${game.artifact}" main="true" />
+    </resources>
+</jnlp>

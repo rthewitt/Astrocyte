@@ -1,0 +1,7 @@
+<hibernate-configuration>
+   <session-factory>
+
+      <mapping package="com.mpi.astro.model" />
+      <mapping class="com.mpi.astro.model.edu.Student" />
+    </session-factory>
+</hibernate-configuration>

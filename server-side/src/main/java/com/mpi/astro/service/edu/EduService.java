@@ -13,12 +13,16 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
+import javax.persistence.Query;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.activemq.transport.stomp.Stomp.Headers.Subscribe;
 import org.apache.activemq.transport.stomp.StompConnection;
 import org.apache.activemq.transport.stomp.StompFrame;
-import org.apache.activemq.transport.stomp.Stomp.Headers.Subscribe;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.mpi.astro.dao.CourseDao;
@@ -27,8 +31,6 @@ import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.util.PropertiesUtil;
 
-// TODO establish security of code-base using access qualifiers
-// TODO establish centralized logging authority
 public class EduService {
 	
 	@Autowired
@@ -36,6 +38,9 @@ public class EduService {
 	
 	@Autowired
 	private CourseDao courseDao;
+	
+	@PersistenceContext(type=PersistenceContextType.EXTENDED)
+	private EntityManager entityManager;
 	
 	public String getPath() {
 		return PropertiesUtil.getProperty(PropertiesUtil.PROP_DATA_DIR);
@@ -45,27 +50,29 @@ public List<Student> getStudentsInCourse(Long courseId) {
 	
 	List<Student> students = new ArrayList<Student>();
 	
-	String sql = "SELECT DISTINCT s.*" +
-			"FROM 'STUDENT' s" +
-				"INNER JOIN STUDENT_COURSE sc " +
-					"ON sc.STUDENT_ID = s.STUDENT_ID" +
-				"INNER JOIN COURSE c" +
-					"ON c.COURSE_ID = sc.COURSE_ID" +
-			"WHERE c.COURSE_ID = " + courseId;
+	/*
+	String sql = "SELECT s.* FROM STUDENT s " +
+			"INNER JOIN STUDENT_COURSE sc ON sc.STUDENT_ID = s.STUDENT_ID " +
+			"INNER JOIN COURSE c ON c.COURSE_ID = sc.COURSE_ID " +
+			"WHERE c.COURSE_ID = 1;";
+	*/
+	
+	String hql = "select distinct s from Student s join s.courses c where c.id =:course_id ";
+	Query query = entityManager.createQuery(hql);
+	query.setParameter("course_id", courseId);
+	students = (List<Student>)query.getResultList();
 	
 	return students;
-	
-//		String hql = "select distinct s from Student s where "
 	}
 	
 	public List<Student> getStudentsInCourse(Course course) {
 			return getStudentsInCourse(course.getId());
 	}
 	
-	
+	// TODO put this into a separate, ever-connected communications service.
 	public static String sendAndReceive(String msg) throws Exception {
 		   
-		   String messageReceived = "Initial value...";
+		   String messageReceived = "Currently not listening!";
 		   
 	      StompConnection connection = new StompConnection();
 	      connection.open("localhost",61613);
@@ -79,19 +86,16 @@ public List<Student> getStudentsInCourse(Long courseId) {
 
 	      connection.subscribe("/queue/test", Subscribe.AckModeValues.CLIENT);
 	      
-	      connection.begin("tx2");
-
-	      StompFrame message = connection.receive();
+//	      connection.begin("tx2");
 	      
-	      messageReceived = message.getBody();
+	      // TODO subscribe to this instead, so that we can log retrieval success
+//	      StompFrame message = connection.receive();
 	      
-	      connection.ack(message, "tx2");
-	//
-//	      message = connection.receive();
-//	      System.out.println(message.getBody());
+//	      messageReceived = message.getBody();
+	      
 //	      connection.ack(message, "tx2");
-	//
-	      connection.commit("tx2");
+	
+//	      connection.commit("tx2");
 
 	      connection.disconnect();
 	      

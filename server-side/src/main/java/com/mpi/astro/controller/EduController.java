@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.model.edu.Tutorial;
 import com.mpi.astro.service.edu.EduService;
+import com.mpi.astro.util.AstrocyteUtils;
+import com.mpi.astro.util.MyelinAction;
 
 @Controller
 @RequestMapping("/enrollment/")
@@ -180,8 +183,8 @@ public class EduController {
 		// TODO 
 		/*
 		 * ------- 1. For all students in course, print student, print tutorial
-		 * 2. Include ApacheMQ api, successfully send to listening python
-		 * 3. Create JSON object instead of string.
+		 * ------- 2. Include ApacheMQ api, successfully send to listening python
+		 * ------- 3. Create JSON object instead of string.
 		 * 4. Unwrap json in python.
 		 */
 		
@@ -191,21 +194,16 @@ public class EduController {
 		Course course = courseDao.find(courseId);
 		Tutorial tutorial = tutorialDao.find(tutorialId);
 		
-		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("Course: %s", course.getName()))
-			.append("\n")
-			.append(String.format("Prototype %s", tutorial.getPrototype()))
-			.append("\n");
-		
 		List<Student> students = eduService.getStudentsInCourse(course);
-		for(Student s : students) {
-			sb.append(String.format("Student: %s %s",
-					s.getFirstName(), s.getLastName()));
-		}
+		
+		JSONObject payload = AstrocyteUtils.getJSONCourseInit(course.getName(), 
+				students, tutorial.getPrototype());
+		
+		String jmsCommand = AstrocyteUtils.getJSONCommand(payload, MyelinAction.INITIALIZE);
 		
 		String message;
 		try {
-			message = eduService.sendAndReceive(sb.toString());
+			message = eduService.sendAndReceive(jmsCommand);
 		} catch (Exception e) {
 			message = e.getMessage();
 			e.printStackTrace();

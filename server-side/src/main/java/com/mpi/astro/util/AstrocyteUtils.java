@@ -64,7 +64,7 @@ public class AstrocyteUtils {
 	
 	public static String getJSONCommand(JSONObject payload, MyelinAction type) {
 		JSONObject command = new JSONObject();
-		command.put("command", type);
+		command.put("command", type.toString());
 		command.put("context", payload);
 		return command.toJSONString();
 	}

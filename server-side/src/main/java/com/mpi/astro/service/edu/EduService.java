@@ -10,27 +10,93 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.activemq.transport.stomp.StompConnection;
+import org.apache.activemq.transport.stomp.StompFrame;
+import org.apache.activemq.transport.stomp.Stomp.Headers.Subscribe;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.mpi.astro.dao.CourseDao;
 import com.mpi.astro.dao.StudentDao;
+import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.util.PropertiesUtil;
 
 // TODO establish security of code-base using access qualifiers
 // TODO establish centralized logging authority
-public class StudentService {
+public class EduService {
 	
 	@Autowired
 	private StudentDao studentDao;
 	
+	@Autowired
+	private CourseDao courseDao;
+	
 	public String getPath() {
 		return PropertiesUtil.getProperty(PropertiesUtil.PROP_DATA_DIR);
 	}
+	
+public List<Student> getStudentsInCourse(Long courseId) {
+	
+	List<Student> students = new ArrayList<Student>();
+	
+	String sql = "SELECT DISTINCT s.*" +
+			"FROM 'STUDENT' s" +
+				"INNER JOIN STUDENT_COURSE sc " +
+					"ON sc.STUDENT_ID = s.STUDENT_ID" +
+				"INNER JOIN COURSE c" +
+					"ON c.COURSE_ID = sc.COURSE_ID" +
+			"WHERE c.COURSE_ID = " + courseId;
+	
+	return students;
+	
+//		String hql = "select distinct s from Student s where "
+	}
+	
+	public List<Student> getStudentsInCourse(Course course) {
+			return getStudentsInCourse(course.getId());
+	}
+	
+	
+	public static String sendAndReceive(String msg) throws Exception {
+		   
+		   String messageReceived = "Initial value...";
+		   
+	      StompConnection connection = new StompConnection();
+	      connection.open("localhost",61613);
+
+	      connection.connect("system", "manager");
+	      
+	      connection.begin("tx1");
+	      connection.send("/queue/test", msg, "tx1", null);
+//	      connection.send("/queue/test", "me now", "tx1", null);
+	      connection.commit("tx1");
+
+	      connection.subscribe("/queue/test", Subscribe.AckModeValues.CLIENT);
+	      
+	      connection.begin("tx2");
+
+	      StompFrame message = connection.receive();
+	      
+	      messageReceived = message.getBody();
+	      
+	      connection.ack(message, "tx2");
+	//
+//	      message = connection.receive();
+//	      System.out.println(message.getBody());
+//	      connection.ack(message, "tx2");
+	//
+	      connection.commit("tx2");
+
+	      connection.disconnect();
+	      
+	      return messageReceived;
+	   }
 	
 	
 	// TODO anticipate collisions, UUID and pass through to script

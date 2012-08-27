@@ -6,9 +6,25 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
-	<title>Home</title>
+	<title>Edit Student</title>
+	<script type="text/javascript">
+		function startMe() {
+			alert("TODO: add jQuery handler to available courses.");
+		}
+		
+		function addCourse(courseId) {
+			ac = document.getElementById('input-add-courses');
+			var append = ac.value.length > 0 ? ',' + courseId : courseId;
+			ac.value += append;
+			var theLi = document.getElementById('li-'+courseId);
+			document.getElementById("my-course-list").innerHTML += 
+				"<li class=\"my-course-addition\">TO ADD: " + theLi.innerHTML + "</li>";
+			theLi.style.display = 'none';
+		}
+	</script>
 </head>
-<body>
+
+<body onload="startMe();" >
 <h1>
 	Editing Student ${student.id} - ${student.firstName}  ${student.lastName} 
 </h1>
@@ -22,6 +38,27 @@
         Last Name<br/>
         <form:input path="lastName"/>
     </p>
+    
+    <div id="my-courses">
+    	<span class="list-header" id="my-courses-title">My Courses</span>
+    	<ul id="my-course-list">
+    		<c:forEach items="${ student.courses }" var="course">
+    			<li class="my-course">${course.name}</li>
+    		</c:forEach>
+    	</ul>
+    </div>
+    
+    <input type="hidden" id="input-add-courses" name="add-courses" value="">
+    
+    <div id="available-courses">
+    <span class="list-header" id="my-courses-title">Available Courses</span>
+    	<ul>
+    		<c:forEach items="${ available }" var="cc">
+    			<li id="li-${cc.id}" class="available-course" onclick="addCourse(${cc.id})">${cc.name }</li>
+    		</c:forEach>
+    	</ul>
+    </div>
+    
     <input type="submit" value="Save"/>
 </form:form>
 </body>

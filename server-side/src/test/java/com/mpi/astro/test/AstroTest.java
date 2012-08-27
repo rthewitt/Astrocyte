@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.dao.StudentDao;
 import com.mpi.astro.model.edu.Student;
-import com.mpi.astro.service.edu.StudentService;
+import com.mpi.astro.service.edu.EduService;
 
 /*
  * As I'll be injecting services and DAOs, this is effectively
@@ -33,7 +33,7 @@ public class AstroTest {
 	private StudentDao studentDao;
 	
 	@Autowired
-	private StudentService studentService;
+	private EduService studentService;
 	
 	private static final List<Student> studentList = new ArrayList<Student>();
 	static {

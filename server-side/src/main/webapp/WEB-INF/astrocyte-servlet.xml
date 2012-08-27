@@ -59,6 +59,8 @@
    
    <!-- EDU -->
    <bean id="studentDao" class="com.mpi.astro.dao.StudentDao" />
-   <bean id="studentService" class="com.mpi.astro.service.edu.StudentService" />
+   <bean id="courseDao" class="com.mpi.astro.dao.CourseDao" />
+   <bean id="tutorialDao" class="com.mpi.astro.dao.TutorialDao" />
+   <bean id="eduService" class="com.mpi.astro.service.edu.EduService" />
 
 </beans>

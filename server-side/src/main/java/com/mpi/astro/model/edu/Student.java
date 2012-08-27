@@ -1,27 +1,42 @@
 package com.mpi.astro.model.edu;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table( name = "STUDENT" )
 public class Student implements Serializable {
 
 	private static final long serialVersionUID = 8114286263271432681L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "STUDENT_ID")
 	private Long id;
 
-	@Column
+	@Column (name = "FIRST_NAME")
 	private String firstName;
 
-	@Column
+	@Column (name = "LAST_NAME")
 	private String lastName;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "STUDENT_COURSE", joinColumns =  { @JoinColumn(name = "STUDENT_ID") },
+	inverseJoinColumns = { @JoinColumn(name = "COURSE_ID")
+	})
+	private Set<Course> courses = new HashSet<Course>(0);
 
 	public Student() {
 	}
@@ -30,6 +45,18 @@ public class Student implements Serializable {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
+	}
+	
+	public Set<Course> getCourses() {
+		return this.courses;
+	}
+	
+	public void setCourses(Set<Course> courses) {
+		this.courses = courses;
+	}
+	
+	public void addCourse(Course course) {
+		this.courses.add(course);
 	}
 
 	public Long getId() {

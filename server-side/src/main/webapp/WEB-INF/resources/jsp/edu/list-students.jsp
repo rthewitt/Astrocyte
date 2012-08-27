@@ -5,7 +5,7 @@
 <%@ page session="false"%>
 <html>
 <head>
-<title>Home</title>
+<title>List Students</title>
 </head>
 <body>
 <h1>Listing Students</h1>
@@ -17,7 +17,6 @@
 <a href="edit"> Add Student</a>
 <br /><br />
 <form id="just-in-case" method="post" action="${pageContext.request.contextPath}/student/generate-course">
-<!-- Changing name in case Spring is specific -->
 <label for="course-name">Enter a Course Name</label>
 <input name="course-name" id="input-course-name" type="text" maxlength="7">
 <input type="submit" value="Prepare Course">

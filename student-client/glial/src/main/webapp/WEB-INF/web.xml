@@ -42,7 +42,7 @@
 
     <servlet-mapping>
         <servlet-name>glial</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/jgit</url-pattern>
     </servlet-mapping>
 
 </web-app>

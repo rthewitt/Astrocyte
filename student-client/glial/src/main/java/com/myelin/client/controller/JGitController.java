@@ -27,10 +27,11 @@ import com.jcraft.jsch.Session;
 public class JGitController extends HttpServlet {
 	
 	// TODO move into util or service, figure out persistence
-	private static final String USER_NAME = "jacob0002";
-	private static final String COURSE = "TESTER";
+	private static final String USER_NAME = "0000002";
+	private static final String COURSE = "CS101";
 	
-	private static final File PATH = new File("/home/synapse/Desktop/client-repository");
+	private static final String PROJECT_LOCATION = "/home/synapse/Desktop/student-project";
+	private static final File PATH = new File(PROJECT_LOCATION);
 	private static final String HOST = "localhost";
 	private static final String SSH_CONFIG_PATH = "/home/synapse/.ssh";
 	private static final String SSH_KEY = SSH_CONFIG_PATH + "/" + "id_rsa";
@@ -50,13 +51,18 @@ public class JGitController extends HttpServlet {
 		else if("commit".equals(action)) commitBranch();
 		else if("init".equals(action)) try {
 			initLocalRepository();
-			PrintWriter out = response.getWriter();
-			out.println("<html><head><title>Initialization Success</title></head><body><h2>init response</h2></body></html>");
+			sendResponse(response, "Initialization Success", "Success!  Repository cloned at " + PROJECT_LOCATION);
 		} catch(GitAPIException ge) {
 			System.out.println("Error initializing repository for " + USER_NAME);
 			ge.printStackTrace();
 			throw new ServletException(ge);
 		}
+		else sendResponse(response, "Failure", "Operation not (yet) supported");
+	}
+	
+	private void sendResponse(HttpServletResponse response, String title, String message) throws IOException {
+		PrintWriter out = response.getWriter();
+		out.println(String.format("<html><head><title>%s</title></head><body><h2>%s</h2></body></html>", title, message));
 	}
 	
 	
@@ -82,10 +88,10 @@ public class JGitController extends HttpServlet {
 		   clone.setBare(false);
 		   
 		   clone.setCloneAllBranches(false); // TODO understand why true doesn't work anyway 
-		   clone.setBranch(String.format("refs/heads/%s", USER_NAME));
+//		   clone.setBranch(String.format("refs/heads/%s", USER_NAME)); // no longer, always master
 		   clone.setDirectory(PATH);
 
-		   clone.setURI(String.format("ssh://%s/%s/%s.git", HOST, MYELIN_GIT_DIR, COURSE));
+		   clone.setURI(String.format("ssh://%s/%s/%s/%s.git", HOST, MYELIN_GIT_DIR, COURSE, USER_NAME));
 		   
 		   clone.setTransportConfigCallback(new TransportConfigCallback() {
 				

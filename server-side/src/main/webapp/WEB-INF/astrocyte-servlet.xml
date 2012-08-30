@@ -5,11 +5,13 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/web-services http://www.springframework.org/schema/web-services/web-services-2.0.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-2.5.xsd" >
 
     <!-- Consider separating these namespaces out to reduce overhead for spring context -->
     
@@ -101,18 +103,36 @@
     <bean id="myQueue" class="org.apache.activemq.command.ActiveMQQueue">
   		<constructor-arg value="test"/>
 	</bean>
+	
+    <bean id="incomingQ" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="incoming" />
+    </bean>
     
     <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
         <property name="connectionFactory">
             <ref local="jmsFactory" />
         </property>
         <property name="defaultDestination" ref="myQueue"/>
-    	<!-- <property name="connectionFactory" ref="connectionFactory" /> -->
-    	<!-- <property name="destinationResolver" ref="destination" /> -->
 	</bean>
+	
+    <!-- Transitioning into jms namespace.  Will connection-factory want AMQC or Pooled/Cached?  Choosing the latter -->
+    <jms:listener-container connection-factory="jmsFactory"
+        destination-resolver="tempDestinationResolver" 
+        concurrency="1"> <!-- tweak concurrency if necessary, can be a range.  No need for it now, affects ordering.  Not recommended for topics -->
+        
+    <jms:listener destination="incomingQ" ref="messageConsumer" method="handleCommand"/> <!-- multiples allowed -->
+    
+	</jms:listener-container>
+	
+    <!-- May wish to change this to JndiDestinationResolver.  Dev/Staging/client servers -->
+	<bean id="tempDestinationResolver" class="org.springframework.jms.support.destination.BeanFactoryDestinationResolver" />
 	
     
     <bean id="messageProducer" class="com.mpi.astro.service.jms.JmsMessageProducer">
+        <property name="template" ref="jmsTemplate" />
+    </bean>
+    
+    <bean id="messageConsumer" class="com.mpi.astro.service.jms.JmsMessageConsumer">
         <property name="template" ref="jmsTemplate" />
     </bean>
  

@@ -22,13 +22,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.activemq.transport.stomp.Stomp.Headers.Subscribe;
 import org.apache.activemq.transport.stomp.StompConnection;
-import org.apache.activemq.transport.stomp.StompFrame;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.mpi.astro.dao.CourseDao;
 import com.mpi.astro.dao.StudentDao;
+import com.mpi.astro.dao.TutorialDao;
 import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Student;
+import com.mpi.astro.model.edu.Tutorial;
+import com.mpi.astro.util.AstrocyteUtils;
+import com.mpi.astro.util.MyelinAction;
 import com.mpi.astro.util.PropertiesUtil;
 
 public class EduService {
@@ -37,7 +41,13 @@ public class EduService {
 	private StudentDao studentDao;
 	
 	@Autowired
+	private TutorialDao tutorialDao;
+	
+	@Autowired
 	private CourseDao courseDao;
+	
+	@Autowired
+	private MyelinService myelinService;
 	
 	@PersistenceContext(type=PersistenceContextType.EXTENDED)
 	private EntityManager entityManager;
@@ -64,13 +74,54 @@ public List<Student> getStudentsInCourse(Long courseId) {
 	
 	return students;
 	}
+
+	/**
+	 * Retrieve course for the given id
+	 * @param courseId
+	 * @return course object
+	 */
+	public Course getCourse(long courseId) {
+		return courseDao.find(courseId);
+	}
+	
+	public List<Course> getAllCourses() {
+		return courseDao.getCourses();
+	}
+	
+	public Tutorial getTutorial(long id) {
+		return tutorialDao.find(id);
+	}
+	
+	public List<Tutorial> getAllTutorials() {
+		return tutorialDao.getTutorials();
+	}
+	
+	public Student getStudent(long id) {
+		return studentDao.find(id);
+	}
+	
+	public List<Student> getAllStudents() {
+		return studentDao.getStudents();
+	}
 	
 	public List<Student> getStudentsInCourse(Course course) {
 			return getStudentsInCourse(course.getId());
 	}
 	
-	// TODO put this into a separate, ever-connected communications service.
-	public static String sendAndReceive(String msg) throws Exception {
+	public void save(Student s) {
+		studentDao.save(s);
+	}
+	
+	public void save(Course c) {
+		courseDao.save(c);
+	}
+	
+	public void save(Tutorial t) {
+		tutorialDao.save(t);
+	}
+	
+	// TODO delete
+	public static String dispatchRequest(String msg) throws Exception {
 		   
 		   String messageReceived = "Currently not listening!";
 		   
@@ -169,68 +220,16 @@ public List<Student> getStudentsInCourse(Long courseId) {
 			return true;
 		}
 		
-		// Eventually this will be a Course object, not a String.
-		public boolean initializeCourse(String courseName, HttpServletResponse response) {
-			
-			return initializeCourseCGI(courseName, response);
-		}
-		
-		
-		// TODO examine server load, bottlenecks
-		// TODO disassociate with response, handle only according to booleans.  Pass string or writer.
-		private boolean initializeCourseCGI(String courseName, HttpServletResponse response) {
-			
-			URLConnection con = null;
-			PrintStream outStream = null;
-			DataInputStream inStream = null;
-			ServletOutputStream out = null;
-			BufferedReader buffReader = null;
-			
-			try {
-				URL url = new URL("http://localhost/cgi-bin/test.py");
-				
-				con = url.openConnection();
-				con.setDoOutput(true);
-				
-				outStream = new PrintStream(con.getOutputStream());
-				// sending a parameter (courseName)
-				outStream.println("course=" + URLEncoder.encode(courseName, "UTF-8"));
-				
-				// handle in finally?
-				outStream.flush();
-				outStream.close();
-				
-				inStream = new DataInputStream(con.getInputStream());
-//				out = response.getWriter();
-				out = response.getOutputStream();
-//				buffReader = new BufferedReader(new InputStreamReader(inStream));
-				byte[] buffer = new byte[4096];
-				int n = -1;
-				
-				while( (n=inStream.read(buffer)) != -1) {
-					out.write(buffer, 0, n);
-				}
-				
-//				String line;
-				
-				// Was an error here from CGI
-//				 while (null != (line = buffReader.readLine())) {
-//					 out.println(line);
-//				 }
-				 inStream.close();
+		// Change so that tutorial discovery comes from DB?
+		public void initializeCourse(long courseId, long tutorialId) {
 
-			} catch(MalformedURLException me) {
-				me.printStackTrace(); // TODO log
-				return false;
-			} catch(IOException me) {
-				me.printStackTrace(); // TODO log
-				return false;
-			} finally {
-				if(outStream != null) outStream.close();
-				// Do I need to close the other streams here?
-			}
+			// TODO handle database changes, state information
 			
-			return true; // change
+			Course course = getCourse(courseId);
+			Tutorial tutorial = getTutorial(tutorialId);
+			List<Student> students = getStudentsInCourse(course);
+			
+			myelinService.dispatchInit(course, tutorial, students);
 		}
 	
 }

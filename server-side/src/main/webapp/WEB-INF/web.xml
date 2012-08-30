@@ -15,6 +15,25 @@
    <listener>
       <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
    </listener>
+   
+   
+   
+   
+   
+   <!-- JMS JNDI values -->
+   <resource-env-ref>
+    	<resource-env-ref-name>jms/command-queue</resource-env-ref-name>
+    	<resource-env-ref-type>javax.jms.Queue</resource-env-ref-type>
+	</resource-env-ref>
+	<resource-ref>
+	    <description>JMS Connection Factory</description>
+	    <res-ref-name>jms/connectionFactory</res-ref-name>
+	    <res-type>org.springframework.jms.connection.CachingConnectionFactory</res-type>
+	    <res-auth>Container</res-auth>
+	    <res-sharing-scope>Shareable</res-sharing-scope>
+	</resource-ref>
+   
+   
     
    <!-- NOTE: This may not work with Jetty version -->
 	<servlet-mapping>

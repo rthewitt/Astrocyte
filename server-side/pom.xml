@@ -172,6 +172,12 @@
 		<version>5.5.0</version>
 	</dependency>
 	
+    <dependency>
+  		<groupId>org.apache.activemq</groupId>
+ 	 	<artifactId>activemq-pool</artifactId>
+ 	 	<version>5.6.0</version>
+ 	</dependency>
+	
 	<dependency>
 		<groupId>org.apache.geronimo.specs</groupId>
 		<artifactId>geronimo-jta_1.0.1B_spec</artifactId>
@@ -182,6 +188,13 @@
 		<groupId>org.apache.geronimo.specs</groupId>
 		<artifactId>geronimo-jms_1.1_spec</artifactId>
 		<version>1.1.1</version>
+	</dependency>
+	
+	<!-- Suddenly needed when using spring / messageProducer -->
+	<dependency>
+		<groupId>xstream</groupId>
+		<artifactId>xstream</artifactId>
+		<version>1.2.2</version>
 	</dependency>
 	
         <!-- Spring dependencies. Moving to new MVC release, potential API collision? -->
@@ -201,6 +214,12 @@
         <dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		
+        <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 		

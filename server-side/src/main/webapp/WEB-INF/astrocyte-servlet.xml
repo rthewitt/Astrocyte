@@ -62,5 +62,58 @@
    <bean id="courseDao" class="com.mpi.astro.dao.CourseDao" />
    <bean id="tutorialDao" class="com.mpi.astro.dao.TutorialDao" />
    <bean id="eduService" class="com.mpi.astro.service.edu.EduService" />
+   
+   
+   <!-- Move to separate context file for readability.  JMS -->
+   <!-- 
+   <bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+    	<property name="environment">
+        	<props>
+            	<prop key="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</prop>
+            	<prop key="java.naming.provider.url">tcp://localhost:61613</prop>
+        	</props>
+    	</property>
+	</bean> -->
+	
+   <!-- 
+   <bean id="connectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiTemplate"><ref bean="jndiTemplate"/></property>
+        <property name="jndiName"><value>java:comp/env/jms/connectionFactory</value></property>
+        <property name="resourceRef"><value>true</value></property>
+    </bean>
 
+    <bean id="destination" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiTemplate"><ref bean="jndiTemplate"/></property>
+        <property name="jndiName"><value>java:comp/env/jms/command-queue</value></property>
+        <property name="resourceRef"><value>true</value></property>
+    </bean> -->
+    
+    <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+    	<property name="connectionFactory">
+      	<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+        	<property name="brokerURL">
+          		<value>tcp://localhost:61616</value>
+        	</property>
+      	</bean>
+    	</property>
+  	</bean>	
+  	
+    <bean id="myQueue" class="org.apache.activemq.command.ActiveMQQueue">
+  		<constructor-arg value="test"/>
+	</bean>
+    
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory">
+            <ref local="jmsFactory" />
+        </property>
+        <property name="defaultDestination" ref="myQueue"/>
+    	<!-- <property name="connectionFactory" ref="connectionFactory" /> -->
+    	<!-- <property name="destinationResolver" ref="destination" /> -->
+	</bean>
+	
+    
+    <bean id="messageProducer" class="com.mpi.astro.service.jms.JmsMessageProducer">
+        <property name="template" ref="jmsTemplate" />
+    </bean>
+ 
 </beans>

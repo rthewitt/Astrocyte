@@ -1,5 +1,6 @@
 package com.mpi.astro.util;
 
 public enum MyelinAction {
-	INITIALIZE
+	INITIALIZE,
+	MERGE_REQUEST
 }

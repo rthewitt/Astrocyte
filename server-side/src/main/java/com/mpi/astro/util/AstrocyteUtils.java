@@ -33,6 +33,9 @@ public class AstrocyteUtils {
 		return alphaGame;
 	}
 	
+	// TODO move keys into static location, perhaps Constants class or Command class 
+	// TODO merge duplicate code for generation
+	
 	public static JSONObject getJSONCourseInit(String courseName, List<Student> students, String prototype) {
 		JSONObject obj = new JSONObject();
 		
@@ -56,6 +59,20 @@ public class AstrocyteUtils {
 		
 		proto.put("repository", prototype);
 		proto.put("initTag", "INIT");
+		
+		obj.put("prototype", proto);
+		
+		return obj;
+	}
+	
+	public static JSONObject getJSONCourseMerge(String courseName, String prototype, String commit) {
+		JSONObject obj = new JSONObject();
+		obj.put("courseName", courseName);
+		
+		Map<String, String> proto = new HashMap<String, String>();
+		proto.put("repository", prototype);
+		proto.put("commitRef", commit);
+		proto.put("method", "merge"); // Quick and dirty.  Dangerous.
 		
 		obj.put("prototype", proto);
 		

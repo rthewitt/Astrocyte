@@ -220,6 +220,8 @@ public List<Student> getStudentsInCourse(Long courseId) {
 			return true;
 		}
 		
+//		============ CREATE A SEPARATE SERVICE FOR ADMIN LEVEL TASKS ================
+		
 		// Change so that tutorial discovery comes from DB?
 		public void initializeCourse(long courseId, long tutorialId) {
 
@@ -230,6 +232,15 @@ public List<Student> getStudentsInCourse(Long courseId) {
 			List<Student> students = getStudentsInCourse(course);
 			
 			myelinService.dispatchInit(course, tutorial, students);
+		}
+		
+		public boolean deployLesson(long courseId, long tutorialId, String commitRef) {
+			Course course = getCourse(courseId); // Here we'll probably be grabbing commit ref from db
+			if(course == null) return false;
+			
+			Tutorial tut = getTutorial(tutorialId); // TODO get from db instead
+			myelinService.dispatchMergeRequest(course, tut.getPrototype(), commitRef);
+			return true; // We may subscribe to topic / queue to verify transmission
 		}
 	
 }

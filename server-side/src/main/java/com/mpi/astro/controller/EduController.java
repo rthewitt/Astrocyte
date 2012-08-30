@@ -174,9 +174,10 @@ public class EduController {
 		*/
 		return "redirect:view";
 	}
+	 
 	
 	@RequestMapping(value = "generate-course", method=RequestMethod.POST)
-	public String testValues(@RequestParam("select-course") String courseIdParam, 
+	public String generateCourse(@RequestParam("select-course") String courseIdParam, 
 			@RequestParam("select-tutorial") String tutorialIdParam,
 			HttpServletRequest request, HttpServletResponse response) throws IOException{
 		
@@ -187,4 +188,5 @@ public class EduController {
 		
 		return "redirect:view"; // change this
 	}
+	
 }

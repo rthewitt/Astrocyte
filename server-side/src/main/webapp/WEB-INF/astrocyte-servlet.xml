@@ -119,11 +119,10 @@
     <jms:listener-container connection-factory="jmsFactory"
         destination-resolver="tempDestinationResolver" 
         concurrency="1"> <!-- tweak concurrency if necessary, can be a range.  No need for it now, affects ordering.  Not recommended for topics -->
-        
     <jms:listener destination="incomingQ" ref="messageConsumer" method="handleCommand"/> <!-- multiples allowed -->
-    
 	</jms:listener-container>
-	
+	 
+	 
     <!-- May wish to change this to JndiDestinationResolver.  Dev/Staging/client servers -->
 	<bean id="tempDestinationResolver" class="org.springframework.jms.support.destination.BeanFactoryDestinationResolver" />
 	
@@ -131,9 +130,7 @@
     <bean id="messageProducer" class="com.mpi.astro.service.jms.JmsMessageProducer">
         <property name="template" ref="jmsTemplate" />
     </bean>
-    
-    <bean id="messageConsumer" class="com.mpi.astro.service.jms.JmsMessageConsumer">
-        <property name="template" ref="jmsTemplate" />
-    </bean>
+
+    <bean id="messageConsumer" class="com.mpi.astro.service.jms.JmsMessageConsumer" />
  
 </beans>

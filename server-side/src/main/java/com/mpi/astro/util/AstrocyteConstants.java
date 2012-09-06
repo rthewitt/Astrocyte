@@ -14,6 +14,8 @@ public class AstrocyteConstants {
 		HTML5
 	}
 	
+	public static final String BASE_TAG="check"; // checkpoint current
+	
 	/*
 	 * Myelin Lessons 
 	 */

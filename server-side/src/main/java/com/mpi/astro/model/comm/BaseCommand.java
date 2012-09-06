@@ -1,0 +1,37 @@
+package com.mpi.astro.model.comm;
+
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
+import com.mpi.astro.util.MyelinAction;
+
+public abstract class BaseCommand implements Command {
+	
+	protected static MyelinAction action;
+	
+	protected String courseName;
+	
+	// some commands, like update, will differ only in this regard
+	protected BaseCommand(MyelinAction action, String courseName) {
+		this.action = action;
+		this.courseName = courseName;
+	}
+	
+	protected static MyelinAction getAction() {
+		return action;
+	}
+	
+	protected abstract Map<String, Object> getContext();
+
+	@Override
+	public String toJsonString() {
+		JSONObject obj = new JSONObject();
+		obj.put("command", action.toString());
+		
+		obj.put("context", getContext());
+		
+		return obj.toJSONString();
+	}
+
+}

@@ -10,6 +10,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mpi.astro.model.arcade.impl.JavaGame;
+import com.mpi.astro.model.comm.InitCommand;
+import com.mpi.astro.model.comm.UpdateCommand;
 import com.mpi.astro.model.edu.Student;
 
 public class AstrocyteUtils {
@@ -65,18 +67,18 @@ public class AstrocyteUtils {
 		return obj;
 	}
 	
-	public static JSONObject getJSONCourseMerge(String courseName, String prototype, String commit) {
-		JSONObject obj = new JSONObject();
-		obj.put("courseName", courseName);
+	public static Class<?> getCommandClass(MyelinAction action){
 		
-		Map<String, String> proto = new HashMap<String, String>();
-		proto.put("repository", prototype);
-		proto.put("commitRef", commit);
-		proto.put("method", "merge"); // Quick and dirty.  Dangerous.
-		
-		obj.put("prototype", proto);
-		
-		return obj;
+		switch(action) {
+		case INITIALIZE:
+			return InitCommand.class;
+		case UPDATE_CLASS:
+			return UpdateCommand.class;
+		case UPDATE_STUDENT:
+			return UpdateCommand.class;
+		default:
+			return null;
+		}
 	}
 	
 }

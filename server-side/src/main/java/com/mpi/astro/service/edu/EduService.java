@@ -31,6 +31,7 @@ import com.mpi.astro.dao.TutorialDao;
 import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.model.edu.Tutorial;
+import com.mpi.astro.util.AstrocyteConstants;
 import com.mpi.astro.util.AstrocyteUtils;
 import com.mpi.astro.util.MyelinAction;
 import com.mpi.astro.util.PropertiesUtil;
@@ -118,6 +119,12 @@ public List<Student> getStudentsInCourse(Long courseId) {
 	
 	public void save(Tutorial t) {
 		tutorialDao.save(t);
+	}
+	
+	// also consider using git build-in email functionality
+	public void notifyProfessorPullRequest() {
+		// TODO update database?
+		// if school has their own ec2 instance / site / control hub, send data to it?
 	}
 	
 	// TODO delete
@@ -232,6 +239,27 @@ public List<Student> getStudentsInCourse(Long courseId) {
 			List<Student> students = getStudentsInCourse(course);
 			
 			myelinService.dispatchInit(course, tutorial, students);
+		}
+		
+		// make progress a function of student?
+		public String getStudentProgressTag(long studentId) {
+			return "check-1"; // TODO change this, intermediate value!!
+		}
+		
+		public boolean advanceStudent(long courseId, long tutorialId, long studentId,
+				String base) {
+			Course course = getCourse(courseId);
+			Tutorial tut = getTutorial(tutorialId);
+			
+			if(course == null || tut == null) return false;
+			
+			// TODO make progress a function of student?  Not sure
+			getStudentProgressTag(studentId);
+			
+			
+			
+			
+			return true;
 		}
 		
 		public boolean deployLesson(long courseId, long tutorialId, String commitRef) {

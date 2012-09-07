@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.activemq.transport.stomp.Stomp.Headers.Subscribe;
 import org.apache.activemq.transport.stomp.StompConnection;
+import org.hibernate.Hibernate;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 

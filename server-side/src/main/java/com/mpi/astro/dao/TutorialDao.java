@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,13 +15,19 @@ import com.mpi.astro.model.edu.Tutorial;
 @Repository
 public class TutorialDao {
 
-	// Spring is injecting the JPA wrapper object of a Hibernate session.
-	// The PersistenceContext defaults to a shared EntityManager.
-	@PersistenceContext
+	// This is a hack to keep lazy loading from causing a failure on collections
+	// Needed because the app is not container managed.  TODO determine CONS
+	@PersistenceContext(type=PersistenceContextType.EXTENDED)
 	private EntityManager entityManager;
 	
 	public Tutorial find(Long id) {
 		return entityManager.find(Tutorial.class, id);
+	}
+	
+	public Tutorial findInitialized(Long id) {
+		Tutorial t = entityManager.find(Tutorial.class, id);
+//		Hibernate.initialize(t.getLessons());
+		return t;
 	}
 	
 	@SuppressWarnings("unchecked")

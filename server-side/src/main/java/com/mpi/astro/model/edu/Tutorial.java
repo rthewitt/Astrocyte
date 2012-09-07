@@ -1,19 +1,29 @@
 package com.mpi.astro.model.edu;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 /*
- * Tutorial will probably be a subclass of something like Activity.
- * Eventually it will contain valuable information, perhaps rev-list checkpoints
- * or tag data on the given repo for traversal.  Ironically, proto design pattern
- * may be a decent choice for repo types.
+ * Implementation of Tutorial has changed in the design.  It will now be a node in a stack.
+ * Simple courses (Not Simple Tutorials) will have a single Tutorial node.
+ * Tutorial will contain a list of commit-tag to media URL mappings.
+ * if last element pop the stack.  May have a finished-tutorial event or method,
+ * e.g. artifact deployment, source branch (for posterity) and/or notification
  */
 @Entity
 @Table(name="TUTORIAL")
@@ -28,16 +38,20 @@ public class Tutorial implements Serializable {
 	
 	@Column(name="TUTORIAL_NAME", nullable=false)
 	private String name;
-	
+
 	@Column(name="TYPE")
 	private TutorialType type = TutorialType.SIMPLE;
 	
-	// This may eventually be an object class
-	// e.g., create localRepository with JGit.
 	@Column(name="PROTO_URI")
 	private String prototype;
 	
-	@Column
+	// mappings of commit-tag (minus-base) -> media uri
+	// media can be animation, pdf, documentation, activity, etc
+	@OneToMany(mappedBy="tutorial", cascade = CascadeType.ALL)
+	@OrderBy("tagNum")
+	private List<Lesson> lessons = new ArrayList(0);
+	
+	@Column(name="DESCRIPTION")
 	private String description;
 	
 	public Tutorial() {
@@ -83,6 +97,33 @@ public class Tutorial implements Serializable {
 		this.description = description;
 	}
 	
+	// required by spring
+	public List<Lesson> getLessons() {
+		return lessons;
+	}
+	// required by spring
+	public void setLessons(List<Lesson> lessons) {
+		this.lessons = lessons;
+	}
+	
+	// hardly necessary...
+	public void addLesson(int tagIndex, String mediaURI) {
+		Lesson lesson = new Lesson(tagIndex, mediaURI);
+		this.lessons.add(lesson);
+		lesson.setTutorial(this); // this is dumb
+	}
+	
+	/**
+	 *  Returns an immutable Map of tag number -> media uri
+	 *  used as convenience for course design and representation.
+	 */
+	public Map<Integer, String> getLessonMappings() {
+		Map<Integer, String> map = new HashMap<Integer, String>();
+		for(Lesson l : lessons)
+			map.put(l.getTagNum(), l.getMediaURI());
+		return Collections.unmodifiableMap(map);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -113,6 +154,11 @@ public class Tutorial implements Serializable {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
+			return false;
+		if (lessons == null) {
+			if (other.lessons != null)
+				return false;
+		} else if (!lessons.equals(other.lessons))
 			return false;
 		if (type == null) {
 			if (other.type != null)

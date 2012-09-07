@@ -5,11 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.jms.JMSException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.mpi.astro.dao.StudentDao;
 import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.model.edu.Tutorial;
 import com.mpi.astro.service.edu.EduService;
-import com.mpi.astro.util.AstrocyteUtils;
-import com.mpi.astro.util.MyelinAction;
 
 @Controller
 @RequestMapping("/enrollment/")
@@ -97,11 +92,10 @@ public class EduController {
 		ModelAndView mav = new ModelAndView();		
  		mav.setViewName("edu/edit-tutorial");
  		Tutorial tut = null;
- 		if (id == null) {
+ 		if (id == null)
  			tut = new Tutorial();
- 		} else {
+ 		else
  			tut = eduService.getTutorial(id);
- 		}
  		
  		mav.addObject("tutorial", tut);
 		return mav;
@@ -156,6 +150,12 @@ public class EduController {
 	@RequestMapping(method=RequestMethod.POST,value="edit-tutorial") 
 	public String saveTutorial(@ModelAttribute Tutorial tut) {
 		logger.debug("Received postback on student " + tut);		
+		// TEMPORARY TODO remove
+		if(tut.getLessons() == null || tut.getLessons().size() < 1) {
+			tut.addLesson(1, "TEST-VAL");
+			tut.addLesson(2, "TEST-VAL");
+		}
+		// -------------
 		eduService.save(tut);
 		return "redirect:view";
 	}
@@ -187,6 +187,11 @@ public class EduController {
 		eduService.initializeCourse(courseId, tutorialId);
 		
 		return "redirect:view"; // change this
+	}
+	
+	@RequestMapping(value = "test-redirect", method=RequestMethod.GET)
+	public String testRedirect() {
+		return "/test/redirect";
 	}
 	
 }

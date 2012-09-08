@@ -25,16 +25,12 @@ public class Lesson implements Serializable {
 	private static final long serialVersionUID = -4962190931295411178L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "LESSON_ID")
-	private Long id;
+	private Integer id;
 	
 	@ManyToOne
 	@JoinColumn(name = "TUTORIAL_ID")
 	private Tutorial tutorial; // I think this is required, although I find it distasteful
-	
-	@Column(name = "TAG_NUMBER")
-	private Integer tagNum; // BASE_TAG_NAME-{tagNum} by convention in repo
 	
 	@Column(name = "MEDIA_URI")
 	private String mediaURI;
@@ -43,17 +39,17 @@ public class Lesson implements Serializable {
 		
 	}
 	
-	public Lesson(int num, String uri) {
-		this.tagNum = num;
+	public Lesson(int id, String uri) {
+		this.id = id;
 		this.mediaURI = uri;
 	}
 	
 	
-	public Long getId() {
+	public Integer getId() {
 		return this.id;
 	}
 	
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	
@@ -64,13 +60,7 @@ public class Lesson implements Serializable {
 	public void setTutorial(Tutorial tutorial) {
 		this.tutorial = tutorial;
 	}
-	
-	public Integer getTagNum() {
-		return tagNum;
-	}
-	public void setTagNum(Integer tagNum) {
-		this.tagNum = tagNum;
-	}
+
 	public String getMediaURI() {
 		return mediaURI;
 	}
@@ -98,11 +88,6 @@ public class Lesson implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Lesson other = (Lesson) obj;
-		if (tagNum == null) {
-			if (other.tagNum != null)
-				return false;
-		} else if (!tagNum.equals(other.tagNum))
-			return false;
 		if (mediaURI == null) {
 			if (other.mediaURI != null)
 				return false;

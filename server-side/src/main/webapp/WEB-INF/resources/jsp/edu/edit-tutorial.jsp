@@ -33,8 +33,10 @@
     <p>
     	<!-- Consider adding link to repository browser read-only -->
     	<c:forEach items="${tutorial.lessons}" varStatus="iter" var="less">
-    		<span class="lesson-number">Lesson Number: ${less.tagNum}</span><br />
-    		<form:hidden path="lessons[${iter.index}].tagNum"/>
+    		<!-- Hibernate was saving children directly without setting foreign key to tutorial object -->
+    		<span class="lesson-number">Lesson Number: ${less.id} (index: ${iter.index})</span><br />
+    		<!-- <input type="input" id="lesson-${iter.index}" value="${less.mediaURI}" /> -->
+    		<form:hidden path="lessons[${iter.index}].id"/>
     		<form:label path="lessons[${iter.index}].mediaURI">Lesson Media</form:label><br />
     		<form:input path="lessons[${iter.index}].mediaURI"/><br />
     	</c:forEach>

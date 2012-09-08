@@ -18,6 +18,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mpi.astro.controller.EduController;
+
 /*
  * Implementation of Tutorial has changed in the design.  It will now be a node in a stack.
  * Simple courses (Not Simple Tutorials) will have a single Tutorial node.
@@ -28,6 +33,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name="TUTORIAL")
 public class Tutorial implements Serializable {
+	
+	private static final Logger logger = LoggerFactory.getLogger(Tutorial.class);
 	
 	private static final long serialVersionUID = 5418688806412246017L;
 
@@ -48,7 +55,7 @@ public class Tutorial implements Serializable {
 	// mappings of commit-tag (minus-base) -> media uri
 	// media can be animation, pdf, documentation, activity, etc
 	@OneToMany(mappedBy="tutorial", cascade = CascadeType.ALL)
-	@OrderBy("tagNum")
+	@OrderBy("id")
 	private List<Lesson> lessons = new ArrayList(0);
 	
 	@Column(name="DESCRIPTION")
@@ -103,6 +110,9 @@ public class Tutorial implements Serializable {
 	}
 	// required by spring
 	public void setLessons(List<Lesson> lessons) {
+		for(Lesson lesson : lessons) {
+			lesson.setTutorial(this);
+		}
 		this.lessons = lessons;
 	}
 	
@@ -110,6 +120,7 @@ public class Tutorial implements Serializable {
 	public void addLesson(int tagIndex, String mediaURI) {
 		Lesson lesson = new Lesson(tagIndex, mediaURI);
 		this.lessons.add(lesson);
+		logger.debug("INSIDE TUTORIAL addLesson: size is now " + this.lessons.size());
 		lesson.setTutorial(this); // this is dumb
 	}
 	
@@ -120,7 +131,7 @@ public class Tutorial implements Serializable {
 	public Map<Integer, String> getLessonMappings() {
 		Map<Integer, String> map = new HashMap<Integer, String>();
 		for(Lesson l : lessons)
-			map.put(l.getTagNum(), l.getMediaURI());
+			map.put(l.getId(), l.getMediaURI());
 		return Collections.unmodifiableMap(map);
 	}
 	

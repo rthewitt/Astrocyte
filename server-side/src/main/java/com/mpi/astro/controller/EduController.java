@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.mpi.astro.model.edu.Course;
+import com.mpi.astro.model.edu.Lesson;
 import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.model.edu.Tutorial;
 import com.mpi.astro.service.edu.EduService;
@@ -143,19 +144,41 @@ public class EduController {
 	}
 	@RequestMapping(method=RequestMethod.POST,value="edit-course") 
 	public String saveCourse(@ModelAttribute Course course) {
-		logger.debug("Received postback on student " + course);		
+		logger.debug("Received postback on course " + course);		
 		eduService.save(course);
 		return "redirect:view";
 	}
 	@RequestMapping(method=RequestMethod.POST,value="edit-tutorial") 
-	public String saveTutorial(@ModelAttribute Tutorial tut) {
-		logger.debug("Received postback on student " + tut);		
+	public String saveTutorial(@ModelAttribute Tutorial tut, HttpServletRequest request) {
+		logger.debug("Received postback on tutorial " + tut);		
 		// TEMPORARY TODO remove
-		if(tut.getLessons() == null || tut.getLessons().size() < 1) {
+		List<Lesson> checkPoints = tut.getLessons();
+		if(checkPoints == null || checkPoints.size() < 1) {
+			logger.debug(checkPoints == null ? "lessons was NULL" : "existed, size was " + checkPoints.size());
+			logger.debug("Adding new lessons");
 			tut.addLesson(1, "TEST-VAL");
 			tut.addLesson(2, "TEST-VAL");
+		} else {
+			logger.debug("Not null, size was: " + checkPoints.size());
+			for(Lesson l : checkPoints)
+				l.setTutorial(tut);
 		}
+		
+		/* else {
+			for(int x=0; x<tut.getLessons().size(); x++) {
+				logger.debug("Searching for lesson: " + x);
+				// get the submitted input tag via name convention
+				String uri = request.getParameter("lesson-" + x);
+				logger.debug("Setting lesson uri: " + uri);
+				// if we're not dealing with copies, this should save correctly. TODO test
+				if(uri != null)
+						checkPoints.get(x).setMediaURI(uri);
+				else logger.error("URI parameter for lesson was not found.");
+			}
+		} */
 		// -------------
+		logger.debug("LESSONS CONTAINED IN TUTORIAL " + tut.getId() + "\n" +
+				tut.getLessons().size() + " lessons");
 		eduService.save(tut);
 		return "redirect:view";
 	}

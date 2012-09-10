@@ -7,12 +7,11 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -23,7 +22,7 @@ public class Student implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "STUDENT_ID")
+	@Column(name = "STUDENT_ID", unique = true, nullable = false)
 	private Long id;
 
 	@Column (name = "FIRST_NAME")
@@ -32,11 +31,13 @@ public class Student implements Serializable {
 	@Column (name = "LAST_NAME")
 	private String lastName;
 	
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "STUDENT_COURSE", joinColumns =  { @JoinColumn(name = "STUDENT_ID") },
-	inverseJoinColumns = { @JoinColumn(name = "COURSE_ID")
-	})
-	private Set<Course> courses = new HashSet<Course>(0);
+	/**
+	 * This set used to be a simple many-to-many with a join table.  The need for status columns
+	 * in the join table lead to a slighly more complex association.  Object type also changed
+	 * Old version can be referenced by commit: a041353da6bec41ebc00f3c8a6e9636231b7724b
+	 */
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.student", cascade=CascadeType.ALL)
+	private Set<StudentCourse> courseAssociations = new HashSet<StudentCourse>(0);
 
 	public Student() {
 	}
@@ -47,16 +48,16 @@ public class Student implements Serializable {
 		this.lastName = lastName;
 	}
 	
-	public Set<Course> getCourses() {
-		return this.courses;
+	public Set<StudentCourse> getCourseAssociations() {
+		return this.courseAssociations;
 	}
 	
-	public void setCourses(Set<Course> courses) {
-		this.courses = courses;
+	public void setCourseAssociations(Set<StudentCourse> assoc) {
+		this.courseAssociations = assoc;
 	}
 	
-	public void addCourse(Course course) {
-		this.courses.add(course);
+	public void saveCourseAssociation(StudentCourse course) {
+		this.courseAssociations.add(course);
 	}
 
 	public Long getId() {
@@ -66,6 +67,13 @@ public class Student implements Serializable {
 	// May wish to separate this as an aspect
 	public String getStudentId() {
 		return id != null ? String.format("%07d", id) : "";
+	}
+	
+	public Tutorial getCurrentTutorialForCourse(Course course) {
+		for(StudentCourse sc : this.courseAssociations)
+			if(course.getId() == sc.getCourse().getId())
+				return course.getTutorialByOrderNumber(sc.getTutorialNum());
+		return null;
 	}
 
 	public void setId(Long id) {

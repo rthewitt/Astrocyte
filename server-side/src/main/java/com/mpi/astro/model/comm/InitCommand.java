@@ -15,11 +15,11 @@ import com.mpi.astro.util.MyelinAction;
 
 public class InitCommand extends BaseCommand implements Command {
 	
-	protected List<Student> students;
+	protected Set<Student> students;
 	protected String prototype;
 	
 	// TODO make sure prototype is handled appropriately, should be more than a string
-	public InitCommand(String courseName, String repo, List<Student> students) {
+	public InitCommand(String courseName, String repo, Set<Student> students) {
 		super(MyelinAction.INITIALIZE, courseName);
 		this.prototype = repo;
 		this.students = students;
@@ -38,9 +38,8 @@ public class InitCommand extends BaseCommand implements Command {
 		ctx.put("courseName", this.courseName);
 		
 		List<Map<String, String>> stArr = new ArrayList<Map<String, String>>();
-		Set<Student> unique = new HashSet<Student>(students);
 		
-		for(Student s : unique) {
+		for(Student s : students) {
 			Map<String, String> stud = new HashMap<String, String>();
 			stud.put("studentId", s.getStudentId());
 			stud.put("name", String.format("%s %s", s.getFirstName(), s.getLastName()) );

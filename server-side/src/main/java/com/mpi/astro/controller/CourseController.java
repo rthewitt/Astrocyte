@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.mpi.astro.model.edu.Course;
-import com.mpi.astro.model.edu.Tutorial;
+import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.service.edu.EduService;
 
 // TODO important - this is really the courseName, change logic, add convenience method to service
@@ -50,15 +49,16 @@ public class CourseController {
 	@ResponseBody
 	public String update(@PathVariable String courseId, HttpServletRequest request) {
 		
-//		long id = Long.parseLong(courseId); // name, not id
-//		Course course = eduService.getCourse(id);
 		String ref = request.getParameter("ref");
+		String studentId = request.getParameter("student");
 		
+		if(ref == null) return "Error, ref is required for update!";
 		
-		// hardcoding for now, move all of this into service layer
-		// more importantly, make tutorial a property, along with state
-		
-		eduService.deployLesson(1L, 1L, ref);
+		// TODO get tutorial id for class, how?
+		if(studentId != null && !studentId.isEmpty()) {
+			Student student = eduService.getStudent(Long.parseLong(studentId));
+			eduService.deployLesson(Long.parseLong(courseId), student, ref);
+		} else eduService.deployLesson(Long.parseLong(courseId), 1L, ref);
 		
 		return "Commit ref: " + ref;
 	}

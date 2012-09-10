@@ -26,7 +26,7 @@ public class Lesson implements Serializable {
 	
 	@Id
 	@Column(name = "LESSON_ID")
-	private Integer id;
+	private Integer id; // TODO make this a composite?  Something like course_name+id or course_id-id
 	
 	@ManyToOne
 	@JoinColumn(name = "TUTORIAL_ID")

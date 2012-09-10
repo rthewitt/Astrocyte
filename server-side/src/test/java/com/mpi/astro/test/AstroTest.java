@@ -69,11 +69,6 @@ public class AstroTest {
 		return true;
 	}
 	
-	@Test
-	public void TestFileWrite() {
-		studentService.writeStudentsToFile("JUNIT-WRITE-TEST");
-	}
-	
 	public void saveStudents() {
 		// TODO deleteAll() implementation
 		for(Student s : studentList) {

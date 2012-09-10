@@ -8,9 +8,6 @@
 <head>
 	<title>Edit Student</title>
 	<script type="text/javascript">
-		function startMe() {
-			alert("TODO: add jQuery handler to available courses.");
-		}
 		
 		function addCourse(courseId) {
 			ac = document.getElementById('input-add-courses');
@@ -42,8 +39,8 @@
     <div id="my-courses">
     	<span class="list-header" id="my-courses-title">My Courses</span>
     	<ul id="my-course-list">
-    		<c:forEach items="${ student.courses }" var="course">
-    			<li class="my-course">${course.name}</li>
+    		<c:forEach items="${ student.courseAssociations }" var="assoc">
+    			<li class="my-course">${assoc.course.name}</li>
     		</c:forEach>
     	</ul>
     </div>

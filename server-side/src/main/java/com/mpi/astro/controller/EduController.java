@@ -28,8 +28,6 @@ import com.mpi.astro.service.edu.EduService;
 @RequestMapping("/enrollment/")
 public class EduController {
 	
-	// TODO Use studentService as an intermediary to dao
-	
 	private static final Logger logger = LoggerFactory.getLogger(EduController.class);
 
 	@Autowired
@@ -71,7 +69,7 @@ public class EduController {
  		}
  		
  		// consider moving this logic into service, perhaps doing an outer join
- 		Set<Course> currentCourses = student.getCourses();
+ 		Set<Course> currentCourses = eduService.getCoursesForStudent(student);
  		
  		List<Course> availableCourses = eduService.getAllCourses();
  		for(Iterator<Course> iter = availableCourses.iterator(); iter.hasNext();) {
@@ -127,19 +125,21 @@ public class EduController {
 		logger.debug("Received postback on student "+student);
 		
 		// Could this have been done through the ModelAttribute somehow?
-		if(request.getParameter("add-courses") != null) {
+		String addInput = request.getParameter("add-courses");
+		if(addInput != null && ! addInput.isEmpty()) {
 			String[] adds = request.getParameter("add-courses").split(",");
 			
 			for(String s : adds) {
 				Course cc = eduService.getCourse(Long.parseLong(s));
 				logger.debug("Request to add: " + cc.getName());
-				student.addCourse(cc);
+				eduService.enrollStudent(student, cc);
 				logger.debug("Course " + cc.getName() + " added");
 			}
 			
-		} else logger.debug("No addition requests");
+		} else logger.debug("No course addition requests for student");
 		
 		eduService.save(student);
+		
 		return "redirect:view";
 	}
 	@RequestMapping(method=RequestMethod.POST,value="edit-course") 
@@ -170,7 +170,7 @@ public class EduController {
 				// get the submitted input tag via name convention
 				String uri = request.getParameter("lesson-" + x);
 				logger.debug("Setting lesson uri: " + uri);
-				// if we're not dealing with copies, this should save correctly. TODO test
+				// if we're not dealing with copies, this should save correctly. 
 				if(uri != null)
 						checkPoints.get(x).setMediaURI(uri);
 				else logger.error("URI parameter for lesson was not found.");
@@ -185,16 +185,9 @@ public class EduController {
 	// =========================================================
 	
 	
+	// using for testing jms producer
 	@RequestMapping(value = "test-produce", method=RequestMethod.GET)
 	public String testProduce() {
-		/*
-		try {
-			testProducer.generateMessages();
-		} catch (JMSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
 		return "redirect:view";
 	}
 	 
@@ -209,7 +202,7 @@ public class EduController {
 		
 		eduService.initializeCourse(courseId, tutorialId);
 		
-		return "redirect:view"; // change this
+		return "redirect:/course/" + courseId + "/";
 	}
 	
 	@RequestMapping(value = "test-redirect", method=RequestMethod.GET)

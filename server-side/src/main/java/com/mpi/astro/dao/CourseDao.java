@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,8 @@ public class CourseDao {
 
 	// Spring is injecting the JPA wrapper object of a Hibernate session.
 	// The PersistenceContext defaults to a shared EntityManager.
-	@PersistenceContext
+//	@PersistenceContext
+	@PersistenceContext(type=PersistenceContextType.EXTENDED)
 	private EntityManager entityManager;
 	
 	public Course find(Long id) {

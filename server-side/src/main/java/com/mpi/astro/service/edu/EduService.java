@@ -1,42 +1,33 @@
 package com.mpi.astro.service.edu;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.Query;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.activemq.transport.stomp.Stomp.Headers.Subscribe;
-import org.apache.activemq.transport.stomp.StompConnection;
-import org.hibernate.Hibernate;
-import org.json.simple.JSONObject;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.mpi.astro.dao.CourseDao;
 import com.mpi.astro.dao.StudentDao;
 import com.mpi.astro.dao.TutorialDao;
 import com.mpi.astro.model.edu.Course;
+import com.mpi.astro.model.edu.CourseTutorial;
 import com.mpi.astro.model.edu.Student;
+import com.mpi.astro.model.edu.StudentCourse;
 import com.mpi.astro.model.edu.Tutorial;
-import com.mpi.astro.util.AstrocyteConstants;
-import com.mpi.astro.util.AstrocyteUtils;
-import com.mpi.astro.util.MyelinAction;
 import com.mpi.astro.util.PropertiesUtil;
 
+// I had left this annotation off - has it affected the construction of the code-base?
+// For instance, did I have more than one instance leading to errors along the way?
+@Service
 public class EduService {
 	
 	@Autowired
@@ -58,23 +49,26 @@ public class EduService {
 		return PropertiesUtil.getProperty(PropertiesUtil.PROP_DATA_DIR);
 	}
 	
-public List<Student> getStudentsInCourse(Long courseId) {
+	private static final Logger logger = Logger.getLogger(EduService.class);
 	
-	List<Student> students = new ArrayList<Student>();
+	// no longer valid, keeping for posterity / example
+	public List<Student> getStudentsInCourse(Long courseId) {
 	
-	/*
-	String sql = "SELECT s.* FROM STUDENT s " +
-			"INNER JOIN STUDENT_COURSE sc ON sc.STUDENT_ID = s.STUDENT_ID " +
-			"INNER JOIN COURSE c ON c.COURSE_ID = sc.COURSE_ID " +
-			"WHERE c.COURSE_ID = 1;";
-	*/
-	
-	String hql = "select distinct s from Student s join s.courses c where c.id =:course_id ";
-	Query query = entityManager.createQuery(hql);
-	query.setParameter("course_id", courseId);
-	students = (List<Student>)query.getResultList();
-	
-	return students;
+		List<Student> students = new ArrayList<Student>();
+		
+		/*
+		String sql = "SELECT s.* FROM STUDENT s " +
+				"INNER JOIN STUDENT_COURSE sc ON sc.STUDENT_ID = s.STUDENT_ID " +
+				"INNER JOIN COURSE c ON c.COURSE_ID = sc.COURSE_ID " +
+				"WHERE c.COURSE_ID = 1;";
+		*/
+		
+		String hql = "select distinct s from Student s join s.courses c where c.id =:course_id ";
+		Query query = entityManager.createQuery(hql);
+		query.setParameter("course_id", courseId);
+		students = (List<Student>)query.getResultList();
+		
+		return students;
 	}
 
 	/**
@@ -122,154 +116,81 @@ public List<Student> getStudentsInCourse(Long courseId) {
 		tutorialDao.save(t);
 	}
 	
+	// I don't think this session is needed at all...
+	public void enrollStudent(Student student, Course course) {
+		StudentCourse enrollment = new StudentCourse();
+		enrollment.setStudent(student);
+		enrollment.setCourse(course);
+		enrollment.setEnrollDate(new Date());
+		
+		student.saveCourseAssociation(enrollment);
+	}
+	
+	public Set<Course> getCoursesForStudent(Student student) {
+		Set<Course> courses = new HashSet<Course>();
+		for(StudentCourse enrollment : student.getCourseAssociations()) {
+			courses.add(enrollment.getCourse());
+		}
+		return courses;
+	}
+	
+	public Set<Course> getCoursesForStudentById(long studentId) {
+		return getCoursesForStudent(studentDao.find(studentId));
+	}
+	
 	// also consider using git build-in email functionality
 	public void notifyProfessorPullRequest() {
 		// TODO update database?
 		// if school has their own ec2 instance / site / control hub, send data to it?
 	}
-	
-	// TODO delete
-	public static String dispatchRequest(String msg) throws Exception {
-		   
-		   String messageReceived = "Currently not listening!";
-		   
-	      StompConnection connection = new StompConnection();
-	      connection.open("localhost",61613);
-
-	      connection.connect("system", "manager");
-	      
-	      connection.begin("tx1");
-	      connection.send("/queue/test", msg, "tx1", null);
-//	      connection.send("/queue/test", "me now", "tx1", null);
-	      connection.commit("tx1");
-
-	      connection.subscribe("/queue/test", Subscribe.AckModeValues.CLIENT);
-	      
-//	      connection.begin("tx2");
-	      
-	      // TODO subscribe to this instead, so that we can log retrieval success
-//	      StompFrame message = connection.receive();
-	      
-//	      messageReceived = message.getBody();
-	      
-//	      connection.ack(message, "tx2");
-	
-//	      connection.commit("tx2");
-
-	      connection.disconnect();
-	      
-	      return messageReceived;
-	   }
-	
-	
-	// TODO anticipate collisions, UUID and pass through to script
-		public boolean writeStudentsToFile(String fileName) {
-			String path = PropertiesUtil.getProperty(PropertiesUtil.PROP_DATA_DIR);
-//			File file = new File(path+"/"+fileName);
-			List<Student> students = studentDao.getStudents();
-			
-			
-			try {
-				File tmp = new File(path+"/"+fileName+".course");
-				if(!tmp.exists())
-					tmp.createNewFile();
-//				File tmp = File.createTempFile(fileName, ".course", new File(path));
-				
-				FileWriter fw = new FileWriter(tmp);;
-				
-				// necessary to nest?
-				try {
-					int len = students.size();
-					StringBuilder sb = new StringBuilder();
-					StringBuilder nums = new StringBuilder();
-					
-					sb.append("NUM_STUDENTS=" + len);
-					
-					// add unix arrays to temp file
-					for(int x=0; x<len; x++) {
-						Student stud = students.get(x);
-						// TODO move userName gen into studentService, add to dao
-						String sId = stud.getStudentId();
-						String lName = stud.getLastName();
-						int nameClip = lName.length() < 5 ?  lName.length() : 5;
-						
-						String userName = String.format("%-4s", lName.substring(0, nameClip)).toLowerCase().replace(' ', '_')
-								+ sId.substring(sId.length()-4);
-						
-						sb.append("\n");
-						sb.append(String.format("names[%d]=\"%s\"", x, userName));
-						nums.append("\n");
-						nums.append(String.format("nums[%d]=\"%s\"", x, sId));
-					}
-					
-					// add prototypical student
-					sb.append("\n");
-					nums.append("\n");
-					sb.append( String.format("names[%d]=\"%s\"", 
-							len, PropertiesUtil.getProperty(PropertiesUtil.PROP_PROTO)) );
-					
-					nums.append( String.format("nums[%d]=\"%s\"", 
-							len, PropertiesUtil.getProperty(PropertiesUtil.PROP_PROTO_ID)) );
-					sb.append("\n");
-					sb.append(nums.toString());
-					
-					fw.write(sb.toString());
-				} catch(Exception e) {
-					throw new IOException(e);
-				} finally {
-					fw.close();
-				}
-				
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}
-			return true;
-		}
 		
 //		============ CREATE A SEPARATE SERVICE FOR ADMIN LEVEL TASKS ================
 		
-		// Change so that tutorial discovery comes from DB?
+		// TODO create Syllabus object and CourseFactory to set up 
+		// repositories / tags prior to initialization
 		public void initializeCourse(long courseId, long tutorialId) {
-
-			// TODO handle database changes, state information
 			
-			Course course = getCourse(courseId);
+			final Course course = getCourse(courseId);
 			Tutorial tutorial = getTutorial(tutorialId);
-			List<Student> students = getStudentsInCourse(course);
+			
+			CourseTutorial association = new CourseTutorial(); // testing constructor
+			association.setCourse(course);
+			association.setTutorial(tutorial);
+			course.saveTutorialAssociation(association);
+			// will cascade.  Change all of this to use factory
+			save(course); // WHY IS THIS BROKEN?
+			
+			Set<Student> students = course.getStudents();
 			
 			myelinService.dispatchInit(course, tutorial, students);
 		}
 		
-		// make progress a function of student?
-		public String getStudentProgressTag(long studentId) {
-			return "check-1"; // TODO change this, intermediate value!!
-		}
-		
-		public boolean advanceStudent(long courseId, long tutorialId, long studentId,
-				String base) {
+		public boolean deployLesson(long courseId, Student student, String commitRef) {
+			
 			Course course = getCourse(courseId);
-			Tutorial tut = getTutorial(tutorialId);
+			Tutorial tut = 
+					student.getCurrentTutorialForCourse(course);
 			
-			if(course == null || tut == null) return false;
+			if(tut == null) {
+				logger.error(String.format("Cannot update, student %s for course %s with id %s",
+						student.getId(), getCourse(courseId).getName(), courseId) );
+				return false;
+			}
 			
-			// TODO make progress a function of student?  Not sure
-			getStudentProgressTag(studentId);
+			logger.info("requesting update for student " + student.getId());
 			
-			
-			
-			
+			myelinService.requestStudentMerge(course, tut.getPrototype(), 
+					commitRef, student.getStudentId().toString());
 			return true;
 		}
 		
 		public boolean deployLesson(long courseId, long tutorialId, String commitRef) {
-			Course course = getCourse(courseId); // Here we'll probably be grabbing commit ref from db
+			Course course = getCourse(courseId);
 			if(course == null) return false;
 			
-			Tutorial tut = getTutorial(tutorialId); // TODO get from db instead
-			myelinService.dispatchMergeRequest(course, tut.getPrototype(), commitRef);
-			return true; // We may subscribe to topic / queue to verify transmission
+			Tutorial tut = getTutorial(tutorialId);
+			myelinService.requestClassMerge(course, tut.getPrototype(), commitRef);
+			return true;
 		}
 	
 }

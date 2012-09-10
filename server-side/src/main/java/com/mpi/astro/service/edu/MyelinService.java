@@ -2,8 +2,8 @@ package com.mpi.astro.service.edu;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -32,26 +32,19 @@ public class MyelinService {
 	private JmsMessageProducer jmsDispatcher;
 	
 	// TODO expand prototype instead of just repo location
-	public void dispatchInit(Course c, Tutorial tut, List<Student> students) {
+	public void dispatchInit(Course c, Tutorial tut, Set<Student> students) {
 		Command com = new InitCommand(c.getName(), tut.getPrototype(), students);
 		dispatchCommand(com);
 	}
 	
-	public void dispatchMergeRequest(Course c, String prototypeURI, String commitRef) {
+	public void requestClassMerge(Course c, String prototypeURI, String commitRef) {
 		Command com = new UpdateCommand(c.getName(), commitRef);
 		dispatchCommand(com);
 	}
 	
-	// TODO follow this logic through, doesn't work yet.  Test.
-	public void dispatchMergeRequest(Course c, String prototypeURI, String commitRef, long studentId) {
+	public void requestStudentMerge(Course c, String prototypeURI, String commitRef, String studentId) {
 		Command com = new UpdateCommand(c.getName(), commitRef, studentId);
 		dispatchCommand(com);
-	}
-	
-	// TODO make this use AdvanceCommand (after creating)
-	public void dispatchAdvanceMergeRequest(Course c, String prototypeURI, long studentId) {
-//		Command com = new UpdateCommand(c.getName(), long studentId );
-//		dispatchCommand(com);
 	}
 	
 	private void dispatchCommand(Command com) {

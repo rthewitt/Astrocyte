@@ -2,8 +2,10 @@ package com.mpi.astro.model.edu;
 
 import java.io.Serializable;
 
+import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
+@Embeddable
 public class CourseTutorialId implements Serializable {
 	
 	private static final long serialVersionUID = 784303429890146551L;

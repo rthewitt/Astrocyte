@@ -40,7 +40,7 @@ public class CourseTutorial implements Serializable {
 	// TODO make this unique to avoid multiple 0 entries
 	// value of this will come from Syllabus List order during
 	// construction
-	@Column(name = "ORDER")
+	@Column(name = "T_ORDER")
 	private Integer order = AstrocyteConstants.INITIAL;
 	
 	public CourseTutorial() {}

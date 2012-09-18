@@ -11,14 +11,21 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table( name = "STUDENT" )
+@NamedQueries(
+		@NamedQuery(name=Student.SQL_FIND_ALL, query="select o from Student o")
+)
 public class Student implements Serializable {
 
 	private static final long serialVersionUID = 8114286263271432681L;
+	
+	public static final String SQL_FIND_ALL = "Student.SQL_FIND_ALL";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

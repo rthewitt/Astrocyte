@@ -20,6 +20,7 @@ public class UpdateCommand extends BaseCommand implements Command {
 	public UpdateCommand(String courseName, String commitRef, String studentId) {
 		super(MyelinAction.UPDATE_STUDENT, courseName);
 		this.commitRef = commitRef;
+		this.studentId = studentId;
 	}
 
 	@Override

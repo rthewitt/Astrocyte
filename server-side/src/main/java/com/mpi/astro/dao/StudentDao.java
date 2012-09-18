@@ -35,7 +35,7 @@ public class StudentDao {
 	 *  
 	 *  http://stackoverflow.com/questions/2547817/what-is-the-difference-between-transaction-scoped-persistence-context-and-extend
 	 */
-	@PersistenceContext(type=PersistenceContextType.EXTENDED)
+	@PersistenceContext//(type=PersistenceContextType.EXTENDED)
 	private EntityManager entityManager;
 	
 	/* Was an attempt to solve lazy loading problem, but session was closed.
@@ -64,4 +64,7 @@ public class StudentDao {
 		}		
 	}	
 	
+	public List<Student> findAll() {
+		return entityManager.createNamedQuery(Student.SQL_FIND_ALL, Student.class).getResultList();
+	}
 }

@@ -14,6 +14,7 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.dao.CourseDao;
 import com.mpi.astro.dao.StudentDao;
@@ -148,6 +149,7 @@ public class EduService {
 		
 		// TODO create Syllabus object and CourseFactory to set up 
 		// repositories / tags prior to initialization
+	@Transactional
 		public void initializeCourse(long courseId, long tutorialId) {
 			
 			final Course course = getCourse(courseId);

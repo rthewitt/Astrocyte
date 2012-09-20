@@ -73,8 +73,7 @@ public class MyelinService {
 			
 			try {
 				command = (Command)ctor.newInstance(ctx);
-			} catch (IllegalArgumentException | InstantiationException
-					| IllegalAccessException | InvocationTargetException e) {
+			} catch (Exception e) {
 				logger.error("Problem trying to convert to command type " + type.toString(), e);
 			}
 		} catch (ParseException e) {

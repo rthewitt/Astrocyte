@@ -6,6 +6,10 @@
   </formats>
   <fileSets>
     <fileSet>
+      <directory>target/generated-resources/appassembler/jsw/glial/etc</directory>
+      <outputDirectory>etc</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/generated-resources/appassembler/jsw/glial/conf</directory>
       <outputDirectory>conf</outputDirectory>
     </fileSet>
@@ -22,6 +26,10 @@
     <fileSet>
       <directory>target/generated-resources/appassembler/jsw/glial/logs</directory>
       <outputDirectory>logs</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/generated-resources/appassembler/jsw/glial/contexts</directory>
+      <outputDirectory>contexts</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target/generated-resources/appassembler/jsw/glial/bin</directory>

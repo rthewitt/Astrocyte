@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.mpi.astro.service.edu.EduService;
 import com.mpi.astro.util.MyelinAction;
 
 public abstract class BaseCommand implements Command {
@@ -11,6 +12,14 @@ public abstract class BaseCommand implements Command {
 	protected static MyelinAction action;
 	
 	protected String courseName;
+	
+	protected EduService eduService;
+	
+	protected BaseCommand() {}
+	
+	public void setServiceReference(EduService service) {
+		this.eduService = service;
+	}
 	
 	// some commands, like update, will differ only in this regard
 	protected BaseCommand(MyelinAction action, String courseName) {

@@ -1,7 +1,6 @@
 package com.mpi.astro.service.edu;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mpi.astro.model.comm.BaseCommand;
 import com.mpi.astro.model.comm.Command;
 import com.mpi.astro.model.comm.InitCommand;
 import com.mpi.astro.model.comm.UpdateCommand;
@@ -62,17 +62,18 @@ public class MyelinService {
 		jmsDispatcher.sendCommand(command.toJSONString());
 	}
 	
-	public Command commandFromJson(String jsonStr) {
+	public Command commandFromJson(String jsonStr, EduService serviceRef) {
 		Command command = null;
 		MyelinAction type = null;
 		try {
 			JSONObject json = (JSONObject) new JSONParser().parse(jsonStr);
-			type = MyelinAction.valueOf((String)json.get("action"));
+			type = MyelinAction.valueOf((String)json.get("command"));
 			Map<String, Object> ctx = (Map<String, Object>) json.get("context");
 			Constructor<?> ctor = AstrocyteUtils.getCommandClass(type).getConstructor(Map.class);
 			
 			try {
 				command = (Command)ctor.newInstance(ctx);
+				((BaseCommand)command).setServiceReference(serviceRef);
 			} catch (Exception e) {
 				logger.error("Problem trying to convert to command type " + type.toString(), e);
 			}

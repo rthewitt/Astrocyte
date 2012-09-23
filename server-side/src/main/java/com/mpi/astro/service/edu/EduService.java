@@ -139,6 +139,11 @@ public class EduService {
 		return getCoursesForStudent(studentDao.find(studentId));
 	}
 	
+	public String getNextCheckpoint(Student student, Course course) {
+		student.getCurrentTutorialForCourse(course);
+		return "check-1"; // TODO make this work!!
+	}
+	
 	// also consider using git build-in email functionality
 	public void notifyProfessorPullRequest() {
 		// TODO update database?

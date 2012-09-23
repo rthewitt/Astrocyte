@@ -39,6 +39,41 @@
 	    <servlet-class>com.myelin.client.controller.JGitController</servlet-class>
 	    <load-on-startup>1</load-on-startup>
   	</servlet>
+  	
+    <servlet>
+   	 <servlet-name>dispatch</servlet-name>
+	    <servlet-class>com.myelin.client.controller.DispatchServlet</servlet-class>
+	    <load-on-startup>0</load-on-startup>
+  	</servlet>
+  	
+    
+	<servlet id="jsp">
+	    <servlet-name>jsp</servlet-name>
+	    <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+	    <init-param>
+        	<param-name>logVerbosityLevel</param-name>
+        	<param-value>DEBUG</param-value>
+    	</init-param>
+    	<init-param>
+	        <param-name>fork</param-name>
+        	<param-value>false</param-value>
+    	</init-param>
+	    <init-param>
+        	<param-name>xpoweredBy</param-name>
+        	<param-value>false</param-value>
+    	</init-param>
+    	<load-on-startup>0</load-on-startup>
+  	</servlet>
+  	
+    <servlet-mapping>
+        <servlet-name>dispatch</servlet-name>
+        <url-pattern>/temp/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>jsp</servlet-name>
+        <url-pattern>/jsp/*jsp</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>glial</servlet-name>

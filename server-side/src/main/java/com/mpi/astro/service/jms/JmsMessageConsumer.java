@@ -53,23 +53,13 @@ public class JmsMessageConsumer {
 			// ======== Temporary testing ===========
 			// going to test using update now, calling with TAG instead of commit-ref
 			
-			try {
-				JSONObject json = (JSONObject)new JSONParser().parse(message);
-				if("ADVANCE".equals( (String)json.get("command") )) {
-//					eduService.deployLesson(1L, 1L, commitRef)
-					eduService.notifyProfessorPullRequest(); // TODO move to execute()
-					// assume it's good
-				}
-			} catch(Exception e) {
-				throw new Exception("Problem during test", e);
-			}
-			
-			Command command = myelinService.commandFromJson(message);
-			
-			// ======================================
+			logger.info("Getting command from json message");
+			// TODO verify json first?
+			Command command = myelinService.commandFromJson(message, eduService);
 			
 			if(command == null) throw new Exception("Command could not be resolved from JMS message");
 			
+			logger.info("executing command"); // more info
 			command.execute();
 			
 		} catch(Exception e) {

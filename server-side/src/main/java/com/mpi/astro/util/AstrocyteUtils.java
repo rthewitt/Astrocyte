@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mpi.astro.model.arcade.impl.JavaGame;
+import com.mpi.astro.model.comm.AdvanceCommand;
 import com.mpi.astro.model.comm.InitCommand;
 import com.mpi.astro.model.comm.UpdateCommand;
 import com.mpi.astro.model.edu.Student;
@@ -76,6 +77,8 @@ public class AstrocyteUtils {
 			return UpdateCommand.class;
 		case UPDATE_STUDENT:
 			return UpdateCommand.class;
+		case ADVANCE_STUDENT:
+			return AdvanceCommand.class;
 		default:
 			return null;
 		}

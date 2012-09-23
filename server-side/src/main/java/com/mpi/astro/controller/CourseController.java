@@ -54,7 +54,7 @@ public class CourseController {
 		
 		if(ref == null) return "Error, ref is required for update!";
 		
-		// TODO get tutorial id for class, how?
+		// TODO if class update, ref will be resolved with selection so tutorial is known.
 		if(studentId != null && !studentId.isEmpty()) {
 			Student student = eduService.getStudent(Long.parseLong(studentId));
 			eduService.deployLesson(Long.parseLong(courseId), student, ref);

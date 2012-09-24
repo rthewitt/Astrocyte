@@ -141,7 +141,7 @@ public class EduService {
 	
 	public String getNextCheckpoint(Student student, Course course) {
 		student.getCurrentTutorialForCourse(course);
-		return "check-1"; // TODO make this work!!
+		return "check-2"; // TODO make this work!!
 	}
 	
 	// also consider using git build-in email functionality

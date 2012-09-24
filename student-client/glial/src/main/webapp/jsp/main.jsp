@@ -18,17 +18,53 @@
       #control {}
       #instructions{left: 100px; top: 20px; width: 700px; height: 400px;}
       #portal {position: absolute; right: 400px; width:550px; height:850px;}
+      #pull-request{background-color:red; color:white; font-weight:bold;}
    </style>
+   <script type="text/javascript" src="/glial/js/jquery-1.7.2.min.js"></script>
    <script type="text/javascript">
-      var portal, media;
+      var portal, media, ajaxStatus, pullRequest;
       var steps = ['one', 'two', 'three'];
       var currentStep = 0;
 
       function nextStep() {
          unloadGameFrame();
-         //TODO load next?
-         currentStep++;
-         loadMedia(getSource());
+         ajaxNextStep();
+      }
+      
+      function ajaxAction(actionName, actionUrl, successText, callback) {
+    	  ajaxStatus.text("Calling "+actionName);
+    	  $.ajax({
+        	  type: "GET",
+        	  url: actionUrl,
+        	  dataType: "json",
+        	  statusCode: {
+        		  200: function() {
+        			  ajaxStatus.text(actionName+": Success - "+successText);
+        			  if(callback !== undefined) callback();
+        		  },
+        		  500: function() {
+        			  // Try searching for my text anyway, consider program errors to be 200 anyway? 
+					ajaxStatus.text(actionName+": 500 Error");
+        		  }
+        	  }
+        	});
+      }
+      
+      var feedbackCB = function() {
+    	  pullRequest.show();
+      };
+      
+      // These functions could be combined.
+      function ajaxNextStep() {
+    	  ajaxAction("Next-step", "/glial/jgit?action=next-step", "submission accepted, waiting for feedback.", feedbackCB);
+      }
+      
+      function ajaxInit() {
+    	  ajaxAction("Init", "/glial/jgit?action=init", "code-base-updated");
+      }
+      
+      function ajaxCompileSwap() {
+    	  ajaxAction("Compile", "/glial/proj?project=betaport&delete=1&action=compile-swap", "Try to load!");
       }
       
       function getSource() {
@@ -55,6 +91,15 @@
       function setup() {
          portal = document.getElementById('portal');
          media = document.getElementById('media');
+         ajaxStatus = $('#action-status');
+         pullRequest = $('#pull-request');
+         pullRequest.click(function(){
+        	 ajaxAction("Update", "", "code-base updated!  May require compilation.");
+        	 currentStep++;
+             loadMedia(getSource());
+             this.hide();
+         });
+         pullRequest.hide();
          loadMedia(getSource());
       }
 
@@ -69,16 +114,17 @@
             </iframe>
             <br /><br />
             <div id="control">
+            	<input type="button" id="reload" name="reload" value="Init" onclick="ajaxInit();" />
                <input type="button" id="reload" name="reload" value="Load!" onclick="loadGameFrame();" />
-               <input type="button" id="next-step" name="next-step" value="next-step" onclick="nextStep()" />
+               <input type="button" id="reload" name="reload" value="Compile" onclick="ajaxCompileSwap();" />
+               <input type="button" id="next-step" name="next-step" value="Submit" onclick="nextStep()" />
                <input type="button" id="unload" name="unload" value="unload" onclick="unloadGameFrame();" />
+               <br /><div id="pull-request">Lesson Available!</div>
             </div>
             <div id="instructions"> 
-               <h2>The actions below may be required in the case that I move the git repository OUT of the project.  I don't
-               know that I want students working with Git directly...</h2>
+            	<span id="action-status"></span>
+               <h2>Only use these if necessary, they no longer work asynchronously, if at all.</h2>
                <br />
-         		<a href="/glial/jgit?action=init">Check out student repository</a>
-         		<br /><br />
          		<a href="/glial/jgit?action=push">Push student repository</a>
          		<br /><br />
          		<a href="/glial/jgit?action=update">Update student repository</a>

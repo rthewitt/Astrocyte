@@ -41,6 +41,12 @@
   	</servlet>
   	
     <servlet>
+   	 <servlet-name>project</servlet-name>
+	    <servlet-class>com.myelin.client.controller.ProjectController</servlet-class>
+	    <load-on-startup>1</load-on-startup>
+  	</servlet>
+  	
+    <servlet>
    	 <servlet-name>dispatch</servlet-name>
 	    <servlet-class>com.myelin.client.controller.DispatchServlet</servlet-class>
 	    <load-on-startup>0</load-on-startup>
@@ -78,6 +84,11 @@
     <servlet-mapping>
         <servlet-name>glial</servlet-name>
         <url-pattern>/jgit</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>project</servlet-name>
+        <url-pattern>/proj</url-pattern>
     </servlet-mapping>
 
 </web-app>

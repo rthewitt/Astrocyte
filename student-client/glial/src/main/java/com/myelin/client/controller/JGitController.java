@@ -30,7 +30,7 @@ import com.jcraft.jsch.Session;
 
 public class JGitController extends HttpServlet {
 	
-	private static String PROJECT_FOLDER = null;
+	private static String PROJECT_BASE = null;
 	
 	private static final String HOST = "localhost";
 	private static final String SSH_CONFIG_PATH = "/home/synapse/.ssh";
@@ -66,7 +66,7 @@ public class JGitController extends HttpServlet {
 			}
 		};
 		
-		PROJECT_FOLDER = getServletContext().getRealPath("/");
+		PROJECT_BASE = getServletContext().getRealPath("/");
 	}
 	
 	@Override
@@ -77,9 +77,9 @@ public class JGitController extends HttpServlet {
 		// TODO handle expired sessions
 		String userId = session.getAttribute("userId").toString();
 		String course = session.getAttribute("courseName").toString();
-		String gitDir = PROJECT_FOLDER+"/"+course+"/"+".git";
+		String gitDir = PROJECT_BASE+"/"+course+"/"+".git";
 		
-		File courseFolder = new File(PROJECT_FOLDER+"/"+course);
+		File courseFolder = new File(PROJECT_BASE+"/"+course);
 		
 		File gitDirectory = new File(gitDir);
 		
@@ -183,4 +183,5 @@ public class JGitController extends HttpServlet {
 //	   System.out.println("B num: " + git.branchList().setListMode(ListMode.ALL).call().size());
 		
 	}
+	
 }

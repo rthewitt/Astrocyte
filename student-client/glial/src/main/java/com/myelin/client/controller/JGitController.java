@@ -16,6 +16,7 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
+import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -121,7 +122,9 @@ public class JGitController extends HttpServlet {
 		
 		pull.setTransportConfigCallback(tCallback);
 		
-		pull.call();
+		PullResult result = pull.call();
+		
+		System.out.println("Pull result: " + result.isSuccessful());
 	}
 	
 	private void commitBranch(Repository repo) throws GitAPIException {

@@ -94,10 +94,10 @@
          ajaxStatus = $('#action-status');
          pullRequest = $('#pull-request');
          pullRequest.click(function(){
-        	 ajaxAction("Update", "", "code-base updated!  May require compilation.");
+        	 ajaxAction("Update", "/glial/jgit?action=update", "code-base updated!  May require compilation.");
         	 currentStep++;
              loadMedia(getSource());
-             this.hide();
+             pullRequest.hide();
          });
          pullRequest.hide();
          loadMedia(getSource());

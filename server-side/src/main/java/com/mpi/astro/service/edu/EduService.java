@@ -120,7 +120,7 @@ public class EduService {
 		tutorialDao.save(t);
 	}
 	
-	// I don't think this session is needed at all...
+	// lack of conditional logic causes stackoverflow when already enrolled during student save
 	public void enrollStudent(Student student, Course course) {
 		StudentCourse enrollment = new StudentCourse();
 		enrollment.setStudent(student);
@@ -164,6 +164,9 @@ public class EduService {
 			course.saveTutorialAssociation(association);
 			// will cascade.  Change all of this to use factory
 			save(course); // WHY IS THIS BROKEN?
+			
+			Set testSet = course.getStudAssociations(); // ADDED TODO finish test
+			logger.debug("Before dispatch, getStudAssociations() test results in "+testSet.size()+" associations.");
 			
 			Set<Student> students = course.getStudents();
 			logger.debug("About to dispatch with student array length: " + students.size());

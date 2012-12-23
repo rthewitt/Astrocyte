@@ -43,7 +43,7 @@ public class Student implements Serializable {
 	@Column (name = "LAST_NAME")
 	private String lastName;
 	
-	@Column (name = "STATE")
+	@Column (name = "CURRENT_STATE")
 	private STUDENT_STATE state = STUDENT_STATE.WORKING;
 	
 	/**

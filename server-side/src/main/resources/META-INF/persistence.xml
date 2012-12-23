@@ -5,14 +5,25 @@
       http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
    version="1.0">
 
+    <!-- This file was renamed NO, and we were working without it.  My assumption was that we
+    were using annotations instead, but apparently Eclipse was reading from the test classpath,
+    regardless of whether or not the declared persistence units therein were utilized. -->
    <persistence-unit name="workingPU" transaction-type="RESOURCE_LOCAL">
       <properties>
           
+      	
       	<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver"/>
       	<property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:mem:test-db"/>
+      	 
+      	 <!-- Test whether or not following is even used.  Perhaps with hypersonic enabled. -->
+      	<!-- 
+      	<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+      	<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/astrocyte"/>
+      	-->
       	<property name="hibernate.show_sql" value="true"/>
       	<!-- <property name="hibernate.hbm2ddl.auto" value="update"/> -->
           
+          <!-- Use create-drop for hsqldb -->
          <property name="hibernate.hbm2ddl.auto" value="create-drop" />
          <!-- <property name="hibernate.transaction.flush_before_completion" value="true" /> -->
          <!-- <property name="hibernate.cache.provider_class" value="org.hibernate.cache.HashtableCacheProvider" />-->

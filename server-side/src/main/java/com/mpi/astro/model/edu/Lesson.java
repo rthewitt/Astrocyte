@@ -61,6 +61,13 @@ public class Lesson implements Serializable {
 		this.tutorial = tutorial;
 	}
 
+	/*
+	 * Originally, this URL was going to be the sole media asset for a lesson
+	 * Now I suggest that it be a file (which can be auto-generated from Authoring tool)
+	 * that specifies main introduction, changed files, and code-highlighted mappings to
+	 * content that will be retrieved, possibly by Ajax.  In this way, you can bring the 
+	 * tutorial / instruction INTO the IDE.
+	 */
 	public String getMediaURI() {
 		return mediaURI;
 	}

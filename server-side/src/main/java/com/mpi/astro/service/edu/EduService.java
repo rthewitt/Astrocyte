@@ -11,7 +11,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,9 @@ public class EduService {
 		return PropertiesUtil.getProperty(PropertiesUtil.PROP_DATA_DIR);
 	}
 	
-	private static final Logger logger = Logger.getLogger(EduService.class);
+//	private static final Logger logger = Logger.getLogger(EduService.class);
+	private static final Logger logger = LoggerFactory.getLogger(EduService.class);
+	
 	
 	// no longer valid, keeping for posterity / example
 	public List<Student> getStudentsInCourse(Long courseId) {
@@ -139,11 +142,6 @@ public class EduService {
 		return getCoursesForStudent(studentDao.find(studentId));
 	}
 	
-	public String getNextCheckpoint(Student student, Course course) {
-		student.getCurrentTutorialForCourse(course);
-		return "check-2"; // TODO make this work!!
-	}
-	
 	// also consider using git build-in email functionality
 	public void notifyProfessorPullRequest() {
 		// TODO update database?
@@ -168,10 +166,12 @@ public class EduService {
 			save(course); // WHY IS THIS BROKEN?
 			
 			Set<Student> students = course.getStudents();
+			logger.debug("About to dispatch with student array length: " + students.size());
 			
 			myelinService.dispatchInit(course, tutorial, students);
 		}
 		
+	    // When lesson becomes available for a student, as determined by workflow
 		public boolean deployLesson(long courseId, Student student, String commitRef) {
 			
 			Course course = getCourse(courseId);
@@ -191,6 +191,7 @@ public class EduService {
 			return true;
 		}
 		
+		// When lesson becomes available for an entire class, as determined by workflow
 		public boolean deployLesson(long courseId, long tutorialId, String commitRef) {
 			Course course = getCourse(courseId);
 			if(course == null) return false;

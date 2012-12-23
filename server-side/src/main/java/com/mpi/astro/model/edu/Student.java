@@ -1,7 +1,9 @@
 package com.mpi.astro.model.edu;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -15,6 +17,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import static com.mpi.astro.util.AstrocyteConstants.STUDENT_STATE;
 
 @Entity
 @Table( name = "STUDENT" )
@@ -38,6 +43,9 @@ public class Student implements Serializable {
 	@Column (name = "LAST_NAME")
 	private String lastName;
 	
+	@Column (name = "STATE")
+	private STUDENT_STATE state = STUDENT_STATE.WORKING;
+	
 	/**
 	 * This set used to be a simple many-to-many with a join table.  The need for status columns
 	 * in the join table lead to a slighly more complex association.  Object type also changed
@@ -45,6 +53,9 @@ public class Student implements Serializable {
 	 */
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.student", cascade=CascadeType.ALL)
 	private Set<StudentCourse> courseAssociations = new HashSet<StudentCourse>(0);
+	
+	@Transient
+	private Map<Course, StudentStatus> statusMap = new HashMap<Course, StudentStatus>();
 
 	public Student() {
 	}
@@ -53,6 +64,14 @@ public class Student implements Serializable {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
+	}
+	
+	public STUDENT_STATE getState() {
+		return this.state;
+	}
+	
+	public void setState(STUDENT_STATE state) {
+		this.state = state;
 	}
 	
 	public Set<StudentCourse> getCourseAssociations() {
@@ -77,10 +96,11 @@ public class Student implements Serializable {
 	}
 	
 	public Tutorial getCurrentTutorialForCourse(Course course) {
-		for(StudentCourse sc : this.courseAssociations)
-			if(course.getId() == sc.getCourse().getId())
-				return course.getTutorialByOrderNumber(sc.getTutorialNum());
-		return null;
+		return statusMap.get(course).getTutorial();
+	}
+	
+	public int getLessonStatusForCourse(Course course) {
+		return statusMap.get(course).getLessonNum();
 	}
 
 	public void setId(Long id) {
@@ -148,5 +168,36 @@ public class Student implements Serializable {
 			return false;
 		return true;
 	}
+	
+	/*
+	 * This will serve to better encapsulate student progress
+	 * A few questions:
+	 * Is it extraneous?  Is progress duplicated unnecessarily in Student_Course?
+	 * Will the status object ever need to refresh itself?
+	 * I think it should refresh, so that I can use a query like:
+	 * if(statusMap.get(Course) == null) statusMap.put(Course, new statusMap); -> then refresh it.
+	 */
+	private class StudentStatus {
+		
+		private Course relevantCourse = null;
+		private StudentCourse association = null;
+		
+		StudentStatus(Course course) {
+			this.relevantCourse = course;
+			for(StudentCourse sc : courseAssociations) {
+				if(relevantCourse.getId() == sc.getCourse().getId())
+					this.association = sc;
+			}
+		}
+		public int getTutorialNum() {
+			return this.association.getTutorialNum();
+		}
+		public int getLessonNum() {
+			return this.association.getLessonNum();
+		}
+		public Tutorial getTutorial() {
+			return relevantCourse.getTutorialByOrderNumber(getTutorialNum());
+		}
+	}	
 
 }

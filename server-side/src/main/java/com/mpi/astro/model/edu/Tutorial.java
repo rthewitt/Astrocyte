@@ -133,6 +133,10 @@ public class Tutorial implements Serializable {
 		lesson.setTutorial(this); // this is dumb
 	}
 	
+	public int getNumSteps() {
+		return lessons.size();
+	}
+	
 	/**
 	 *  Returns an immutable Map of tag number -> media uri
 	 *  used as convenience for course design and representation.

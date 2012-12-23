@@ -65,7 +65,7 @@
    <!--  EDU -->
    
    <bean id="studentDao" class="com.mpi.astro.dao.StudentDao" />
-   <bean id="studentService" class="com.mpi.astro.service.edu.StudentService" />
+   <bean id="studentService" class="com.mpi.astro.service.edu.EduService" />
    
    <!-- DataSource -->
 		

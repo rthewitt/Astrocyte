@@ -5,8 +5,8 @@ import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
@@ -14,7 +14,7 @@ import org.springframework.jms.core.MessageCreator;
 
 public class JmsMessageProducer {
 
-    private static final Logger logger = Logger.getLogger(JmsMessageProducer.class);
+    private static final Logger logger = LoggerFactory.getLogger(JmsMessageProducer.class);
 
     protected static final String MESSAGE_COUNT = "messageCount";
 

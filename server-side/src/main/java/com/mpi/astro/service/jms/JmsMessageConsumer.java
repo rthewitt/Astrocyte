@@ -1,22 +1,18 @@
 package com.mpi.astro.service.jms;
 
-import java.util.Map;
-
 import javax.jms.TextMessage;
 
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.mpi.astro.model.comm.Command;
-import com.mpi.astro.model.comm.UpdateCommand;
 import com.mpi.astro.service.edu.EduService;
 import com.mpi.astro.service.edu.MyelinService;
 
 public class JmsMessageConsumer {
 
-	private static final Logger logger = Logger.getLogger(JmsMessageConsumer.class);
+	private static final Logger logger = LoggerFactory.getLogger(JmsMessageConsumer.class);
 	
 	@Autowired
 	private EduService eduService;
@@ -63,7 +59,7 @@ public class JmsMessageConsumer {
 			command.execute();
 			
 		} catch(Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage(), e);
 		}
 	}
 	

@@ -68,6 +68,10 @@ public class AstrocyteUtils {
 		return obj;
 	}
 	
+	public static String getCheckpointStr(int number) {
+		return AstrocyteConstants.BASE_TAG+"-"+number;
+	}
+	
 	public static Class<?> getCommandClass(MyelinAction action){
 		
 		switch(action) {

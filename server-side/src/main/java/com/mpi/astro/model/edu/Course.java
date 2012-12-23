@@ -19,6 +19,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import static com.mpi.astro.util.AstrocyteConstants.COURSE_WORKFLOW;
+
 @Entity
 @Table(name="COURSE")
 public class Course implements Serializable {
@@ -30,8 +32,11 @@ public class Course implements Serializable {
 	@Column(name = "COURSE_ID", unique = true, nullable = false)
 	private Long id;
 	
-	@Column(name = "COURSE_NAME", nullable=false)
+	@Column(name = "COURSE_NAME", nullable = false)
 	private String name;
+	
+	@Column(name = "WORKFLOW", nullable = false)
+	private COURSE_WORKFLOW workflow = COURSE_WORKFLOW.PASSIVE;
 	
 	@Column(name = "COURSE_DESC", nullable = false)
 	private String description;
@@ -60,6 +65,14 @@ public class Course implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public COURSE_WORKFLOW getWorkflow() {
+		return this.workflow;
+	}
+	
+	public void setWorkflow(COURSE_WORKFLOW wf) {
+		this.workflow = wf;
 	}
 
 	public String getDescription() {

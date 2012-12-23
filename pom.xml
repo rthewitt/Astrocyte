@@ -32,6 +32,15 @@
 			<organization>Myelin Price Interactive</organization>
 			<url>http://www.myelinprice.com</url>
 		</developer>
+		
+	<!-- Dependencies on jmx, etc. broke compatibility with Maven 2.x
+	     Maven 1 style legacy repository support was dropped in 3+.
+	     This repository contains the artifacts I depend on. -->
+	<repository>
+	  <id>repository.jboss.org-public</id>
+	  <name>JBoss repository</name>
+	  <url>https://repository.jboss.org/nexus/content/groups/public</url>
+	</repository>
 	
 	<scm>
 		<connection>scm:git:git@github.com:rthewitt/Astrocyte.git</connection>

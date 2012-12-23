@@ -32,22 +32,39 @@
 			<organization>Myelin Price Interactive</organization>
 			<url>http://www.myelinprice.com</url>
 		</developer>
-		
-	<!-- Dependencies on jmx, etc. broke compatibility with Maven 2.x
-	     Maven 1 style legacy repository support was dropped in 3+.
-	     This repository contains the artifacts I depend on. -->
-	<repository>
-	  <id>repository.jboss.org-public</id>
-	  <name>JBoss repository</name>
-	  <url>https://repository.jboss.org/nexus/content/groups/public</url>
-	</repository>
 	
 	<scm>
 		<connection>scm:git:git@github.com:rthewitt/Astrocyte.git</connection>
 		<url>scm:git:git@github.com:rthewitt/Astrocyte.git</url>
 		<developerConnection>scm:git:git@github.com:rthewitt/Astrocyte.git</developerConnection>
 	</scm>
-    
+	
+	<dependencyManagement>
+		<!-- Cleaning up child poms  -->
+		 <dependency>
+         	<groupId>log4j</groupId>
+         	<artifactId>log4j</artifactId>
+         	<version>1.2.15</version>
+         	<exclusions>
+	            <exclusion>
+               	<groupId>com.sun.jdmk</groupId>
+               	<artifactId>jmxtools</artifactId>
+            	</exclusion>
+            	<exclusion>
+               	<groupId>com.sun.jmx</groupId>
+               	<artifactId>jmxri</artifactId>
+            	</exclusion>
+            	<!-- Crucial for Maven 3.x compatibility. Uses legacy repository -->
+            	<exclusion>
+                <groupId>javax.jms</groupId>
+                <artifactId>jms</artifactId>
+            </exclusion>
+         	</exclusions>
+         	<scope>runtime</scope>
+      	</dependency>
+    </dependencyManagement>
+	
+	
     <dependencies>
       <!-- TODO pull commonalities into parent -->
     </dependencies>

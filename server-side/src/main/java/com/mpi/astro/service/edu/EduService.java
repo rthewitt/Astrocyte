@@ -173,6 +173,11 @@ public class EduService {
 			
 			myelinService.dispatchInit(course, tutorial, students);
 		}
+	
+		public boolean isEligibleForAdvance(Student student, Course course) {
+			return student.getLessonStatusForCourse(course) <
+					student.getCurrentTutorialForCourse(course).getNumSteps();
+		}
 		
 	    // When lesson becomes available for a student, as determined by workflow
 		public boolean deployLesson(long courseId, Student student, String commitRef) {

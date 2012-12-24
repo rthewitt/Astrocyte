@@ -52,7 +52,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 		case WORKING:
 			if(course.getWorkflow() == COURSE_WORKFLOW.PASSIVE) {
 				student.setState(STUDENT_STATE.ADVANCING);
-				if(currentLesson < student.getCurrentTutorialForCourse(course).getNumSteps())
+				if(eduService.isEligibleForAdvance(student, course))
 					eduService.deployLesson(course.getId(), student, AstrocyteUtils.getCheckpointStr(currentLesson+1));
 				else System.out.println("Tutorial finished.  Unroll next if available...");
 			}

@@ -103,6 +103,11 @@ public class Student implements Serializable {
 		return statusMap.get(course).getTutorial();
 	}
 	
+	public void advanceStudentForCourse(Course course) {
+		ensureConvenienceMapping(course);
+		statusMap.get(course).advanceLesson();
+	}
+	
 	public int getLessonStatusForCourse(Course course) {
 		ensureConvenienceMapping(course);
 		return statusMap.get(course).getLessonNum();
@@ -204,6 +209,9 @@ public class Student implements Serializable {
 		}
 		public int getLessonNum() {
 			return this.association.getLessonNum();
+		}
+		public void advanceLesson() {
+			this.association.setLessonNum(getLessonNum()+1);
 		}
 		public Tutorial getTutorial() {
 			return relevantCourse.getTutorialByOrderNumber(getTutorialNum());

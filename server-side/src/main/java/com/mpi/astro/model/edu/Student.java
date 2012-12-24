@@ -82,8 +82,11 @@ public class Student implements Serializable {
 		this.courseAssociations = assoc;
 	}
 	
+	// adds to map for convenience, intuitive methods
 	public void saveCourseAssociation(StudentCourse course) {
 		this.courseAssociations.add(course);
+		Course coursePart = course.getCourse();
+		this.statusMap.put(coursePart, new StudentStatus(coursePart));
 	}
 
 	public Long getId() {
@@ -96,11 +99,18 @@ public class Student implements Serializable {
 	}
 	
 	public Tutorial getCurrentTutorialForCourse(Course course) {
+		ensureConvenienceMapping(course);
 		return statusMap.get(course).getTutorial();
 	}
 	
 	public int getLessonStatusForCourse(Course course) {
+		ensureConvenienceMapping(course);
 		return statusMap.get(course).getLessonNum();
+	}
+	
+	public void ensureConvenienceMapping(Course course) {
+		if(statusMap.get(course) == null)
+			statusMap.put(course, new StudentStatus(course));
 	}
 
 	public void setId(Long id) {

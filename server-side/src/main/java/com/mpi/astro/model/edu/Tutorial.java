@@ -49,9 +49,8 @@ public class Tutorial implements Serializable {
 	@Column(name="PROTO_URI")
 	private String prototype;
 	
-	// mappings of commit-tag (minus-base) -> media uri
-	// media can be animation, pdf, documentation, activity, etc
-	@OneToMany(mappedBy="tutorial", cascade = CascadeType.ALL)
+	// This eager loading requirement is quite frustrating.  Must consult with someone.
+	@OneToMany(fetch = FetchType.EAGER, mappedBy="tutorial", cascade = CascadeType.ALL)
 	@OrderBy("id")
 	private List<Lesson> lessons = new ArrayList(0);
 	

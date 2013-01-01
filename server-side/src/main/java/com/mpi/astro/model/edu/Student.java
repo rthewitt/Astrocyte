@@ -127,6 +127,7 @@ public class Student implements Serializable {
 		statusMap.get(course).advanceLesson();
 	}
 	
+	// TODO consider hql query instead
 	public int getLessonStatusForCourse(Course course) {
 		ensureConvenienceMapping(course);
 		return statusMap.get(course).getLessonNum();

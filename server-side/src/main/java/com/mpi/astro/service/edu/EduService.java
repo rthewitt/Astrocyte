@@ -52,35 +52,11 @@ public class EduService {
 	@Autowired
 	private MyelinService myelinService;
 	
-	@PersistenceContext(type=PersistenceContextType.EXTENDED)
-	private EntityManager entityManager;
-	
 	public String getPath() {
 		return PropertiesUtil.getProperty(PropertiesUtil.PROP_DATA_DIR);
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(EduService.class);
-	
-	
-	// no longer valid, keeping for posterity / example
-	public List<Student> getStudentsInCourse(Long courseId) {
-	
-		List<Student> students = new ArrayList<Student>();
-		
-		/*
-		String sql = "SELECT s.* FROM STUDENT s " +
-				"INNER JOIN STUDENT_COURSE sc ON sc.STUDENT_ID = s.STUDENT_ID " +
-				"INNER JOIN COURSE c ON c.COURSE_ID = sc.COURSE_ID " +
-				"WHERE c.COURSE_ID = 1;";
-		*/
-		
-		String hql = "select distinct s from Student s join s.courses c where c.id =:course_id ";
-		Query query = entityManager.createQuery(hql);
-		query.setParameter("course_id", courseId);
-		students = (List<Student>)query.getResultList();
-		
-		return students;
-	}
 
 	/**
 	 * Retrieve course for the given id
@@ -99,6 +75,10 @@ public class EduService {
 		return tutorialDao.find(id);
 	}
 	
+	public Tutorial getTutorialEager(long id) {
+		return tutorialDao.getWithLessons(id);
+	}
+	
 	public List<Tutorial> getAllTutorials() {
 		return tutorialDao.getTutorials();
 	}
@@ -109,10 +89,6 @@ public class EduService {
 	
 	public List<Student> getAllStudents() {
 		return studentDao.getStudents();
-	}
-	
-	public List<Student> getStudentsInCourse(Course course) {
-			return getStudentsInCourse(course.getId());
 	}
 	
 	public Student save(Student s) {
@@ -148,7 +124,7 @@ public class EduService {
 	
 	//TODO add enrollStudent( Collection of Course ) @Transactional // entry-point for Controller
 	
-	// This should probably retrieve an unmodifiable set. TODO look downstream, consider
+	// This should probably retrieve an unmodifiable set.
 	public Set<Course> getCoursesForStudent(Student student) {
 		Set<Course> courses = new HashSet<Course>();
 		for(StudentCourse enrollment : student.getCourseAssociations()) {
@@ -181,8 +157,9 @@ public class EduService {
 			association.setCourse(course);
 			association.setTutorial(tutorial);
 			course.saveTutorialAssociation(association);
+			
 			// will cascade.  Change all of this to use factory
-			save(course); // WHY IS THIS BROKEN?
+			save(course);
 			
 			Set testSet = course.getStudAssociations(); // ADDED TODO finish test
 			logger.debug("Before dispatch, getStudAssociations() test results in "+testSet.size()+" associations.");

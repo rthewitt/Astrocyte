@@ -14,8 +14,9 @@ import org.hibernate.annotations.Parent;
  */
 @Embeddable
 public class Lesson implements Serializable {
-	private static final long serialVersionUID = -4962190931295411178L;
 	
+	private static final long serialVersionUID = 6602616479188456171L;
+
 	@Parent
 	private Tutorial tutorial;
 	

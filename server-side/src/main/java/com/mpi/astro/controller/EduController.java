@@ -92,6 +92,7 @@ public class EduController {
 		return mav;
 	}
 	
+	@Transactional
 	@RequestMapping(method=RequestMethod.GET,value="edit-tutorial")
 	public ModelAndView editTutorial(@RequestParam(value="id",required=false) Long id) {		
 		
@@ -101,11 +102,11 @@ public class EduController {
  		
  		if (id == null) {
  			TutorialViewDescriptor container = new TutorialViewDescriptor();
- 			mav.addObject("descriptor", container);
+ 			mav.addObject("container", container);
  		}
  		else {
  			Tutorial tut = null;
- 			tut = eduService.getTutorial(id);
+ 			tut = eduService.getTutorialEager(id);
  			mav.addObject("tutorial", tut);
  		}
  			
@@ -170,7 +171,8 @@ public class EduController {
 		
 		return "redirect:view";
 	}
-	@Transactional // MAYBE this will force a db record ?
+	
+	@Transactional
 	@RequestMapping(method=RequestMethod.POST,value="edit-course") 
 	public String saveCourse(@ModelAttribute Course course) {
 		logger.debug("Received postback on course " + course);		
@@ -188,8 +190,8 @@ public class EduController {
 		return "redirect:view";
 	}
 	
-	// TODO update jsp for new-tutorial based on object present
 	// TODO refactor builder -> service layer with Spring injection
+	// But do note, you don't want a singleton.
 	@RequestMapping(method=RequestMethod.POST, value="new-tutorial")
 	public String createTutorial(@ModelAttribute TutorialViewDescriptor container, 
 			HttpServletRequest request) {
@@ -213,6 +215,7 @@ public class EduController {
 		builder.buildLessons(jsonStr);
 		
 		newTut = builder.getTutorial();
+		newTut.setDescription(container.getDescription());
 		eduService.save(newTut);
 		
 		return "redirect:view";

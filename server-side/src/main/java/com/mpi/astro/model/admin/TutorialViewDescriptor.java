@@ -7,6 +7,7 @@ package com.mpi.astro.model.admin;
  */
 public class TutorialViewDescriptor {
 	private String name;
+	private String description;
 	private String descriptionFile;
 	private String gitRepo;
 	
@@ -21,6 +22,13 @@ public class TutorialViewDescriptor {
 	}
 	public String getDescriptionFile() {
 		return this.descriptionFile;
+	}
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public void setGitRepo(String gitRepo) {
 		this.gitRepo = gitRepo;

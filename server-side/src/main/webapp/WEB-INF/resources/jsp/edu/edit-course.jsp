@@ -10,7 +10,7 @@
 </head>
 <body>
 <h1>
-	Editing Student ${course.id} - ${course.name} 
+	Editing Course ${course.id} - ${course.name} 
 </h1>
 <form:form commandName="course" style="padding:8px">
     ID - ${course.id}<br/>

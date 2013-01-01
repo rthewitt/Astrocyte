@@ -22,6 +22,13 @@ public class TutorialDao {
 		return entityManager.find(Tutorial.class, id);
 	}
 	
+	public Tutorial getWithLessons(Long id) {
+		Tutorial tut = find(id);
+		// TODO write a join query for practice
+		if(tut.getLessons().size() > 0) tut.getLessons().get(0).getClientJSON();
+		return tut;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<Tutorial> getTutorials() {
 		return entityManager.createQuery("select t from Tutorial t").getResultList();

@@ -32,7 +32,7 @@ implements TutorialBuilder {
 			JSONArray lessonArray = (JSONArray)tutorialDef.get("lessons");
 			for(Object lessonJson : lessonArray) {
 				String media = (String)((JSONObject)lessonJson).get("main");
-				String tmpClientDescription = "{'primaryMedia':'"+media+"'}";
+				String tmpClientDescription = "{'primaryMedia':'"+media+"'}".replace('\'', '"'); // easier to read
 				tutorial.addLesson(tmpClientDescription);
 			}
 		} catch (ParseException e) {

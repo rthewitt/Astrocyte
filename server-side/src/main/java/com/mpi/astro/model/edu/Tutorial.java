@@ -26,12 +26,13 @@ import org.slf4j.LoggerFactory;
  * Courses contain a persistent list of tutorials.
  */
 @Entity
-@Table(name="TUTORIAL")
+@Table(name="NEW_TUTORIAL")
 public class Tutorial implements Serializable {
-	
+
+	private static final long serialVersionUID = -1644958495485527162L;
+
 	private static final Logger logger = LoggerFactory.getLogger(Tutorial.class);
 	
-	private static final long serialVersionUID = 5418688806412246017L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -52,7 +53,7 @@ public class Tutorial implements Serializable {
 	
 	@ElementCollection
 	@CollectionTable(
-	name = "LESSON",
+	name = "NEW_LESSON",
 	joinColumns = @JoinColumn(name = "TUTORIAL_ID")
 	)
 	@IndexColumn(

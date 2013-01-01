@@ -3,6 +3,8 @@ package com.mpi.astro.model.comm;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.util.AstrocyteConstants;
@@ -31,6 +33,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 	 * Second case is receipt and permission to advance Student in DB
 	 * Consider inclusion of CLASS based update
 	 */
+	@Transactional
 	@Override
 	public void execute() {
 		
@@ -64,9 +67,9 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			switch(student.getState()) {
 			case WORKING:
 				if(course.getWorkflow() == COURSE_WORKFLOW.PASSIVE) {
-					student.setState(STUDENT_STATE.ADVANCING);
 					if(eduService.isEligibleForAdvance(student, course)) {
 						student.setState(STUDENT_STATE.ADVANCING);
+						// determine if entityManager should be flushed.
 						eduService.save(student);
 						eduService.deployLesson(course.getId(), student, 
 								AstrocyteUtils.getCheckpointStr(currentLesson+1));
@@ -94,6 +97,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 				System.out.println("Receipt for " + this.studentId + " discarded, student in state " + student.getState().toString());
 				return;
 			}
+			// this could also be hql
 			student.advanceStudentForCourse(course);
 			student.setState(STUDENT_STATE.WORKING); // consider intermediate for ajax ping from client
 			eduService.save(student);

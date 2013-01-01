@@ -20,26 +20,19 @@
         <form:input path="name"/>
     </p>
     <p>
-    	Type<br />
-    	${tutorial.type}
-    </p>
-    <p>
-    	Repository Location<br />
-    	<form:input path="prototype" />
-    </p>
-    <p>
         Description<br/>
         <form:input path="description"/>
     </p>
     <p>
+    	Repository Location<br />
+    	<form:input path="prototype" cssStyle="width:300px;" />
+    </p>
+    <p>
     	<!-- Consider adding link to repository browser read-only -->
     	<c:forEach items="${tutorial.lessons}" varStatus="iter" var="less">
-    		<!-- Hibernate was saving children directly without setting foreign key to tutorial object -->
-    		<span class="lesson-number">Lesson Number: ${less.id} (index: ${iter.index})</span><br />
-    		<!-- <input type="input" id="lesson-${iter.index}" value="${less.mediaURI}" /> -->
-    		<form:hidden path="lessons[${iter.index}].id"/>
-    		<form:label path="lessons[${iter.index}].mediaURI">Lesson Media</form:label><br />
-    		<form:input path="lessons[${iter.index}].mediaURI"/><br />
+    		<span class="lesson-number">Lesson number [Indexed]: ${iter.index})</span><br />
+    		<form:label path="lessons[${iter.index}].clientJSON">Lesson Media</form:label><br />
+    		<form:input path="lessons[${iter.index}].clientJSON" cssStyle="width:300px;" /><br />
     	</c:forEach>
     </p>
     <input type="submit" value="Save"/>
@@ -48,10 +41,14 @@
 <h1>
 	Create new Tutorial: 
 </h1>
-<form:form commandName="container" style="padding:8px">
+<form:form commandName="container" style="padding:8px" action="new-tutorial">
 	<p>
         Name<br/>
         <form:input path="name"/>
+    </p>
+    <p>
+        Description<br/>
+        <form:input path="description"/>
     </p>
     <p>
         Git Repository<br/>

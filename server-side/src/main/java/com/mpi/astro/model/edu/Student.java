@@ -9,6 +9,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,16 +21,23 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import static com.mpi.astro.util.AstrocyteConstants.STUDENT_STATE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mpi.astro.service.edu.EduService;
+import com.mpi.astro.util.AstrocyteConstants.STUDENT_STATE;
 
 @Entity
 @Table( name = "STUDENT" )
+// Understand this addition.  What was the initial problem?
 @NamedQueries(
 		@NamedQuery(name=Student.SQL_FIND_ALL, query="select o from Student o")
 )
 public class Student implements Serializable {
 
 	private static final long serialVersionUID = 8114286263271432681L;
+	
+	private static final Logger logger = LoggerFactory.getLogger(Student.class);
 	
 	public static final String SQL_FIND_ALL = "Student.SQL_FIND_ALL";
 
@@ -43,17 +52,15 @@ public class Student implements Serializable {
 	@Column (name = "LAST_NAME")
 	private String lastName;
 	
+	@Enumerated(EnumType.STRING)
 	@Column (name = "CURRENT_STATE")
 	private STUDENT_STATE state = STUDENT_STATE.WORKING;
 	
-	/**
-	 * This set used to be a simple many-to-many with a join table.  The need for status columns
-	 * in the join table lead to a slighly more complex association.  Object type also changed
-	 * Old version can be referenced by commit: a041353da6bec41ebc00f3c8a6e9636231b7724b
-	 */
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.student", cascade=CascadeType.ALL)
+	// Do not allow cascading until you understand why it breaks everything here.  (Cycle or different contexts)
+	@OneToMany(mappedBy = "pk.student") // , cascade=CascadeType.ALL
 	private Set<StudentCourse> courseAssociations = new HashSet<StudentCourse>(0);
 	
+	// TODO determine safety of equality of Courses as keys given scope of identity.
 	@Transient
 	private Map<Course, StudentStatus> statusMap = new HashMap<Course, StudentStatus>();
 
@@ -82,10 +89,22 @@ public class Student implements Serializable {
 		this.courseAssociations = assoc;
 	}
 	
-	// adds to map for convenience, intuitive methods
-	public void saveCourseAssociation(StudentCourse course) {
-		this.courseAssociations.add(course);
-		Course coursePart = course.getCourse();
+	public boolean isEnrolled(Course course) {
+		if(statusMap.get(course) != null) return true;
+		
+		logger.debug("Course "+course.getName()+" not found in convenience map, checking associations.");
+		
+		boolean enrolled = false;
+		for(StudentCourse sc : courseAssociations)
+			if(sc.getCourse().getId() == course.getId()) enrolled = true;
+		logger.debug("Student " + this.id + (enrolled ? " was" : " was NOT") + " enrolled in " + course.getName());
+		return enrolled;
+	}
+	
+	// TODO determine safety of equality of Courses as keys given scope of identity.
+	public void addCourseAssociation(StudentCourse enrollment) {
+		this.courseAssociations.add(enrollment);
+		Course coursePart = enrollment.getCourse();
 		this.statusMap.put(coursePart, new StudentStatus(coursePart));
 	}
 
@@ -113,6 +132,7 @@ public class Student implements Serializable {
 		return statusMap.get(course).getLessonNum();
 	}
 	
+	// Wait, this would automatically enroll student if methods above are called...
 	public void ensureConvenienceMapping(Course course) {
 		if(statusMap.get(course) == null)
 			statusMap.put(course, new StudentStatus(course));
@@ -214,7 +234,7 @@ public class Student implements Serializable {
 			this.association.setLessonNum(getLessonNum()+1);
 		}
 		public Tutorial getTutorial() {
-			return relevantCourse.getTutorialByOrderNumber(getTutorialNum());
+			return relevantCourse.getTutorialByOrderNumber(getTutorialNum()); 
 		}
 	}	
 

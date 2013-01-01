@@ -2,12 +2,21 @@ package com.mpi.astro.model.edu;
 
 import java.io.Serializable;
 
+import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
+@Embeddable
 public class StudentCourseId implements Serializable {
+	
+	// I am using transient on the getters one level up, but I'm using field-based discovery
+	// so it seems unnecessary.  However this is an embedded object
+	// Should I make these fields transient as well?
 
 	private static final long serialVersionUID = -8869705074497650857L;
 	
+	// Book example places the objects in the enclosing class, uses just id.
+	// Does the ManyToOne translate through the hierarchy appropriately?
 	@ManyToOne
 	private Student student;
 	@ManyToOne

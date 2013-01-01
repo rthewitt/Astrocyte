@@ -1,5 +1,7 @@
 <hibernate-configuration>
    <session-factory>
+       <!-- Book states that configure() method on session seeks this out.  However... 
+            When JPA is used, configuration is moved to persistence.xml, which specifies Annotation scan -->
 
       <mapping package="com.mpi.astro.model" />
       <mapping class="com.mpi.astro.model.edu.Student" />

@@ -15,11 +15,8 @@ import com.mpi.astro.model.edu.Tutorial;
 @Repository
 public class CourseDao {
 
-	// Spring is injecting the JPA wrapper object of a Hibernate session.
-	// The PersistenceContext defaults to a shared EntityManager.
-//	@PersistenceContext
-	@PersistenceContext(type=PersistenceContextType.EXTENDED)
-	private EntityManager entityManager;
+	@PersistenceContext
+	public EntityManager entityManager;
 	
 	public Course find(Long id) {
 		return entityManager.find(Course.class, id);

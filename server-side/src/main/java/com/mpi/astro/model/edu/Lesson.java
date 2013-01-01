@@ -1,11 +1,13 @@
 package com.mpi.astro.model.edu;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -28,6 +30,10 @@ public class Lesson implements Serializable {
 	@Column(name = "LESSON_ID")
 	private Integer id; // TODO make this a composite?  Something like course_name+id or course_id-id
 	
+	// If I decide to use index column instead of OrderBy, this needs to be the inverse.
+	// Can be accomplished by setting update, insert to false and using a JoinColumn.
+	// Would also require a hibernate specific IndexColumn on the collection side.
+	// How does making this a value type affect this decision?
 	@ManyToOne
 	@JoinColumn(name = "TUTORIAL_ID")
 	private Tutorial tutorial; // I think this is required, although I find it distasteful
@@ -36,7 +42,6 @@ public class Lesson implements Serializable {
 	private String mediaURI;
 	
 	public Lesson() {
-		
 	}
 	
 	public Lesson(int id, String uri) {

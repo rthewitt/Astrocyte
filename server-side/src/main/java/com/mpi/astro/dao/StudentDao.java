@@ -15,6 +15,7 @@ import com.mpi.astro.model.edu.Student;
 @Repository
 public class StudentDao {
 	
+	// TODO delete this silliness when you determine a working strategy.  References EXTENDED context
 	/**
 	 * The annotation configuration below is based on my current lack of understanding of managed vs unmanaged
 	 *  environments.  I do not believe Tomcat is "managed", transactionally speaking, but I keep reading that Spring is.
@@ -35,15 +36,8 @@ public class StudentDao {
 	 *  
 	 *  http://stackoverflow.com/questions/2547817/what-is-the-difference-between-transaction-scoped-persistence-context-and-extend
 	 */
-	@PersistenceContext//(type=PersistenceContextType.EXTENDED)
-	private EntityManager entityManager;
-	
-	/* Was an attempt to solve lazy loading problem, but session was closed.
-	public Student find(Long id, boolean eager) {
-		Student s = entityManager.find(Student.class, id); 
-		if(eager) Hibernate.initialize(s.getCourses());
-		return s;
-	}*/
+	@PersistenceContext
+	public EntityManager entityManager;
 	
 	public Student find(Long id) {
 		return entityManager.find(Student.class, id);
@@ -64,6 +58,8 @@ public class StudentDao {
 		}		
 	}	
 	
+	// Why would Denis add this? What benefit does it yield?
+	// Does not appear to be used, probably for illustration purposes
 	public List<Student> findAll() {
 		return entityManager.createNamedQuery(Student.SQL_FIND_ALL, Student.class).getResultList();
 	}

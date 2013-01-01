@@ -8,6 +8,8 @@
     <!-- This file was renamed NO, and we were working without it.  My assumption was that we
     were using annotations instead, but apparently Eclipse was reading from the test classpath,
     regardless of whether or not the declared persistence units therein were utilized. -->
+    <!-- It appears that persistance.xml is used with JPA + hibernate.  Does Spring render this obsolete? -->
+    <!-- Perhaps instead of being ignored, the properties are simply being overwritten by db.properties -->
    <persistence-unit name="workingPU" transaction-type="RESOURCE_LOCAL">
       <properties>
           
@@ -31,21 +33,3 @@
    </persistence-unit>
 
 </persistence>
-<!--<?xml version="1.0" encoding="UTF-8"?>
-<persistence xmlns="http://java.sun.com/xml/ns/persistence"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
-      http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
-   version="1.0">
-
-   <persistence-unit name="acme" transaction-type="RESOURCE_LOCAL">
-      <properties>
-         <property name="hibernate.hbm2ddl.auto" value="create-drop" />
-         <property name="hibernate.show_sql" value="true" />
-         <property name="hibernate.transaction.flush_before_completion"
-            value="true" />
-         <property name="hibernate.cache.provider_class" value="org.hibernate.cache.HashtableCacheProvider" />
-      </properties>
-   </persistence-unit>
-
-</persistence> -->

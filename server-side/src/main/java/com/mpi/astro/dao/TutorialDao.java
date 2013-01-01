@@ -15,19 +15,11 @@ import com.mpi.astro.model.edu.Tutorial;
 @Repository
 public class TutorialDao {
 
-	// This is a hack to keep lazy loading from causing a failure on collections
-	// Needed because the app is not container managed.  TODO determine CONS
-	@PersistenceContext(type=PersistenceContextType.EXTENDED)
+	@PersistenceContext
 	private EntityManager entityManager;
 	
 	public Tutorial find(Long id) {
 		return entityManager.find(Tutorial.class, id);
-	}
-	
-	public Tutorial findInitialized(Long id) {
-		Tutorial t = entityManager.find(Tutorial.class, id);
-//		Hibernate.initialize(t.getLessons());
-		return t;
 	}
 	
 	@SuppressWarnings("unchecked")

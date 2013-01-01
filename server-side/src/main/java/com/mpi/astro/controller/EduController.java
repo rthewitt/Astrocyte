@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Lesson;
 import com.mpi.astro.model.edu.Student;
+import com.mpi.astro.model.edu.StudentCourse;
 import com.mpi.astro.model.edu.Tutorial;
 import com.mpi.astro.service.edu.EduService;
 
@@ -55,6 +57,9 @@ public class EduController {
 		return mav;	
 	}
 	
+	// Added this annotation in my attempt to initiate a conversation.  I'd like one context per request with reattachment
+	// Primarily because I don't know how to get an Interceptor from Spring - would that even work with Stateless requests?
+	@Transactional
 	@RequestMapping(method=RequestMethod.GET,value="edit-student")
 	public ModelAndView editStudent(@RequestParam(value="id",required=false) Long id) {		
 		
@@ -68,7 +73,6 @@ public class EduController {
  			student = eduService.getStudent(id);
  		}
  		
- 		// consider moving this logic into service, perhaps doing an outer join
  		Set<Course> currentCourses = eduService.getCoursesForStudent(student);
  		
  		List<Course> availableCourses = eduService.getAllCourses();
@@ -117,12 +121,24 @@ public class EduController {
 		return mav;
 	}
 	
-	
-	// TODO combine these methods into single post to separate url
+	@Transactional
 	@RequestMapping(method=RequestMethod.POST,value="edit-student") 
-	public String saveStudent(@ModelAttribute Student student, 
+	public String saveStudent(@ModelAttribute Student detachedStudent, 
 			HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("Received postback on student "+student);
+		logger.debug("Received postback on student "+detachedStudent);
+		
+		// Come back to this, can't figure out why no associations existed
+		for(StudentCourse xx : detachedStudent.getCourseAssociations()) {
+			logger.debug("FINALLY one found in the detached object...");
+		}
+		
+		
+		// Reattaching to persistenceContext
+		Student student = eduService.save(detachedStudent);
+		
+		for(StudentCourse xx : student.getCourseAssociations()) {
+			logger.debug("Well, at least there was one here");
+		}
 		
 		// Could this have been done through the ModelAttribute somehow?
 		String addInput = request.getParameter("add-courses");
@@ -132,7 +148,11 @@ public class EduController {
 			for(String s : adds) {
 				Course cc = eduService.getCourse(Long.parseLong(s));
 				logger.debug("Request to add: " + cc.getName());
-				eduService.enrollStudent(student, cc);
+				if(!student.isEnrolled(cc)) {
+					eduService.enrollStudent(student, cc);
+					eduService.save(cc); // student saved further down
+					}
+				    
 				logger.debug("Course " + cc.getName() + " added");
 			}
 			
@@ -142,6 +162,7 @@ public class EduController {
 		
 		return "redirect:view";
 	}
+	@Transactional // MAYBE this will force a db record ?
 	@RequestMapping(method=RequestMethod.POST,value="edit-course") 
 	public String saveCourse(@ModelAttribute Course course) {
 		logger.debug("Received postback on course " + course);		

@@ -9,6 +9,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,19 +37,19 @@ public class Course implements Serializable {
 	@Column(name = "COURSE_NAME", nullable = false)
 	private String name;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(name = "WORKFLOW", nullable = false)
 	private COURSE_WORKFLOW workflow = COURSE_WORKFLOW.PASSIVE;
 	
 	@Column(name = "COURSE_DESC", nullable = false)
 	private String description;
 	
-	// giving up to test.  Will LAZY ever come in handy?
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.course")
+	@OneToMany(mappedBy = "pk.course")
 	private Set<StudentCourse> studAssociations = new HashSet<StudentCourse>(0);
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pkey.course", cascade=CascadeType.ALL)
+	@OneToMany(mappedBy = "pkey.course")
 	private Set<CourseTutorial> tutAssociations = new HashSet<CourseTutorial>(0);
-
+	
 	public Course() {
 	}
 	
@@ -92,8 +94,13 @@ public class Course implements Serializable {
 		this.studAssociations = studAssociations;
 	}
 	
+	// WHY WASN'T THERE A COURSE SIDE OF THIS IMPLEMENTED?  MAYBE THIS WILL SOLVE PROBLEM? 12/29/2012
+	public void addStudentAssociation(StudentCourse enrollment) {
+		this.studAssociations.add(enrollment);
+	}
+	
 	public Set<CourseTutorial> getTutAssociations() {
-		return tutAssociations;
+		return tutAssociations; 
 	}
 
 	public void setTutAssociations(Set<CourseTutorial> tutAssociations) {
@@ -101,14 +108,14 @@ public class Course implements Serializable {
 	}
 
 	public void saveTutorialAssociation(CourseTutorial assoc) {
-		this.tutAssociations.add(assoc);
+		this.tutAssociations.add(assoc); 
 	}
 	
 	public Tutorial getTutorialByOrderNumber(int orderNum) {
 		for(CourseTutorial ct : this.tutAssociations)
 			if(ct.getOrder() == orderNum) return ct.getTutorial();
 		return null;
-	}
+	} 
 	
 	// Note that if lazy loaded, session must be open
 	public Set<Student> getStudents() {

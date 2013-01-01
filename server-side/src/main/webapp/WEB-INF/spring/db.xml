@@ -9,8 +9,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd" default-autowire="byName">
 
-	<!-- Scans within the base package of the application for @Components to configure as beans
-	<bean id="placeholderConfig"
+	<!-- <bean id="placeholderConfig"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location" value="classpath:db.properties" />
 	</bean> -->
@@ -40,6 +39,7 @@
 
 	<!-- Adding these properties to txmgr to match my test-context.  Trying to get session
 		so that I can initialize lazy-loaded collections during view processing -->
+	<!-- Did you really know what you were doing or did you just copy this from the interwebz? -->
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 	    <property name="entityManagerFactory" ref="entityManagerFactory"/>
 	    <property name="dataSource" ref="dataSource" />

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.dao.CourseDao;
+import com.mpi.astro.dao.StudentCourseDao;
 import com.mpi.astro.dao.StudentDao;
 import com.mpi.astro.dao.TutorialDao;
 import com.mpi.astro.model.edu.Course;
@@ -27,8 +28,11 @@ import com.mpi.astro.model.edu.StudentCourse;
 import com.mpi.astro.model.edu.Tutorial;
 import com.mpi.astro.util.PropertiesUtil;
 
-// I had left this annotation off - has it affected the construction of the code-base?
-// For instance, did I have more than one instance leading to errors along the way?
+// TODO add Transactional annotation to service methods as necessary.
+// TODO remove object management from Controller and use only service
+// TODO create interface layer for services
+// TODO consider inheritance for domain instead of ENUM types
+// TODO separate controllers to represent phrases of the transactional conversation
 @Service
 public class EduService {
 	
@@ -41,6 +45,10 @@ public class EduService {
 	@Autowired
 	private CourseDao courseDao;
 	
+	// if this works, consider refactoring -> service logic only
+	@Autowired
+	private StudentCourseDao enrollmentDao;
+	
 	@Autowired
 	private MyelinService myelinService;
 	
@@ -51,7 +59,6 @@ public class EduService {
 		return PropertiesUtil.getProperty(PropertiesUtil.PROP_DATA_DIR);
 	}
 	
-//	private static final Logger logger = Logger.getLogger(EduService.class);
 	private static final Logger logger = LoggerFactory.getLogger(EduService.class);
 	
 	
@@ -108,28 +115,46 @@ public class EduService {
 			return getStudentsInCourse(course.getId());
 	}
 	
-	public void save(Student s) {
-		studentDao.save(s);
+	public Student save(Student s) {
+		return studentDao.save(s);
 	}
 	
-	public void save(Course c) {
-		courseDao.save(c);
+	public Course save(Course c) {
+		return courseDao.save(c);
 	}
 	
-	public void save(Tutorial t) {
-		tutorialDao.save(t);
+	public Tutorial save(Tutorial t) {
+		return tutorialDao.save(t);
 	}
 	
-	// lack of conditional logic causes stackoverflow when already enrolled during student save
+	public StudentCourse save(StudentCourse enrollment) {
+		return enrollmentDao.save(enrollment);
+	}
+	
+	// These were all different, but possibly only because they refer to a proxy for the transactional
+	public void checkEMs() {
+		logger.debug((entityManager == studentDao.entityManager ? "same as studentdao" : "different"));
+		logger.debug((entityManager.equals(studentDao.entityManager) ? "equal to studentdao" : "not equal"));
+		logger.debug((entityManager == courseDao.entityManager ? "same as courseDao" : "different"));
+		logger.debug((entityManager.equals(courseDao.entityManager) ? "equal to courseDao" : "not equal"));
+	}
+	
+	// If this works, decide if Dao is actually necessary or not
+	// I would rather not treat associations as first-order persistent objects
+	@Transactional
 	public void enrollStudent(Student student, Course course) {
 		StudentCourse enrollment = new StudentCourse();
 		enrollment.setStudent(student);
 		enrollment.setCourse(course);
 		enrollment.setEnrollDate(new Date());
 		
-		student.saveCourseAssociation(enrollment);
+		student.addCourseAssociation(enrollment);
+		course.addStudentAssociation(enrollment); // ADDED 12/29/2012
+		
+		save(enrollment); // testing
 	}
 	
+	// This should probably retrieve an unmodifiable set. TODO look downstream, consider
 	public Set<Course> getCoursesForStudent(Student student) {
 		Set<Course> courses = new HashSet<Course>();
 		for(StudentCourse enrollment : student.getCourseAssociations()) {
@@ -152,7 +177,7 @@ public class EduService {
 		
 		// TODO create Syllabus object and CourseFactory to set up 
 		// repositories / tags prior to initialization
-	@Transactional
+		@Transactional
 		public void initializeCourse(long courseId, long tutorialId) {
 			
 			final Course course = getCourse(courseId);

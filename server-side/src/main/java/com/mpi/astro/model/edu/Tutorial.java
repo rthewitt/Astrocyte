@@ -12,6 +12,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -43,18 +45,18 @@ public class Tutorial implements Serializable {
 	@Column(name="TUTORIAL_NAME", nullable=false)
 	private String name;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name="TYPE")
 	private TutorialType type = TutorialType.SIMPLE;
 	
 	@Column(name="PROTO_URI")
 	private String prototype;
 	
-	// This eager loading requirement is quite frustrating.  Must consult with someone.
-	@OneToMany(fetch = FetchType.EAGER, mappedBy="tutorial", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy="tutorial")
 	@OrderBy("id")
-	private List<Lesson> lessons = new ArrayList(0);
+	private List<Lesson> lessons = new ArrayList<Lesson>(0);
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pkey.tutorial")
+	@OneToMany(mappedBy = "pkey.tutorial")
 	private Set<CourseTutorial> courseAssociations = new HashSet<CourseTutorial>(0);
 	
 	@Column(name="DESCRIPTION")
@@ -112,11 +114,10 @@ public class Tutorial implements Serializable {
 		this.description = description;
 	}
 	
-	// required by spring
 	public List<Lesson> getLessons() {
 		return lessons;
 	}
-	// required by spring
+	
 	public void setLessons(List<Lesson> lessons) {
 		for(Lesson lesson : lessons) {
 			lesson.setTutorial(this);

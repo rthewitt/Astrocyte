@@ -63,6 +63,8 @@
    <bean id="studentDao" class="com.mpi.astro.dao.StudentDao" />
    <bean id="courseDao" class="com.mpi.astro.dao.CourseDao" />
    <bean id="tutorialDao" class="com.mpi.astro.dao.TutorialDao" />
+   <!-- I could probably have simply added logic to eduService for save/delete -->
+   <bean id="enrollmentDao" class="com.mpi.astro.dao.StudentCourseDao" />
    <bean id="eduService" class="com.mpi.astro.service.edu.EduService" />
    
    
@@ -82,8 +84,9 @@
         <property name="jndiTemplate"><ref bean="jndiTemplate"/></property>
         <property name="jndiName"><value>java:comp/env/jms/connectionFactory</value></property>
         <property name="resourceRef"><value>true</value></property>
-    </bean>
-
+    </bean> -->
+    <!-- This was in reference to the web.xml jndi definition, which is probably no longer needed. -->
+    <!--
     <bean id="destination" class="org.springframework.jndi.JndiObjectFactoryBean">
         <property name="jndiTemplate"><ref bean="jndiTemplate"/></property>
         <property name="jndiName"><value>java:comp/env/jms/command-queue</value></property>

@@ -66,6 +66,10 @@ public class StudentCourse implements Serializable {
 		this.pk = pk;
 	}
 	
+	// TODO these integer fields are bad design.  They should be foreign keys, constrained by the database.
+	// Except how do I handle 0/0?  Tutorial is not required for Course, Lesson is not required for Tutorial.
+	// This means quite frankly that there's a difference between Course and CourseDefinition.  Also between
+	// Tutorial and TutorialDefinition.  Consider.
 	public Integer getLessonNum() {
 		return lessonNum;
 	}

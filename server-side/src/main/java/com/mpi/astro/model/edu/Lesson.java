@@ -1,61 +1,32 @@
 package com.mpi.astro.model.edu;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.Embeddable;
+
+import org.hibernate.annotations.Parent;
 
 /**
  * 
  * @author Ryan Hewitt
  * 
- * Lesson will be a node in the Tutorial stack.
- * Provides the location of the media that accompanies
- * the current state of the code.
  */
-@Entity
-@Table( name="LESSON" )
+@Embeddable
 public class Lesson implements Serializable {
 	private static final long serialVersionUID = -4962190931295411178L;
 	
-	@Id
-	@Column(name = "LESSON_ID")
-	private Integer id; // TODO make this a composite?  Something like course_name+id or course_id-id
+	@Parent
+	private Tutorial tutorial;
 	
-	// If I decide to use index column instead of OrderBy, this needs to be the inverse.
-	// Can be accomplished by setting update, insert to false and using a JoinColumn.
-	// Would also require a hibernate specific IndexColumn on the collection side.
-	// How does making this a value type affect this decision?
-	@ManyToOne
-	@JoinColumn(name = "TUTORIAL_ID")
-	private Tutorial tutorial; // I think this is required, although I find it distasteful
-	
-	@Column(name = "MEDIA_URI")
-	private String mediaURI;
+	@Column(name = "CLIENT_JSON")
+	private String clientJSON = "{}";
 	
 	public Lesson() {
 	}
 	
-	public Lesson(int id, String uri) {
-		this.id = id;
-		this.mediaURI = uri;
-	}
-	
-	
-	public Integer getId() {
-		return this.id;
-	}
-	
-	public void setId(Integer id) {
-		this.id = id;
+	public Lesson(String jsonDescription) {
+		this.clientJSON = jsonDescription;
 	}
 	
 	public Tutorial getTutorial() {
@@ -67,17 +38,14 @@ public class Lesson implements Serializable {
 	}
 
 	/*
-	 * Originally, this URL was going to be the sole media asset for a lesson
-	 * Now I suggest that it be a file (which can be auto-generated from Authoring tool)
-	 * that specifies main introduction, changed files, and code-highlighted mappings to
-	 * content that will be retrieved, possibly by Ajax.  In this way, you can bring the 
-	 * tutorial / instruction INTO the IDE.
+	 * This will be sent to the client for each lesson,
+	 * and will describe media placements in the code 
 	 */
-	public String getMediaURI() {
-		return mediaURI;
+	public String getClientJSON() {
+		return clientJSON;
 	}
-	public void setMediaURI(String mediaURI) {
-		this.mediaURI = mediaURI;
+	public void setClientJSON(String clientJSON) {
+		this.clientJSON = clientJSON;
 	}
 	
 	
@@ -85,9 +53,8 @@ public class Lesson implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result
-				+ ((mediaURI == null) ? 0 : mediaURI.hashCode());
+				+ ((clientJSON == null) ? 0 : clientJSON.hashCode());
 		return result;
 	}
 	
@@ -100,10 +67,10 @@ public class Lesson implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Lesson other = (Lesson) obj;
-		if (mediaURI == null) {
-			if (other.mediaURI != null)
+		if (clientJSON == null) {
+			if (other.clientJSON != null)
 				return false;
-		} else if (!mediaURI.equals(other.mediaURI))
+		} else if (!clientJSON.equals(other.clientJSON))
 			return false;
 
 		return true;

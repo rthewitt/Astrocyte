@@ -1,13 +1,21 @@
 package com.mpi.astro.util;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mpi.astro.model.arcade.impl.JavaGame;
 import com.mpi.astro.model.comm.AdvanceCommand;
@@ -16,6 +24,8 @@ import com.mpi.astro.model.comm.UpdateCommand;
 import com.mpi.astro.model.edu.Student;
 
 public class AstrocyteUtils {
+	
+	protected static final Logger logger = LoggerFactory.getLogger(AstrocyteUtils.class);
 	
 	private static final JavaGame alphaGame = new JavaGame();
 	
@@ -66,6 +76,21 @@ public class AstrocyteUtils {
 		obj.put("prototype", proto);
 		
 		return obj;
+	}
+	
+	// TODO reroute through auto-commit form in JSP after JSON web-service
+	public static String getExternalTutorialDescriptionAsString(String URI) {
+		DefaultHttpClient client = new DefaultHttpClient();
+		HttpGet get = new HttpGet(URI);
+		try {
+			HttpResponse response = client.execute(get);
+			return IOUtils.toString(response.getEntity().getContent());
+		} catch (ClientProtocolException e) {
+			logger.error("Problem getting JSON descriptor for tutorial", e);
+		} catch (IOException e) {
+			logger.error("Problem getting response from httpClient", e);
+		}
+		return null;
 	}
 	
 	public static String getCheckpointStr(int number) {

@@ -9,6 +9,7 @@
 	<title>Edit Tutorial</title>
 </head>
 <body>
+<% if(request.getAttribute("tutorial") != null) { %>
 <h1>
 	Editing Tutorial ${tutorial.id} - ${tutorial.name} 
 </h1>
@@ -43,5 +44,29 @@
     </p>
     <input type="submit" value="Save"/>
 </form:form>
+<% }else if(request.getAttribute("container") != null) { %>
+<h1>
+	Create new Tutorial: 
+</h1>
+<form:form commandName="container" style="padding:8px">
+	<p>
+        Name<br/>
+        <form:input path="name"/>
+    </p>
+    <p>
+        Git Repository<br/>
+        <form:input path="gitRepo"/>
+    </p>
+    <p>
+        Generated Description File Location<br/>
+        <form:input path="descriptionFile"/>
+    </p>
+    <input type="submit" value="Save"/>
+</form:form>
+<% } else { %>
+<h1>
+	Serious problem.  Nothing in view.
+</h1>
+<% } %>
 </body>
 </html>

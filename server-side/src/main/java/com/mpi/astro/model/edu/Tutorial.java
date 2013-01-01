@@ -2,26 +2,22 @@ package com.mpi.astro.model.edu;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.IndexColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,17 +40,25 @@ public class Tutorial implements Serializable {
 	
 	@Column(name="TUTORIAL_NAME", nullable=false)
 	private String name;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name="TYPE")
-	private TutorialType type = TutorialType.SIMPLE;
 	
 	@Column(name="PROTO_URI")
 	private String prototype;
 	
+	/*
 	@OneToMany(mappedBy="tutorial")
 	@OrderBy("id")
-	private List<Lesson> lessons = new ArrayList<Lesson>(0);
+	private List<Lesson> lessons = new ArrayList<Lesson>(0); */
+	// Changed below for indexed collection of values
+	
+	@ElementCollection
+	@CollectionTable(
+	name = "LESSON",
+	joinColumns = @JoinColumn(name = "TUTORIAL_ID")
+	)
+	@IndexColumn(
+	name="CHECKPOINT", base = 1
+	)
+	private List<Lesson> lessons = new ArrayList<Lesson>();
 	
 	@OneToMany(mappedBy = "pkey.tutorial")
 	private Set<CourseTutorial> courseAssociations = new HashSet<CourseTutorial>(0);
@@ -97,15 +101,6 @@ public class Tutorial implements Serializable {
 		this.name = name;
 	}
 
-
-	public TutorialType getType() {
-		return type;
-	}
-
-	public void setType(TutorialType type) {
-		this.type = type;
-	}
-
 	public String getDescription() {
 		return description;
 	}
@@ -125,27 +120,15 @@ public class Tutorial implements Serializable {
 		this.lessons = lessons;
 	}
 	
-	// hardly necessary...
-	public void addLesson(int tagIndex, String mediaURI) {
-		Lesson lesson = new Lesson(tagIndex, mediaURI);
+	public void addLesson(String jsonDescription) {
+		Lesson lesson = new Lesson(jsonDescription);
 		this.lessons.add(lesson);
 		logger.debug("INSIDE TUTORIAL addLesson: size is now " + this.lessons.size());
-		lesson.setTutorial(this); // this is dumb
+		lesson.setTutorial(this);
 	}
 	
 	public int getNumSteps() {
 		return lessons.size();
-	}
-	
-	/**
-	 *  Returns an immutable Map of tag number -> media uri
-	 *  used as convenience for course design and representation.
-	 */
-	public Map<Integer, String> getLessonMappings() {
-		Map<Integer, String> map = new HashMap<Integer, String>();
-		for(Lesson l : lessons)
-			map.put(l.getId(), l.getMediaURI());
-		return Collections.unmodifiableMap(map);
 	}
 
 	@Override
@@ -159,7 +142,6 @@ public class Tutorial implements Serializable {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result
 				+ ((prototype == null) ? 0 : prototype.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -196,8 +178,6 @@ public class Tutorial implements Serializable {
 			if (other.prototype != null)
 				return false;
 		} else if (!prototype.equals(other.prototype))
-			return false;
-		if (type != other.type)
 			return false;
 		return true;
 	}

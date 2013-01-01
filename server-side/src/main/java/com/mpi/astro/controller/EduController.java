@@ -19,12 +19,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mpi.astro.model.admin.TutorialViewDescriptor;
+import com.mpi.astro.model.builder.CodeTutorialBuilder;
+import com.mpi.astro.model.builder.TutorialBuilder;
 import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Lesson;
 import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.model.edu.StudentCourse;
 import com.mpi.astro.model.edu.Tutorial;
 import com.mpi.astro.service.edu.EduService;
+import com.mpi.astro.util.AstrocyteUtils;
 
 @Controller
 @RequestMapping("/enrollment/")
@@ -94,13 +98,17 @@ public class EduController {
 		logger.debug("Received request to edit tutorial id : "+id);				
 		ModelAndView mav = new ModelAndView();		
  		mav.setViewName("edu/edit-tutorial");
- 		Tutorial tut = null;
- 		if (id == null)
- 			tut = new Tutorial();
- 		else
- 			tut = eduService.getTutorial(id);
  		
- 		mav.addObject("tutorial", tut);
+ 		if (id == null) {
+ 			TutorialViewDescriptor container = new TutorialViewDescriptor();
+ 			mav.addObject("descriptor", container);
+ 		}
+ 		else {
+ 			Tutorial tut = null;
+ 			tut = eduService.getTutorial(id);
+ 			mav.addObject("tutorial", tut);
+ 		}
+ 			
 		return mav;
 	}
 	
@@ -169,42 +177,46 @@ public class EduController {
 		eduService.save(course);
 		return "redirect:view";
 	}
+	
 	@RequestMapping(method=RequestMethod.POST,value="edit-tutorial") 
 	public String saveTutorial(@ModelAttribute Tutorial tut, HttpServletRequest request) {
 		logger.debug("Received postback on tutorial " + tut);		
-		// TEMPORARY TODO remove
-		List<Lesson> checkPoints = tut.getLessons();
-		if(checkPoints == null || checkPoints.size() < 1) {
-			logger.debug(checkPoints == null ? "lessons was NULL" : "existed, size was " + checkPoints.size());
-			logger.debug("Adding new lessons");
-			tut.addLesson(1, "TEST-VAL");
-			tut.addLesson(2, "TEST-VAL");
-		} else {
-			logger.debug("Not null, size was: " + checkPoints.size());
-			for(Lesson l : checkPoints)
-				l.setTutorial(tut);
-		}
 		
-		/* else {
-			for(int x=0; x<tut.getLessons().size(); x++) {
-				logger.debug("Searching for lesson: " + x);
-				// get the submitted input tag via name convention
-				String uri = request.getParameter("lesson-" + x);
-				logger.debug("Setting lesson uri: " + uri);
-				// if we're not dealing with copies, this should save correctly. 
-				if(uri != null)
-						checkPoints.get(x).setMediaURI(uri);
-				else logger.error("URI parameter for lesson was not found.");
-			}
-		} */
-		// -------------
 		logger.debug("LESSONS CONTAINED IN TUTORIAL " + tut.getId() + "\n" +
 				tut.getLessons().size() + " lessons");
 		eduService.save(tut);
 		return "redirect:view";
 	}
-	// =========================================================
 	
+	// TODO update jsp for new-tutorial based on object present
+	// TODO refactor builder -> service layer with Spring injection
+	@RequestMapping(method=RequestMethod.POST, value="new-tutorial")
+	public String createTutorial(@ModelAttribute TutorialViewDescriptor container, 
+			HttpServletRequest request) {
+		Tutorial newTut = null;
+		
+		TutorialBuilder builder = new CodeTutorialBuilder();
+		builder.createTutorial(container.getName());
+		
+		// This may or may not be moved to client
+		// It's possible that this will be used for the full Project
+		// and when cloud9 is loaded, the prototype will be created manually.
+		builder.buildProjectDefinition(container.getGitRepo());
+		
+		String jsonStr =  AstrocyteUtils
+				.getExternalTutorialDescriptionAsString(container.getDescriptionFile());
+		
+		if(jsonStr == null) {
+			logger.error("Problem getting JSON string in controller, was null");
+			return "edu/failure"; // does this work?
+		}
+		builder.buildLessons(jsonStr);
+		
+		newTut = builder.getTutorial();
+		eduService.save(newTut);
+		
+		return "redirect:view";
+	}
 	
 	// using for testing jms producer
 	@RequestMapping(value = "test-produce", method=RequestMethod.GET)

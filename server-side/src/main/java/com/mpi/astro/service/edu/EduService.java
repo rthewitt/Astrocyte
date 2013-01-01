@@ -131,14 +131,6 @@ public class EduService {
 		return enrollmentDao.save(enrollment);
 	}
 	
-	// These were all different, but possibly only because they refer to a proxy for the transactional
-	public void checkEMs() {
-		logger.debug((entityManager == studentDao.entityManager ? "same as studentdao" : "different"));
-		logger.debug((entityManager.equals(studentDao.entityManager) ? "equal to studentdao" : "not equal"));
-		logger.debug((entityManager == courseDao.entityManager ? "same as courseDao" : "different"));
-		logger.debug((entityManager.equals(courseDao.entityManager) ? "equal to courseDao" : "not equal"));
-	}
-	
 	// If this works, decide if Dao is actually necessary or not
 	// I would rather not treat associations as first-order persistent objects
 	@Transactional
@@ -153,6 +145,8 @@ public class EduService {
 		
 		save(enrollment); // testing
 	}
+	
+	//TODO add enrollStudent( Collection of Course ) @Transactional // entry-point for Controller
 	
 	// This should probably retrieve an unmodifiable set. TODO look downstream, consider
 	public Set<Course> getCoursesForStudent(Student student) {

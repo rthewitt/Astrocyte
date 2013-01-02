@@ -37,21 +37,20 @@ public class AdvanceCommand extends BaseCommand implements Command {
 	@Override
 	public void execute() {
 		
-		Student student = eduService.getStudent(Long.parseLong(this.studentId));
-		Set<Course> validCourses = eduService.getCoursesForStudent(student);
+		Student student = eduService.getStudentEager(Long.parseLong(this.studentId));
 		
-		Course course = null;
-		for(Course c : validCourses) {
-			if(c.getName().equals(this.courseName)) {
-				course = c;
-				break;
-			}
+		// TODO either change thalamus to use courseId, or force courseName to be unique 
+		// guarantee transfer without changes to string
+		Course course = eduService.getCourseByName(this.courseName);
+		
+		// Consider throwing an error here
+		if(course == null || !student.getCourses().contains(course)) {
+			logger.error("Problem advancing student "+student.getId()+" for course "+course.getName()+
+					"\nThis will likely lead to data inconsistency!");
+			return;
 		}
-		// TODO Log, throw exception
-		if(course == null) ; // Big problem
+			
 		int currentLesson = student.getLessonStatusForCourse(course);
-		
-		// TODO decide whether or not arguments can or will change meaning
 		
 		if("request".equals(this.advanceStatus)) {
 			
@@ -59,9 +58,8 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			
 			if(!(statusTag.matches(AstrocyteConstants.CHECKPOINT_REGEX) &&
 					Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-'))) == currentLesson )) {
-				// TODO exception logging!
 				System.out.println("repository state corrupted!");
-				return;
+				// TODO throw exception
 			}
 			
 			switch(student.getState()) {

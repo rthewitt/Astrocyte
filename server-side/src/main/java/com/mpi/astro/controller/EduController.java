@@ -77,7 +77,7 @@ public class EduController {
  			student = eduService.getStudent(id);
  		}
  		
- 		Set<Course> currentCourses = eduService.getCoursesForStudent(student);
+ 		Set<Course> currentCourses = student.getCourses();
  		
  		List<Course> availableCourses = eduService.getAllCourses();
  		for(Iterator<Course> iter = availableCourses.iterator(); iter.hasNext();) {

@@ -21,6 +21,11 @@ public class CourseDao {
 		return entityManager.find(Course.class, id);
 	}
 	
+	public Course findByName(String courseName) {
+		return (Course)entityManager.createQuery("select c from Course c where c.name = :name")
+		.setParameter("name", courseName).getSingleResult();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<Course> getCourses() {
 		return entityManager.createQuery("select c from Course c").getResultList();

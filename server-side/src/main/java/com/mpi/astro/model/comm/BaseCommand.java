@@ -3,11 +3,15 @@ package com.mpi.astro.model.comm;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mpi.astro.service.edu.EduService;
 import com.mpi.astro.util.MyelinAction;
 
 public abstract class BaseCommand implements Command {
+	
+	protected static final Logger logger = LoggerFactory.getLogger(BaseCommand.class);
 	
 	protected static MyelinAction action;
 	

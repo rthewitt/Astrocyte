@@ -61,6 +61,10 @@ public class EduService {
 		return courseDao.find(courseId);
 	}
 	
+	public Course getCourseByName(String courseName) {
+		return courseDao.findByName(courseName);
+	}
+	
 	public List<Student> getStudentsForCourse(long courseId) {
 		return courseDao.getStudentsForCourse(courseId);
 	}
@@ -83,6 +87,10 @@ public class EduService {
 	
 	public Student getStudent(long id) {
 		return studentDao.find(id);
+	}
+	
+	public Student getStudentEager(long id) {
+		return studentDao.getStudentWithCourses(id);
 	}
 	
 	public List<Student> getAllStudents() {
@@ -122,21 +130,6 @@ public class EduService {
 		course.addStudentAssociation(enrollment); // ADDED 12/29/2012
 		
 		save(enrollment); // testing
-	}
-	
-	//TODO add enrollStudent( Collection of Course ) @Transactional // entry-point for Controller
-	
-	// This should probably retrieve an unmodifiable set.
-	public Set<Course> getCoursesForStudent(Student student) {
-		Set<Course> courses = new HashSet<Course>();
-		for(StudentCourse enrollment : student.getCourseAssociations()) {
-			courses.add(enrollment.getCourse());
-		}
-		return courses;
-	}
-	
-	public Set<Course> getCoursesForStudentById(long studentId) {
-		return getCoursesForStudent(studentDao.find(studentId));
 	}
 	
 	// also consider using git build-in email functionality

@@ -7,6 +7,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 
 import org.hibernate.Hibernate;
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,13 @@ public class StudentDao {
 	
 	public Student find(Long id) {
 		return entityManager.find(Student.class, id);
+	}
+	
+	// may need super eager query for tutorials and lessons and such
+	public Student getStudentWithCourses(long id) {
+		Student student = find(id);
+		Hibernate.initialize(student.getCourseAssociations());
+		return student;
 	}
 	
 	@SuppressWarnings("unchecked")

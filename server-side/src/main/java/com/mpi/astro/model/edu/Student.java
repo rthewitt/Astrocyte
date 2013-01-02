@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import com.mpi.astro.service.edu.EduService;
 import com.mpi.astro.util.AstrocyteConstants.STUDENT_STATE;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 @Entity
 @Table( name = "STUDENT" )
 // Understand this addition.  What was the initial problem?
@@ -87,6 +89,14 @@ public class Student implements Serializable {
 	
 	public void setCourseAssociations(Set<StudentCourse> assoc) {
 		this.courseAssociations = assoc;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Set<Course> getCourses() {
+		Set<Course> courses = new HashSet<Course>();
+		for(StudentCourse enrollment : this.getCourseAssociations())
+			courses.add(enrollment.getCourse());
+		return Collections.unmodifiableSet(courses);
 	}
 	
 	public boolean isEnrolled(Course course) {

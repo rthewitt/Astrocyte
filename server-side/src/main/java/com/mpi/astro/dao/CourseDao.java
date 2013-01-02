@@ -4,13 +4,12 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.model.edu.Course;
-import com.mpi.astro.model.edu.Tutorial;
+import com.mpi.astro.model.edu.Student;
 
 @Repository
 public class CourseDao {
@@ -25,6 +24,14 @@ public class CourseDao {
 	@SuppressWarnings("unchecked")
 	public List<Course> getCourses() {
 		return entityManager.createQuery("select c from Course c").getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Student> getStudentsForCourse(Long id) {
+		
+		return (List<Student>) entityManager.createQuery("select s " +
+				"from Student s join s.courseAssociations sc where sc.pk.course.id = :c_id")
+			.setParameter("c_id", id).getResultList();
 	}
 	
 	@Transactional

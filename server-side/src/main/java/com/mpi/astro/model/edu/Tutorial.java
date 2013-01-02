@@ -81,6 +81,10 @@ public class Tutorial implements Serializable {
 	public void setCourseAssociations(Set<CourseTutorial> courseAssociations) {
 		this.courseAssociations = courseAssociations;
 	}
+	
+	public void addCourseAssociation(CourseTutorial association) {
+		this.courseAssociations.add(association);
+	}
 
 	public void setId(Long id) {
 		this.id = id;

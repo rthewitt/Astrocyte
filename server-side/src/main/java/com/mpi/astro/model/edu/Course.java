@@ -1,27 +1,22 @@
 package com.mpi.astro.model.edu;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import static com.mpi.astro.util.AstrocyteConstants.COURSE_WORKFLOW;
+import com.mpi.astro.util.AstrocyteConstants.COURSE_WORKFLOW;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 @Entity
 @Table(name="COURSE")
@@ -94,6 +89,17 @@ public class Course implements Serializable {
 		this.studAssociations = studAssociations;
 	}
 	
+	// Any reason to force unmodifiable?
+	/* Also, would placing annotations on setters increase performance for getting just the
+	   student ids for initialization / generation / future reporting? */
+	@SuppressWarnings("unchecked")
+	public Set<Student> getStudentsInCourse() {
+		Set <Student> ret = new HashSet<Student>();
+		for(StudentCourse sc : this.studAssociations)
+			ret.add(sc.getStudent());
+		return Collections.unmodifiableSet(ret);
+	}
+	
 	// WHY WASN'T THERE A COURSE SIDE OF THIS IMPLEMENTED?  MAYBE THIS WILL SOLVE PROBLEM? 12/29/2012
 	public void addStudentAssociation(StudentCourse enrollment) {
 		this.studAssociations.add(enrollment);
@@ -107,7 +113,7 @@ public class Course implements Serializable {
 		this.tutAssociations = tutAssociations;
 	}
 
-	public void saveTutorialAssociation(CourseTutorial assoc) {
+	public void addTutorialAssociation(CourseTutorial assoc) {
 		this.tutAssociations.add(assoc); 
 	}
 	
@@ -116,14 +122,6 @@ public class Course implements Serializable {
 			if(ct.getOrder() == orderNum) return ct.getTutorial();
 		return null;
 	} 
-	
-	// Note that if lazy loaded, session must be open
-	public Set<Student> getStudents() {
-		Set<Student> students = new HashSet<Student>();
-		for(StudentCourse sc : studAssociations )
-			students.add(sc.getStudent());
-		return students;
-	}
 
 	@Override
 	public int hashCode() {

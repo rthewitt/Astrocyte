@@ -1,15 +1,9 @@
 package com.mpi.astro.service.edu;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
-import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.dao.CourseDao;
+import com.mpi.astro.dao.CourseTutorialDao;
 import com.mpi.astro.dao.StudentCourseDao;
 import com.mpi.astro.dao.StudentDao;
 import com.mpi.astro.dao.TutorialDao;
@@ -38,16 +33,15 @@ public class EduService {
 	
 	@Autowired
 	private StudentDao studentDao;
-	
 	@Autowired
 	private TutorialDao tutorialDao;
-	
 	@Autowired
 	private CourseDao courseDao;
-	
-	// if this works, consider refactoring -> service logic only
 	@Autowired
 	private StudentCourseDao enrollmentDao;
+	@Autowired
+	// this may change to a List<CT> as in Tut->Lessons, but with entity
+	private CourseTutorialDao tmpCTDao; 
 	
 	@Autowired
 	private MyelinService myelinService;
@@ -65,6 +59,10 @@ public class EduService {
 	 */
 	public Course getCourse(long courseId) {
 		return courseDao.find(courseId);
+	}
+	
+	public List<Student> getStudentsForCourse(long courseId) {
+		return courseDao.getStudentsForCourse(courseId);
 	}
 	
 	public List<Course> getAllCourses() {
@@ -105,6 +103,10 @@ public class EduService {
 	
 	public StudentCourse save(StudentCourse enrollment) {
 		return enrollmentDao.save(enrollment);
+	}
+	
+	public CourseTutorial save(CourseTutorial association) {
+		return tmpCTDao.save(association);
 	}
 	
 	// If this works, decide if Dao is actually necessary or not
@@ -156,17 +158,17 @@ public class EduService {
 			CourseTutorial association = new CourseTutorial(); // testing constructor
 			association.setCourse(course);
 			association.setTutorial(tutorial);
-			course.saveTutorialAssociation(association);
+			course.addTutorialAssociation(association);
+			tutorial.addCourseAssociation(association);
 			
-			// will cascade.  Change all of this to use factory
+			save(association);
 			save(course);
+			save(tutorial);
 			
-			Set testSet = course.getStudAssociations(); // ADDED TODO finish test
-			logger.debug("Before dispatch, getStudAssociations() test results in "+testSet.size()+" associations.");
+//			Set<Student> students = new HashSet<Student>(getStudentsForCourse(courseId));
+			Set<Student> students = course.getStudentsInCourse();
 			
-			Set<Student> students = course.getStudents();
 			logger.debug("About to dispatch with student array length: " + students.size());
-			
 			myelinService.dispatchInit(course, tutorial, students);
 		}
 	

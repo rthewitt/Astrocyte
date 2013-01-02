@@ -44,10 +44,9 @@ public class StudentDao {
 		return entityManager.find(Student.class, id);
 	}
 	
-	// may need super eager query for tutorials and lessons and such
-	public Student getStudentWithCourses(long id) {
+	public Student getStudentInitialized(long id) {
 		Student student = find(id);
-		Hibernate.initialize(student.getCourseAssociations());
+		Hibernate.initialize(student);
 		return student;
 	}
 	

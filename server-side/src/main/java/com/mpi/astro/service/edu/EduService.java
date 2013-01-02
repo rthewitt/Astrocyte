@@ -90,7 +90,7 @@ public class EduService {
 	}
 	
 	public Student getStudentEager(long id) {
-		return studentDao.getStudentWithCourses(id);
+		return studentDao.getStudentInitialized(id);
 	}
 	
 	public List<Student> getAllStudents() {

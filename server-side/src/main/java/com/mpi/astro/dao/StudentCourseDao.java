@@ -64,6 +64,7 @@ public class StudentCourseDao {
 		return new StudentStatus((Integer)statz[0], (Integer)statz[1]);
 	}
 	
+	@Transactional
 	public Tutorial getCurrentTutorialForStudent(Student student, Course course) {
 		/*
 		return (Tutorial)entityManager.createQuery("select t from Tutorial t, StudentCourse sc" +
@@ -82,8 +83,12 @@ public class StudentCourseDao {
 				"and ct.pkey.tutorial = t " +
 				"and sc = :enrollment";
 		
-		return (Tutorial)entityManager.createQuery(query)
+		Tutorial lazyTut =  (Tutorial)entityManager.createQuery(query)
 		.setParameter("enrollment", enrollment).getSingleResult();
+		
+		if(lazyTut.getLessons().size() > 0) 
+			lazyTut.getLessons().get(0); // Eager
+		return lazyTut;
 	}
 	
 	public void clearForTest(){

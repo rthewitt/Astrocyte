@@ -42,6 +42,7 @@ public class StudentDao {
 	}
 	
 	// Hibernate.initialize is not appropriate for collections
+	@Transactional
 	public Student getStudentInitialized(long id) {
 		Student student = find(id);
 		student.getCourses();

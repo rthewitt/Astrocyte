@@ -86,7 +86,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			}
 			
 		} else if("confirm".equals(this.advanceStatus)) {
-			int claimedStatus = Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-')));
+			int claimedStatus = Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-')+1));
 			if(!(statusTag.matches(AstrocyteConstants.CHECKPOINT_REGEX) &&
 					claimedStatus == current.getLessonNum()+1 )) {
 				logger.warn(String.format("Suspect Advance Confirmation receipt indicates next lesson is %d - " +

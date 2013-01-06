@@ -44,4 +44,8 @@ public class TutorialDao {
 		}		
 	}	
 	
+	public void clearForTest(){
+		entityManager.clear();
+	}
+	
 }

@@ -1,12 +1,12 @@
 package com.mpi.astro.model.comm;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Student;
+import com.mpi.astro.model.edu.StudentStatus;
 import com.mpi.astro.util.AstrocyteConstants;
 import com.mpi.astro.util.AstrocyteConstants.COURSE_WORKFLOW;
 import com.mpi.astro.util.AstrocyteConstants.STUDENT_STATE;
@@ -50,14 +50,14 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			return;
 		}
 			
-		int currentLesson = student.getLessonStatusForCourse(course);
+		StudentStatus current = eduService.getStudentStatus(student, course);
 		
 		if("request".equals(this.advanceStatus)) {
 			
 			eduService.notifyProfessorPullRequest();
 			
 			if(!(statusTag.matches(AstrocyteConstants.CHECKPOINT_REGEX) &&
-					Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-'))) == currentLesson )) {
+					Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-'))) == current.getLessonNum() )) {
 				System.out.println("repository state corrupted!");
 				// TODO throw exception
 			}
@@ -70,7 +70,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 						// determine if entityManager should be flushed.
 						eduService.save(student);
 						eduService.deployLesson(course.getId(), student, 
-								AstrocyteUtils.getCheckpointStr(currentLesson+1));
+								AstrocyteUtils.getCheckpointStr(current.getLessonNum()+1));
 					} else System.out.println("Tutorial finished.  Unroll next if available...");
 				}
 				else {
@@ -87,7 +87,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			
 		} else if("confirm".equals(this.advanceStatus)) {
 			if(!(statusTag.matches(AstrocyteConstants.CHECKPOINT_REGEX) &&
-					Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-'))) == ++currentLesson )) {
+					Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-'))) == current.getLessonNum()+1 )) {
 				System.out.println("Confirmation receipt not accepted after advance of " + this.studentId + " to " + this.statusTag);
 				return;
 			}
@@ -95,8 +95,8 @@ public class AdvanceCommand extends BaseCommand implements Command {
 				System.out.println("Receipt for " + this.studentId + " discarded, student in state " + student.getState().toString());
 				return;
 			}
-			// this could also be hql
-			student.advanceStudentForCourse(course);
+			// Move more of this logic into the service layer, use custom exceptions
+			eduService.advanceStudentForCourse(student, course);
 			student.setState(STUDENT_STATE.WORKING); // consider intermediate for ajax ping from client
 			eduService.save(student);
 		}

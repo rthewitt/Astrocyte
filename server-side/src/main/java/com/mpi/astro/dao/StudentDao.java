@@ -4,10 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 
-import org.hibernate.Hibernate;
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,9 +41,10 @@ public class StudentDao {
 		return entityManager.find(Student.class, id);
 	}
 	
+	// Hibernate.initialize is not appropriate for collections
 	public Student getStudentInitialized(long id) {
 		Student student = find(id);
-		Hibernate.initialize(student);
+		student.getCourses();
 		return student;
 	}
 	
@@ -69,5 +67,9 @@ public class StudentDao {
 	// Does not appear to be used, probably for illustration purposes
 	public List<Student> findAll() {
 		return entityManager.createNamedQuery(Student.SQL_FIND_ALL, Student.class).getResultList();
+	}
+	
+	public void clearForTest(){
+		entityManager.clear();
 	}
 }

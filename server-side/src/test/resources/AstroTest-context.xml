@@ -5,13 +5,13 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/web-services http://www.springframework.org/schema/web-services/web-services-2.0.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-2.5.xsd" >
     
     <context:component-scan base-package="com.mpi.astro"/>
     <context:annotation-config/>
@@ -65,7 +65,10 @@
    <!--  EDU -->
    
    <bean id="studentDao" class="com.mpi.astro.dao.StudentDao" />
-   <bean id="studentService" class="com.mpi.astro.service.edu.EduService" />
+   <bean id="courseDao" class="com.mpi.astro.dao.CourseDao" />
+   <bean id="tutorialDao" class="com.mpi.astro.dao.TutorialDao" />
+   <bean id="enrollmentDao" class="com.mpi.astro.dao.StudentCourseDao" />
+   <bean id="eduService" class="com.mpi.astro.service.edu.EduService" />
    
    <!-- DataSource -->
 		
@@ -78,13 +81,9 @@
 		<property name="password" value="" />
 	</bean>
 	
-	<!-- EntityManager is the JPA spec, which offers the general functionality that the Hibernate Session object offers.  Hibernate Sessions are
-	cast (or more accurately wrapped) as EntityManagers, and so the SessionFactory described later is Hibernate specific, whereas the EntityManagerFactory
-	below is the JPA way of doing things.  Prefer to use JPA, as the session can always be unwrapped if I need Hibernate specific functionality. -->
-	<!-- Note that I am changing the transactionManager implementation now that this exists, instead of just removing dataSource. -->
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="persistenceUnitName" value="testPU"/>
+		<property name="persistenceUnitName" value="workingPU"/>
 		<property name="dataSource" ref="testDataSource"/>
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
@@ -100,5 +99,49 @@
 	    <property name="dataSource" ref="testDataSource" />
 	</bean>
 	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+	
+	<!-- JMS, although probably not going to test and shouldn't require a connection.  Restrict bean scan somehow? -->
+	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+    	<property name="connectionFactory">
+      	<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+        	<property name="brokerURL">
+          		<value>tcp://localhost:61616</value>
+        	</property>
+      	</bean>
+    	</property>
+  	</bean>	
+  	
+    <bean id="myQueue" class="org.apache.activemq.command.ActiveMQQueue">
+  		<constructor-arg value="test"/>
+	</bean>
+	
+    <bean id="incomingQ" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="incoming" />
+    </bean>
+    
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory">
+            <ref local="jmsFactory" />
+        </property>
+        <property name="defaultDestination" ref="myQueue"/>
+	</bean>
+	
+    <!-- Transitioning into jms namespace.  Will connection-factory want AMQC or Pooled/Cached?  Choosing the latter -->
+    <jms:listener-container connection-factory="jmsFactory"
+        destination-resolver="tempDestinationResolver" 
+        concurrency="1"> <!-- tweak concurrency if necessary, can be a range.  No need for it now, affects ordering.  Not recommended for topics -->
+    <jms:listener destination="incomingQ" ref="messageConsumer" method="handleCommand"/> <!-- multiples allowed -->
+	</jms:listener-container>
+	 
+	 
+    <!-- May wish to change this to JndiDestinationResolver.  Dev/Staging/client servers -->
+	<bean id="tempDestinationResolver" class="org.springframework.jms.support.destination.BeanFactoryDestinationResolver" />
+	
+    
+    <bean id="messageProducer" class="com.mpi.astro.service.jms.JmsMessageProducer">
+        <property name="template" ref="jmsTemplate" />
+    </bean>
+
+    <bean id="messageConsumer" class="com.mpi.astro.service.jms.JmsMessageConsumer" />
 
 </beans>

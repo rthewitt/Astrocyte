@@ -65,6 +65,8 @@
    <bean id="tutorialDao" class="com.mpi.astro.dao.TutorialDao" />
    <!-- I could probably have simply added logic to eduService for save/delete -->
    <bean id="enrollmentDao" class="com.mpi.astro.dao.StudentCourseDao" />
+   <!-- How was this used if no bean was defined?  Annotation @Repository have an effect? -->
+   <!-- <bean id="tmpDao" class="com.mpi.astro.dao.CourseTutorialDao" /> -->
    <bean id="eduService" class="com.mpi.astro.service.edu.EduService" />
    
    

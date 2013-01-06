@@ -1,7 +1,6 @@
 package com.mpi.astro.service.edu;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +19,7 @@ import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.CourseTutorial;
 import com.mpi.astro.model.edu.Student;
 import com.mpi.astro.model.edu.StudentCourse;
+import com.mpi.astro.model.edu.StudentStatus;
 import com.mpi.astro.model.edu.Tutorial;
 import com.mpi.astro.util.PropertiesUtil;
 
@@ -40,7 +40,6 @@ public class EduService {
 	@Autowired
 	private StudentCourseDao enrollmentDao;
 	@Autowired
-	// this may change to a List<CT> as in Tut->Lessons, but with entity
 	private CourseTutorialDao tmpCTDao; 
 	
 	@Autowired
@@ -117,6 +116,11 @@ public class EduService {
 		return tmpCTDao.save(association);
 	}
 	
+	public Tutorial getCurrentTutorialForStudent(Student student, Course course) {
+		// currently uses two separate queries.  Consider composite if necessary
+		return enrollmentDao.getCurrentTutorialForStudent(student, course);
+	}
+	
 	// If this works, decide if Dao is actually necessary or not
 	// I would rather not treat associations as first-order persistent objects
 	@Transactional
@@ -129,7 +133,7 @@ public class EduService {
 		student.addCourseAssociation(enrollment);
 		course.addStudentAssociation(enrollment); // ADDED 12/29/2012
 		
-		save(enrollment); // testing
+		save(enrollment);
 	}
 	
 	// also consider using git build-in email functionality
@@ -164,18 +168,33 @@ public class EduService {
 			logger.debug("About to dispatch with student array length: " + students.size());
 			myelinService.dispatchInit(course, tutorial, students);
 		}
+		
+		public StudentStatus getStudentStatus(Student student, Course course) {
+			return enrollmentDao.getStudentStatus(student, course);
+		}
 	
 		public boolean isEligibleForAdvance(Student student, Course course) {
-			return student.getLessonStatusForCourse(course) <
-					student.getCurrentTutorialForCourse(course).getNumSteps();
+			StudentStatus current = enrollmentDao.getStudentStatus(student, course);
+			Tutorial currentTut = enrollmentDao.getCurrentTutorialForStudent(student, course);
+			return current.getLessonNum() < currentTut.getNumSteps();
+		}
+		
+		@Transactional
+		public void advanceStudentForCourse(Student student, Course course) {
+//			StudentStatus current = enrollmentDao.getStudentStatus(student, course);  // will used later as vehicle
+			
+			// TODO provide conditional.  If another tutorial exists, move on and zero out lessonNum in DB
+			// if las tutorial and final lesson num, graduate the student (after workflow?)
+			StudentCourse enrollment = enrollmentDao.getEnrollment(student, course);
+			enrollment.setLessonNum(enrollment.getLessonNum()+1); // temporary without constraints
+			save(enrollment);
 		}
 		
 	    // When lesson becomes available for a student, as determined by workflow
 		public boolean deployLesson(long courseId, Student student, String commitRef) {
 			
 			Course course = getCourse(courseId);
-			Tutorial tut = 
-					student.getCurrentTutorialForCourse(course);
+			Tutorial tut = enrollmentDao.getCurrentTutorialForStudent(student, course);
 			
 			if(tut == null) {
 				logger.error(String.format("Cannot update, student %s for course %s with id %s",
@@ -198,6 +217,14 @@ public class EduService {
 			Tutorial tut = getTutorial(tutorialId);
 			myelinService.requestClassMerge(course, tut.getPrototype(), commitRef);
 			return true;
+		}
+		
+		public void clearForTest(){
+			studentDao.clearForTest();
+			tutorialDao.clearForTest();
+			courseDao.clearForTest();
+			enrollmentDao.clearForTest();
+			tmpCTDao.clearForTest(); 
 		}
 	
 }

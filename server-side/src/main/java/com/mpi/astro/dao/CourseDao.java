@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.model.edu.Course;
 import com.mpi.astro.model.edu.Student;
+import com.mpi.astro.model.edu.StudentStatus;
 
 @Repository
 public class CourseDao {
@@ -47,6 +48,9 @@ public class CourseDao {
 		} else {
 			return entityManager.merge(course);
 		}		
-	}	
+	}
 	
+	public void clearForTest(){
+		entityManager.clear();
+	}
 }

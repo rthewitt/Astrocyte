@@ -12,7 +12,7 @@ import com.mpi.astro.model.edu.CourseTutorial;
 public class CourseTutorialDao {
 
 	@PersistenceContext
-	private EntityManager entityManager;
+	public EntityManager entityManager;
 	
 	public CourseTutorial find(Long id) {
 		return entityManager.find(CourseTutorial.class, id);
@@ -27,4 +27,8 @@ public class CourseTutorialDao {
 			return entityManager.merge(association);
 		}		
 	}	
+	
+	public void clearForTest(){
+		entityManager.clear();
+	}
 }

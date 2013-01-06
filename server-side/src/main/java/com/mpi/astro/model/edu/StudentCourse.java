@@ -46,13 +46,9 @@ public class StudentCourse implements Serializable {
 	@Column(name = "ENROLL_DATE", nullable=false, length = 10)
 	private Date enrollDate;
 	
-	//  consider making this a lazy loaded Lesson.
-	//  OR simply constrained as a foreign key ?
 	@Column(name = "LESSON_NUM")
 	private Integer lessonNum = AstrocyteConstants.NOT_STARTED;
 	
-	//  consider making this a lazy loaded Lesson.
-	//  OR simply constrained as a foreign key ?
 	@Column(name = "TUTORIAL_NUM")
 	private Integer tutorialNum = AstrocyteConstants.NOT_STARTED;
 	

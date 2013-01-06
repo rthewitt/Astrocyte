@@ -61,10 +61,6 @@ public class Student implements Serializable {
 	// Do not allow cascading until you understand why it breaks everything here.  (Cycle or different contexts)
 	@OneToMany(mappedBy = "pk.student") // , cascade=CascadeType.ALL
 	private Set<StudentCourse> courseAssociations = new HashSet<StudentCourse>(0);
-	
-	// TODO determine safety of equality of Courses as keys given scope of identity.
-	@Transient
-	private Map<Course, StudentStatus> statusMap = new HashMap<Course, StudentStatus>();
 
 	public Student() {
 	}
@@ -100,8 +96,6 @@ public class Student implements Serializable {
 	}
 	
 	public boolean isEnrolled(Course course) {
-		if(statusMap.get(course) != null) return true;
-		
 		logger.debug("Course "+course.getName()+" not found in convenience map, checking associations.");
 		
 		boolean enrolled = false;
@@ -115,7 +109,6 @@ public class Student implements Serializable {
 	public void addCourseAssociation(StudentCourse enrollment) {
 		this.courseAssociations.add(enrollment);
 		Course coursePart = enrollment.getCourse();
-		this.statusMap.put(coursePart, new StudentStatus(coursePart));
 	}
 
 	public Long getId() {
@@ -125,28 +118,6 @@ public class Student implements Serializable {
 	// May wish to separate this as an aspect
 	public String getStudentId() {
 		return id != null ? String.format("%07d", id) : "";
-	}
-	
-	public Tutorial getCurrentTutorialForCourse(Course course) {
-		ensureConvenienceMapping(course);
-		return statusMap.get(course).getTutorial();
-	}
-	
-	public void advanceStudentForCourse(Course course) {
-		ensureConvenienceMapping(course);
-		statusMap.get(course).advanceLesson();
-	}
-	
-	// TODO consider hql query instead
-	public int getLessonStatusForCourse(Course course) {
-		ensureConvenienceMapping(course);
-		return statusMap.get(course).getLessonNum();
-	}
-	
-	// Wait, this would automatically enroll student if methods above are called...
-	public void ensureConvenienceMapping(Course course) {
-		if(statusMap.get(course) == null)
-			statusMap.put(course, new StudentStatus(course));
 	}
 
 	public void setId(Long id) {
@@ -223,6 +194,7 @@ public class Student implements Serializable {
 	 * I think it should refresh, so that I can use a query like:
 	 * if(statusMap.get(Course) == null) statusMap.put(Course, new statusMap); -> then refresh it.
 	 */
+	/*
 	private class StudentStatus {
 		
 		private Course relevantCourse = null;
@@ -247,6 +219,6 @@ public class Student implements Serializable {
 		public Tutorial getTutorial() {
 			return relevantCourse.getTutorialByOrderNumber(getTutorialNum()); 
 		}
-	}	
+	} */	
 
 }

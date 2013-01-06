@@ -71,10 +71,10 @@ public class AdvanceCommand extends BaseCommand implements Command {
 						eduService.save(student);
 						eduService.deployLesson(course.getId(), student, 
 								AstrocyteUtils.getCheckpointStr(current.getLessonNum()+1));
-					} else System.out.println("Tutorial finished.  Unroll next if available...");
+					} else logger.info("Tutorial finished.  Unroll next if available...");
 				}
 				else {
-					System.out.println("Advanced workflows not yet available.");
+					logger.warn("Advanced workflows not yet available!");
 					return;
 				}
 				break;
@@ -86,9 +86,12 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			}
 			
 		} else if("confirm".equals(this.advanceStatus)) {
+			int claimedStatus = Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-')));
 			if(!(statusTag.matches(AstrocyteConstants.CHECKPOINT_REGEX) &&
-					Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-'))) == current.getLessonNum()+1 )) {
-				System.out.println("Confirmation receipt not accepted after advance of " + this.studentId + " to " + this.statusTag);
+					claimedStatus == current.getLessonNum()+1 )) {
+				logger.warn(String.format("Suspect Advance Confirmation receipt indicates next lesson is %d - " +
+						"Current lesson on record for student is %d", claimedStatus, current.getLessonNum()));
+				logger.warn("Confirmation receipt not accepted after advance of " + this.studentId + " to " + this.statusTag);
 				return;
 			}
 			if(student.getState() != STUDENT_STATE.ADVANCING) {

@@ -71,6 +71,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 						eduService.save(student);
 						eduService.deployLesson(course.getId(), student, 
 								AstrocyteUtils.getCheckpointStr(current.getLessonNum()+1));
+						logger.info("Deployment request made for student " + student.getId());
 					} else logger.info("Tutorial finished.  Unroll next if available...");
 				}
 				else {
@@ -102,6 +103,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			eduService.advanceStudentForCourse(student, course);
 			student.setState(STUDENT_STATE.WORKING); // consider intermediate for ajax ping from client
 			eduService.save(student);
+			logger.info("Student " + student.getId() + " advanced to lesson " + claimedStatus);
 		}
 	}
 

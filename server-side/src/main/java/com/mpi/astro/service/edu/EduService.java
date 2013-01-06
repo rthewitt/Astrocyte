@@ -176,7 +176,10 @@ public class EduService {
 		public boolean isEligibleForAdvance(Student student, Course course) {
 			StudentStatus current = enrollmentDao.getStudentStatus(student, course);
 			Tutorial currentTut = enrollmentDao.getCurrentTutorialForStudent(student, course);
-			return current.getLessonNum() < currentTut.getNumSteps();
+			boolean canAdvance = current.getLessonNum() < currentTut.getNumSteps();
+			logger.debug("Student " + student.getId() + (canAdvance ? " can " : " cannot ") + "advance.\n" +
+					"Current: " + current.getLessonNum() + "\nAvailable Lessons: " + currentTut.getNumSteps());
+			return canAdvance;
 		}
 		
 		@Transactional

@@ -35,20 +35,14 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Logger;
 import com.jcraft.jsch.Session;
+import com.myelin.client.util.GlialProps;
 import com.myelin.client.util.JSchCommonsLogger;
+
+import static com.myelin.client.util.GlialProps.*;
 
 public class JGitController extends HttpServlet {
 	
-	private static String PROJECT_BASE = null;
-	
-	private static final String HOST = "localhost";
-//	private static final String HOST = "23.23.248.141";
-	private static final String SSH_CONFIG_PATH = "/home/synapse/.ssh";
-	
-	// Testing whether another key can be used.
-	private static final String SSH_KEY = SSH_CONFIG_PATH + "/" + "MPI/stupid-test";
-	private static final String SSH_USER = "myelin";
-	private static final String MYELIN_GIT_DIR = "/home/myelin/git-repositories";
+	private static String KEY_FILE = SSH_DIR + "/" + SSH_KEY;
 	
 	private static JSchCommonsLogger jschLogger = new JSchCommonsLogger();
 	
@@ -77,8 +71,8 @@ public class JGitController extends HttpServlet {
                             throws com.jcraft.jsch.JSchException {
 						JSch orig = super.createDefaultJSch(fs);
 						try {
-							   byte [] privateKey = IOUtils.toByteArray(new FileInputStream(SSH_KEY));
-							   byte [] publicKey = IOUtils.toByteArray(new FileInputStream(SSH_KEY+".pub"));
+							   byte [] privateKey = IOUtils.toByteArray(new FileInputStream(KEY_FILE));
+							   byte [] publicKey = IOUtils.toByteArray(new FileInputStream(KEY_FILE+".pub"));
 							   byte [] passphrase = "asshole".getBytes(); 
 							   orig.addIdentity(SSH_USER, privateKey, publicKey, passphrase);
 							  } catch (IOException e) {
@@ -103,7 +97,7 @@ public class JGitController extends HttpServlet {
 						Properties config = new Properties();
 						config.put("StrictHostKeyChecking", "no");
 						config.put("PreferredAuthentications", "publickey");
-						config.put("IdentityFile", SSH_KEY);
+						config.put("IdentityFile", KEY_FILE);
 						session.setConfig(config);
 						jschLogger.log(0, "Setting configuration.  Session userName is: " + session.getUserName());
 					}
@@ -111,8 +105,6 @@ public class JGitController extends HttpServlet {
 					
 			}
 		};
-		
-		PROJECT_BASE = getServletContext().getRealPath("/");
 	}
 	
 	@Override
@@ -123,9 +115,9 @@ public class JGitController extends HttpServlet {
 		// TODO handle expired sessions
 		String userId = session.getAttribute("userId").toString();
 		String course = session.getAttribute("courseName").toString();
-		String gitDir = PROJECT_BASE+"/"+course+"/"+".git";
+		String gitDir = GlialProps.STUDENT_PROJECT+"/"+course+"/"+".git";
 		
-		File courseFolder = new File(PROJECT_BASE+"/"+course);
+		File courseFolder = new File(GlialProps.STUDENT_PROJECT+"/"+course);
 		
 		File gitDirectory = new File(gitDir);
 		
@@ -206,7 +198,7 @@ public class JGitController extends HttpServlet {
 		String userId = session.getAttribute("userId").toString();
 		String course = session.getAttribute("courseName").toString();
 //		return String.format("ssh://%s@%s/%s/%s/%s.git", SSH_USER, HOST, MYELIN_GIT_DIR, course, userId);
-		return String.format("ssh://%s/%s/%s/%s.git", HOST, MYELIN_GIT_DIR, course, userId);
+		return String.format("ssh://%s/%s/%s/%s.git", GlialProps.ASTROCYTE_HOST, SERVER_GIT_DIR, course, userId);
 	}
 	
 	private void initLocalRepository(HttpSession session, Repository repo, File localFolder) throws IOException, GitAPIException {

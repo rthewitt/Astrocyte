@@ -12,41 +12,31 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.util.StringUtils;
 
-public class ProjectController extends HttpServlet {
+import com.myelin.client.util.GlialProps;
 
-	private static final long serialVersionUID = -170992583878685792L;
+public class ProjectController extends HttpServlet {
 	
-	static String PROJECT_BASE=null;
-	
-	
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-		PROJECT_BASE = getServletContext().getRealPath("/");
-	}
-	
+	private static final long serialVersionUID = 3642951840339972596L;
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
-		String name = request.getParameter("project");
 		// Was having problems with cache before.  
 		// Provides a simple check, also cleans maven project
 		boolean delete = request.getParameter("delete") != null;
 		String action = request.getParameter("action");
 		
-		if(StringUtils.isEmptyOrNull(name) || StringUtils.isEmptyOrNull(action)) {
+		if(StringUtils.isEmptyOrNull(action)) {
 			response.setStatus(400); // bad request
 			return;
 		}
 		
 		String courseName = request.getSession().getAttribute("courseName").toString();
 		
-		if(delete) {
-			File assetDir = new File(PROJECT_BASE+"/"+name);
-			FileUtils.deleteDirectory(assetDir);
-		}
+		if(delete)
+			FileUtils.deleteDirectory(new File(GlialProps.WEB_PROJECT));
 		
-		File projectRoot = new File(PROJECT_BASE+"/"+courseName); // should already exist
+		File projectRoot = new File(GlialProps.STUDENT_PROJECT+"/"+courseName); // should already exist
 		
 		if("compile-swap".equals(action)) {
 			Process proc = Runtime.getRuntime().exec((delete ? new String[] {"mvn", "-Phtml", "clean", "integration-test"} :
@@ -76,7 +66,7 @@ public class ProjectController extends HttpServlet {
 			response.setStatus((success ? 200 : 500));
 			response.setContentType("application/json");
 			response.getWriter().println(sb.toString());
-			return; // flush is handled by parent I believe.
+			return;
 		}
 	}
 

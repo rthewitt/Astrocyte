@@ -73,7 +73,7 @@ public class JGitController extends HttpServlet {
 						try {
 							   byte [] privateKey = IOUtils.toByteArray(new FileInputStream(KEY_FILE));
 							   byte [] publicKey = IOUtils.toByteArray(new FileInputStream(KEY_FILE+".pub"));
-							   byte [] passphrase = "asshole".getBytes(); 
+							   byte [] passphrase = SSH_PASS.getBytes(); 
 							   orig.addIdentity(SSH_USER, privateKey, publicKey, passphrase);
 							  } catch (IOException e) {
 							   jschLogger.log(Logger.ERROR, "Problem with key-byte arrays.");
@@ -137,11 +137,15 @@ public class JGitController extends HttpServlet {
 				commitBranch(courseRepo);
 				pushBranch(courseRepo);
 			}
-			else if("init".equals(action)) 
+			else if("init".equals(action)) {
+				System.out.println("OUT: init called");
 				initLocalRepository(session, courseRepo, courseFolder);
+			}
 			else sendResponse(response, "Failure", "Operation not (yet) supported");
 			
 		} catch(GitAPIException ge) {
+			ge.printStackTrace();
+			jschLogger.error("Problem in JGitController", ge);
 			throw new ServletException(ge);
 		}
 	}

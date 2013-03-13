@@ -66,5 +66,9 @@ public class JSchCommonsLogger implements Logger {
             break;
         }
     }
+    
+    public void error(String message, Throwable t) {
+    	log.error(message, t);
+    }
 
 }

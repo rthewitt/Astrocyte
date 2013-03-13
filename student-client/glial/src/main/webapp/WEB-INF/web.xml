@@ -52,7 +52,8 @@
 	    <load-on-startup>0</load-on-startup>
   	</servlet>
   	
-    
+    <!-- Tomcat does not require this, and it actually interferes -->
+    <!-- 
 	<servlet id="jsp">
 	    <servlet-name>jsp</servlet-name>
 	    <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
@@ -70,16 +71,19 @@
     	</init-param>
     	<load-on-startup>0</load-on-startup>
   	</servlet>
+  	 -->
   	
     <servlet-mapping>
         <servlet-name>dispatch</servlet-name>
         <url-pattern>/temp/*</url-pattern>
     </servlet-mapping>
     
+    <!-- 
     <servlet-mapping>
         <servlet-name>jsp</servlet-name>
         <url-pattern>/jsp/*jsp</url-pattern>
     </servlet-mapping>
+     --> 	
 
     <servlet-mapping>
         <servlet-name>glial</servlet-name>

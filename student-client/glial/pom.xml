@@ -205,7 +205,7 @@
     
     
     <build>
-        <finalName>Glial</finalName>
+        <finalName>glial</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

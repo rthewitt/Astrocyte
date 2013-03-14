@@ -27,8 +27,8 @@
 	</licenses>
 	
 	<modules>
-		<module>glial</module>
-		<module>distribution</module>
+		<module>war</module>
+		<module>jetty</module>
 	</modules>
 	
 	<dependencyManagement>

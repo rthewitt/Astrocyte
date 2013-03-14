@@ -5,7 +5,7 @@
 
    <parent>
       <groupId>com.myelin</groupId>
-      <artifactId>module.parent</artifactId>
+      <artifactId>astro.parent</artifactId>
       <version>1.0-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
@@ -14,7 +14,7 @@
 
 
     <groupId>com.mpi</groupId>
-    <artifactId>astrocyte</artifactId>
+    <artifactId>astro.core</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>Astrocyte</name>
@@ -140,22 +140,6 @@
          <version>4.8.2</version>
          <scope>test</scope>
       </dependency>
-      
-      <dependency>
-         <groupId>org.springframework</groupId>
-         <artifactId>spring-test</artifactId>
-         <version>${org.springframework.version}</version>
-         <scope>test</scope>
-      </dependency>
-    
-    <!-- Finally giving into Console error -->
-    <!-- 
-	<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-jpa</artifactId>
-		<version>2.0.8</version>
-	</dependency> -->
-            
         
         <!-- logging -->
       <dependency>
@@ -236,73 +220,6 @@
 		<artifactId>xstream</artifactId>
 		<version>1.2.2</version>
 	</dependency>
-	
-        <!-- Spring dependencies. Moving to new MVC release, potential API collision? -->
-        
-        <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		
-        <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		
-        <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		
-        <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jms</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		
-        <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		
-        <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${org.springframework.version}</version>
-			<exclusions>
-			    <!-- Following Spring's advice to ignore commons logging, going with slf4j -->
-			    <exclusion>
-			        <groupId>commons-logging</groupId>
-			        <artifactId>commons-logging</artifactId>
-			    </exclusion>
-			</exclusions>
-		</dependency>
-		
-        <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		
-        <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${org.springframework.version}</version>
-			<!-- Was compile in sample app - then why does eclipse complain? -->
-			<!-- <scope>compile</scope> -->
-			<!-- <scope>test</scope> -->
-		</dependency>
-        
-        <!-- Eclipse seemed to resolve just fine with just the following -->
-        <dependency>
-            <groupId>org.springframework.ws</groupId>
-            <artifactId>spring-ws-core</artifactId>
-            <version>2.0.4.RELEASE</version>
-        </dependency>
         
         <!-- Dynamic JNLP, Java files for archetype and possibly profile pages -->
 		<dependency>
@@ -370,27 +287,6 @@
          <version>5.1.6</version>
          <scope>provided</scope>
       </dependency>
-            
-        
-        <dependency>
-		<groupId>javax.servlet</groupId>
-		<artifactId>jstl</artifactId>
-		<version>1.1.2</version>
-		<scope>provided</scope>
-	</dependency>
- 
-	<dependency>
-		<groupId>taglibs</groupId>
-		<artifactId>standard</artifactId>
-		<version>1.1.2</version>
-	</dependency>
-        
-    <dependency>
-		<groupId>javax.servlet</groupId>
-		<artifactId>servlet-api</artifactId>
-		<version>2.5</version>
-		<scope>provided</scope>
-	</dependency>
 	
     </dependencies>
     

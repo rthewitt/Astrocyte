@@ -15,7 +15,6 @@
 
     <!-- Consider separating these namespaces out to reduce overhead for spring context -->
     
-    <!-- If you refactor, remember to change the component scan! -->
     <context:component-scan base-package="com.mpi.astro"/>
     <context:annotation-config/>
     <mvc:annotation-driven />

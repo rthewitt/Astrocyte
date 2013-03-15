@@ -19,19 +19,19 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mpi.astro.dao.StudentDao;
-import com.mpi.astro.model.builder.CodeTutorialBuilder;
-import com.mpi.astro.model.builder.TutorialBuilder;
-import com.mpi.astro.model.edu.Course;
-import com.mpi.astro.model.edu.CourseTutorial;
-import com.mpi.astro.model.edu.Student;
-import com.mpi.astro.model.edu.StudentCourse;
-import com.mpi.astro.model.edu.StudentStatus;
-import com.mpi.astro.model.edu.Tutorial;
-import com.mpi.astro.service.edu.EduService;
-import com.mpi.astro.util.AstrocyteConstants;
-import com.mpi.astro.util.AstrocyteConstants.STUDENT_STATE;
-import com.mpi.astro.util.AstrocyteUtils;
+import com.mpi.astro.core.dao.StudentDao;
+import com.mpi.astro.core.model.builder.CodeTutorialBuilder;
+import com.mpi.astro.core.model.builder.TutorialBuilder;
+import com.mpi.astro.core.model.edu.Course;
+import com.mpi.astro.core.model.edu.CourseTutorial;
+import com.mpi.astro.core.model.edu.Student;
+import com.mpi.astro.core.model.edu.StudentCourse;
+import com.mpi.astro.core.model.edu.StudentStatus;
+import com.mpi.astro.core.model.edu.Tutorial;
+import com.mpi.astro.core.service.edu.EduService;
+import com.mpi.astro.core.util.AstrocyteConstants;
+import com.mpi.astro.core.util.AstrocyteUtils;
+import com.mpi.astro.core.util.AstrocyteConstants.STUDENT_STATE;
 
 /*
  * This is effectively an integration test suite, not a unit test suite. 

@@ -14,7 +14,7 @@
 
    <context-param>
       <param-name>contextConfigLocation</param-name>
-      <param-value>/WEB-INF/applicationContext.xml</param-value>
+      <param-value>/WEB-INF/spring/root-context.xml</param-value>
    </context-param>
    
    <listener>
@@ -37,6 +37,13 @@
 		<servlet-name>view-servlet</servlet-name>
 		<url-pattern>/WEB-INF/servlet/view</url-pattern>
 	</servlet-mapping>
+	
+	<!-- Added absolute path to jsp, eclipse wasn't validating correctly -->
+	<!--<jsp-config>
+		<taglib>
+			<taglib-uri>http://java.sun.com/portlet_2_0</taglib-uri>
+			<taglib-location>/WEB-INF/tld/liferay-portlet.tld</taglib-location>
+		</taglib>
+	</jsp-config>-->
    
-
 </web-app>

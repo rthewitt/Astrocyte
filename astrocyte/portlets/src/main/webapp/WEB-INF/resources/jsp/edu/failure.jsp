@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>CGI Failure</title>
+<title>Page Error</title>
 </head>
 <body>
-CGI call for course: ${courseName} failed due to error.
+<h1>${errorText}</h1>
 </body>
 </html>

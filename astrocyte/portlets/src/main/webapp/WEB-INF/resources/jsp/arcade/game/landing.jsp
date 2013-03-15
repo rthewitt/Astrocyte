@@ -1,6 +1,6 @@
 <%@page language="java" %>
-<%@page import="com.mpi.astro.util.AstrocyteConstants" %>
-<%@page import="com.mpi.astro.model.arcade.impl.JavaGame" %>
+<%@page import="com.mpi.astro.core.util.AstrocyteConstants" %>
+<%@page import="com.mpi.astro.core.model.arcade.impl.JavaGame" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <% 

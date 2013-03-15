@@ -1,13 +1,12 @@
-package com.mpi.astro.portlet.course;
+package com.mpi.astro.core.controller;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.RenderRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,39 +15,31 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 
 import com.mpi.astro.core.model.admin.TutorialViewDescriptor;
 import com.mpi.astro.core.model.builder.CodeTutorialBuilder;
 import com.mpi.astro.core.model.builder.TutorialBuilder;
 import com.mpi.astro.core.model.edu.Course;
+import com.mpi.astro.core.model.edu.Lesson;
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.StudentCourse;
 import com.mpi.astro.core.model.edu.Tutorial;
 import com.mpi.astro.core.service.edu.EduService;
 import com.mpi.astro.core.util.AstrocyteUtils;
-import com.mpi.astro.portlet.BaseAstroPortlet;
 
 @Controller
-@RequestMapping("VIEW")
-public class AstroLifePortlet extends BaseAstroPortlet {
+@RequestMapping("/enrollment/")
+public class EduController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(AstroLifePortlet.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(EduController.class);
+
 	@Autowired
 	private EduService eduService ;
 	
-	/*@RenderMapping
-	public String showDefaultView(RenderRequest request, RenderResponse response) {
-		return "astrolife/new-context-test";
-	} */
-	
-	
-	@RenderMapping
+	@RequestMapping(method=RequestMethod.GET,value="view")
 	public ModelAndView overview() {
 		
 		logger.debug("Education Landing page");
@@ -72,9 +63,8 @@ public class AstroLifePortlet extends BaseAstroPortlet {
 	
 	// Added this annotation in my attempt to initiate a conversation.  I'd like one context per request with reattachment
 	// Primarily because I don't know how to get an Interceptor from Spring - would that even work with Stateless requests?
-//	@RequestMapping(method=RequestMethod.GET,value="edit-student") // No longer using webmvc, instead mvc-portlet
 	@Transactional
-	@RenderMapping(params="edit=student")
+	@RequestMapping(method=RequestMethod.GET,value="edit-student")
 	public ModelAndView editStudent(@RequestParam(value="id",required=false) Long id) {		
 		
 		logger.debug("Received request to edit student id : "+id);				
@@ -103,7 +93,7 @@ public class AstroLifePortlet extends BaseAstroPortlet {
 	}
 	
 	@Transactional
-	@RenderMapping(params="edit=tutorial")
+	@RequestMapping(method=RequestMethod.GET,value="edit-tutorial")
 	public ModelAndView editTutorial(@RequestParam(value="id",required=false) Long id) {		
 		
 		logger.debug("Received request to edit tutorial id : "+id);				
@@ -123,7 +113,7 @@ public class AstroLifePortlet extends BaseAstroPortlet {
 		return mav;
 	}
 	
-	@RenderMapping(params="edit=course")
+	@RequestMapping(method=RequestMethod.GET,value="edit-course")
 	public ModelAndView editCourse(@RequestParam(value="id",required=false) Long id) {		
 		
 		logger.debug("Received request to edit course id : "+id);				
@@ -140,13 +130,13 @@ public class AstroLifePortlet extends BaseAstroPortlet {
 		return mav;
 	}
 	
-	@Transactional 
-	@ActionMapping(params="edit=student")
-	public void saveStudent(@ModelAttribute Student detachedStudent, 
-			ActionRequest request, ActionResponse response) {
+	@Transactional
+	@RequestMapping(method=RequestMethod.POST,value="edit-student") 
+	public String saveStudent(@ModelAttribute Student detachedStudent, 
+			HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("Received postback on student "+detachedStudent);
 		
-		// TODO determine if this was ever resolved.  Search logs.
+		// Come back to this, can't figure out why no associations existed
 		for(StudentCourse xx : detachedStudent.getCourseAssociations()) {
 			logger.debug("FINALLY one found in the detached object...");
 		}
@@ -178,30 +168,33 @@ public class AstroLifePortlet extends BaseAstroPortlet {
 		} else logger.debug("No course addition requests for student");
 		
 		eduService.save(student);
+		
+		return "redirect:view";
 	}
 	
 	@Transactional
-	@ActionMapping(params="edit=course") 
-	public void saveCourse(@ModelAttribute Course course) {
+	@RequestMapping(method=RequestMethod.POST,value="edit-course") 
+	public String saveCourse(@ModelAttribute Course course) {
 		logger.debug("Received postback on course " + course);		
 		eduService.save(course);
+		return "redirect:view";
 	}
 	
-	@ActionMapping(params="edit=tutorial") 
-	public void saveTutorial(@ModelAttribute Tutorial tut, ActionRequest request) {
+	@RequestMapping(method=RequestMethod.POST,value="edit-tutorial") 
+	public String saveTutorial(@ModelAttribute Tutorial tut, HttpServletRequest request) {
 		logger.debug("Received postback on tutorial " + tut);		
 		
 		logger.debug("LESSONS CONTAINED IN TUTORIAL " + tut.getId() + "\n" +
 				tut.getLessons().size() + " lessons");
 		eduService.save(tut);
+		return "redirect:view";
 	}
 	
 	// TODO refactor builder -> service layer with Spring injection
 	// But do note, you don't want a singleton.
-	// I don't remember switching this over, have I used it in the JSP?
-	@ActionMapping(params="import=tutorial")
-	public void createTutorial(@ModelAttribute TutorialViewDescriptor container, 
-			ActionRequest request, ActionResponse response) {
+	@RequestMapping(method=RequestMethod.POST, value="new-tutorial")
+	public String createTutorial(@ModelAttribute TutorialViewDescriptor container, 
+			HttpServletRequest request) {
 		Tutorial newTut = null;
 		
 		TutorialBuilder builder = new CodeTutorialBuilder();
@@ -215,43 +208,42 @@ public class AstroLifePortlet extends BaseAstroPortlet {
 		String jsonStr =  AstrocyteUtils
 				.getExternalTutorialDescriptionAsString(container.getDescriptionFile());
 		
-		// TODO this breaks because httpclient throws errors.  Handle all exceptions in portlet!
 		if(jsonStr == null) {
-			String temporaryError = "Problem getting JSON string in controller, was null";
-			logger.error(temporaryError);
-			response.setRenderParameter("astrolifeError", temporaryError);
+			logger.error("Problem getting JSON string in controller, was null");
+			return "edu/failure"; // does this work?
 		}
 		builder.buildLessons(jsonStr);
 		
 		newTut = builder.getTutorial();
 		newTut.setDescription(container.getDescription());
 		eduService.save(newTut);
+		
+		return "redirect:view";
 	}
 	
-	@RenderMapping(params="astrolifeError")
-	public ModelAndView bigProblemLittlePortlet(RenderRequest request) {
-		String errorText = 
-				(request.getParameter("astrolifeError") != null ? request.getParameter("astrolifeError") :
-					"A problem occured during previous action.");
-		logger.debug("Error in astrolife portlet: " + errorText);
-		return new ModelAndView("edu/failure").addObject("errorText", errorText);
+	// using for testing jms producer
+	@RequestMapping(value = "test-produce", method=RequestMethod.GET)
+	public String testProduce() {
+		return "redirect:view";
 	}
+	 
 	
-	// note that when refreshed, the page errors out due to select-course/tutorial being stripped
-	// TODO solve this issue
-	@ActionMapping(params="deploy=course")
-	public void generateCourse(@RequestParam("select-course") String courseIdParam, 
+	@RequestMapping(value = "generate-course", method=RequestMethod.POST)
+	public String generateCourse(@RequestParam("select-course") String courseIdParam, 
 			@RequestParam("select-tutorial") String tutorialIdParam,
-			ActionRequest request, ActionResponse response) throws IOException{
-		logger.debug("A request was made to deploy course with id: " + courseIdParam);
-		response.setRenderParameter("astrolifeError", "This action is under development");
-		/*
+			HttpServletRequest request, HttpServletResponse response) throws IOException{
+		
 		long courseId = Long.parseLong(courseIdParam);
 		long tutorialId = Long.parseLong(tutorialIdParam);
 		
 		eduService.initializeCourse(courseId, tutorialId);
 		
 		return "redirect:/course/" + courseId + "/";
-		*/
 	}
+	
+	@RequestMapping(value = "test-redirect", method=RequestMethod.GET)
+	public String testRedirect() {
+		return "/test/redirect";
+	}
+	
 }

@@ -2,45 +2,62 @@
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page session="false"%>
+<%@ taglib uri="/WEB-INF/tld/liferay-portlet.tld" prefix="portlet" %>
+<%@ page session="false"%>				
 <html>
 	<head>
 		<title>Astrocyte University</title>
 	</head>
+	
+	<portlet:defineObjects/>
 
+	<!-- Consider moving this elsewhere -->
+	<portlet:renderURL var="editStudent">
+		<portlet:param name="edit" value="student"></portlet:param>
+	</portlet:renderURL>
+	<portlet:renderURL var="editCourse">
+		<portlet:param name="edit" value="course"></portlet:param>
+	</portlet:renderURL>
+	<portlet:renderURL var="editTutorial">
+		<portlet:param name="edit" value="tutorial"></portlet:param>
+	</portlet:renderURL>
+	<portlet:actionURL var="deployCourse">
+		<portlet:param name="deploy" value="course"></portlet:param>
+	</portlet:actionURL>
 
 	<body>
 		<h1>Students</h1>
 			<c:forEach items="${students}" var="v_student">
-   				<a href="edit-student?id=${v_student.id}">${v_student.studentId} -
-   					${v_student.firstName} ${v_student.lastName}</a>
+	   			<a href="<%= editStudent %>&id=${v_student.id}">
+	   			${v_student.firstName} ${v_student.lastName}</a>
 	   			<br />
 			</c:forEach>
 			<br /><br />
-			<a href="edit-student"> Add Student</a>
+			<a href="<%= editStudent %>"> Add Student</a>
 		<br /><br />
 		
 		<h1>Courses</h1>
 		
 		<c:forEach items="${courses}" var="course">
-			<a href="edit-course?id=${course.id}">${course.id} - ${course.name }</a>
+		<a href="<%= editCourse %>&id=${course.id}">${course.id} - ${course.name}</a>
 			<br /><div class="description">${course.description}</div>
 		</c:forEach>
 		<br /><br />
-		<a href="edit-course"> Add Course</a>
+		<a href="<%= editCourse %>"> Add Course</a>
 		<br /><br />
 		
 		<h1>Tutorials</h1>
 	
 		<c:forEach items="${tutorials}" var="tutorial">
-			<a href="edit-tutorial?id=${tutorial.id}">${tutorial.id} - ${tutorial.name }</a>
+			<a href="<%= editTutorial %>&id=${tutorial.id}">${tutorial.id} - ${tutorial.name }</a>
 			<br /><div class="description">${tutorial.description}</div>
 		</c:forEach>
 		<br /><br />
-		<a href="edit-tutorial"> Add Tutorial</a>
+		<a href="<%= editTutorial %>"> Add Tutorial</a>
 		<br /><br />
 	
-		<form name="generateForm" id="generate-form" method="post" action="${pageContext.request.contextPath}/enrollment/generate-course">
+	<!-- TODO Not yet converted to Liferay actionUrl!-->
+		<form name="generateForm" id="generate-form" method="post" action="${deployCourse}">
 			<label for="select-course">Select a Course</label>
 			<select name="select-course" id="select-course">
 				<c:forEach items="${courses}" var="course">

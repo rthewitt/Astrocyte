@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sws="http://www.springframework.org/schema/web-services"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/web-services http://www.springframework.org/schema/web-services/web-services-2.0.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-2.5.xsd" >
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<context:component-scan base-package="com.mpi.astro.core" />
+    <!-- 	<context:exclude-filter type="regex" expression="com\.mpi\.astro\.portlet.*"/>
+ 	</context:component-scan> -->
+ 	
+    <context:annotation-config/>
+    <!--<mvc:annotation-driven />-->
+    <tx:annotation-driven/>
+    
+    <bean id="serverProps"
+		class="com.mpi.astro.core.util.PropertiesUtil">
+		<property name="locations">
+		    <list>
+		        <value>classpath:db.properties</value>
+		        <!-- Probably not used any longer.  Servlet/Portlet specific anyway.  TODO remove -->
+		        <value>classpath:myelin.properties</value>
+		    </list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</bean>
+	
+    <import resource="db.xml" />
+    
+    <!-- 
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="250000"/>
+	</bean> -->
+    
+
+    <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+        <property name="resourceLoaderPath" value="/WEB-INF/resources/templates/velocity/" />
+    </bean>
+    
+    <!-- Was unable to add a secondary straightforward url resolver, but it should definitely work.  Research -->
+
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/resources/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="cache" value="true" />
+		<property name="prefix" value="" />
+		<property name="order" value="1"/>
+		<property name="suffix" value=".vm" />
+	</bean>
+	
+	<bean id="alphaGame" class="com.mpi.astro.core.model.arcade.impl.JavaGame">
+	    <property name="appName" value="com.alpha.core.game.Alpha Game" />
+	    <property name="artifact" value="alpha-game-1.0-SNAPSHOT.jar" />
+	    <property name="author" value="Fierfek" />
+	    <property name="javaVersion" value="1.6" />
+	     <property name="mainClass" value="com.alpha.core.game.Alpha" />
+	     <property name="thumbNail" value="http://www.freevectorgraphics.org/d/file/201103/81b147bb0534b59dded39b95f5bbd267.png" />
+	     <property name="title" value="Alpha" />
+	     <property name="vendor" value="Myelin Price Interactive" />
+	</bean>
+
+   <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+   
+   <!-- EDU -->
+   <bean id="studentDao" class="com.mpi.astro.core.dao.StudentDao" />
+   <bean id="courseDao" class="com.mpi.astro.core.dao.CourseDao" />
+   <bean id="tutorialDao" class="com.mpi.astro.core.dao.TutorialDao" />
+   <!-- I could probably have simply added logic to eduService for save/delete -->
+   <bean id="enrollmentDao" class="com.mpi.astro.core.dao.StudentCourseDao" />
+   <!-- How was this used if no bean was defined?  Annotation @Repository have an effect? -->
+   <!-- <bean id="tmpDao" class="com.mpi.astro.dao.CourseTutorialDao" /> -->
+   
+   
+   <!-- Add this back in if there's a problem.  Shouldn't be a problem though... 3/15/2013.  Above may be unecessary... -->
+   <!-- <bean id="eduService" class="com.mpi.astro.core.service.edu.EduService" /> -->
+   
+   
+   <!-- Move to separate context file for readability.  JMS -->
+   <!-- 
+   <bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+    	<property name="environment">
+        	<props>
+            	<prop key="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</prop>
+            	<prop key="java.naming.provider.url">tcp://localhost:61613</prop>
+        	</props>
+    	</property>
+	</bean> -->
+	
+   <!-- 
+   <bean id="connectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiTemplate"><ref bean="jndiTemplate"/></property>
+        <property name="jndiName"><value>java:comp/env/jms/connectionFactory</value></property>
+        <property name="resourceRef"><value>true</value></property>
+    </bean> -->
+    <!-- This was in reference to the web.xml jndi definition, which is probably no longer needed. -->
+    <!--
+    <bean id="destination" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiTemplate"><ref bean="jndiTemplate"/></property>
+        <property name="jndiName"><value>java:comp/env/jms/command-queue</value></property>
+        <property name="resourceRef"><value>true</value></property>
+    </bean> -->
+    
+    <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+    	<property name="connectionFactory">
+      	<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+        	<property name="brokerURL">
+          		<value>tcp://localhost:61616</value>
+        	</property>
+      	</bean>
+    	</property>
+  	</bean>	
+  	
+    <bean id="myQueue" class="org.apache.activemq.command.ActiveMQQueue">
+  		<constructor-arg value="test"/>
+	</bean>
+	
+    <bean id="incomingQ" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="incoming" />
+    </bean>
+    
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory">
+            <ref local="jmsFactory" />
+        </property>
+        <property name="defaultDestination" ref="myQueue"/>
+	</bean>
+	
+    <!-- Transitioning into jms namespace.  Will connection-factory want AMQC or Pooled/Cached?  Choosing the latter -->
+    <jms:listener-container connection-factory="jmsFactory"
+        destination-resolver="tempDestinationResolver" 
+        concurrency="1"> <!-- tweak concurrency if necessary, can be a range.  No need for it now, affects ordering.  Not recommended for topics -->
+    <jms:listener destination="incomingQ" ref="messageConsumer" method="handleCommand"/> <!-- multiples allowed -->
+	</jms:listener-container>
+	 
+	 
+    <!-- May wish to change this to JndiDestinationResolver.  Dev/Staging/client servers -->
+	<bean id="tempDestinationResolver" class="org.springframework.jms.support.destination.BeanFactoryDestinationResolver" />
+	
+    
+    <bean id="messageProducer" class="com.mpi.astro.core.service.jms.JmsMessageProducer">
+        <property name="template" ref="jmsTemplate" />
+    </bean>
+
+    <bean id="messageConsumer" class="com.mpi.astro.core.service.jms.JmsMessageConsumer" />
+
+</beans>

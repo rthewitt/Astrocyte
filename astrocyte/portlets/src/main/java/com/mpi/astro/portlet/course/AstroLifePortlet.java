@@ -244,14 +244,11 @@ public class AstroLifePortlet extends BaseAstroPortlet {
 			@RequestParam("select-tutorial") String tutorialIdParam,
 			ActionRequest request, ActionResponse response) throws IOException{
 		logger.debug("A request was made to deploy course with id: " + courseIdParam);
-		response.setRenderParameter("astrolifeError", "This action is under development");
-		/*
+		
 		long courseId = Long.parseLong(courseIdParam);
 		long tutorialId = Long.parseLong(tutorialIdParam);
 		
 		eduService.initializeCourse(courseId, tutorialId);
-		
-		return "redirect:/course/" + courseId + "/";
-		*/
+		response.setRenderParameter("astrolifeError", "Your course has been deployed. (Action under development)");
 	}
 }

@@ -5,11 +5,11 @@
 		<portlet-name>astrolife</portlet-name>
 		<display-name>Astrocyte Liferay Portlet</display-name>
 		<portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-		<!-- 
-		<init-param>  
+		
+		<!--<init-param>  
        		<name>contextConfigLocation</name>  
-       		<value>/WEB-INF/applicationContext.xml</value>  
-     	</init-param> --> 
+       		<value>/WEB-INF/astrolife-fakespace.xml</value>  
+     	</init-param> -->
 		
 		<expiration-cache>0</expiration-cache>
 		<supports>

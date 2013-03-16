@@ -11,9 +11,9 @@
         http://www.springframework.org/schema/tx 
         http://www.springframework.org/schema/tx/spring-tx.xsd">
 
+	 <context:component-scan base-package="com.mpi.astro.portlet" />
 	<context:annotation-config />
-	<context:component-scan base-package="com.mpi.astro.portlet"/>
-	<!--<mvc:annotation-driven />--> <!-- Needed with portlet-mvc? -->
+    
     <tx:annotation-driven/>
 	
 	<bean id="viewResolver"
@@ -24,46 +24,9 @@
 		<property name="cache" value="true" />
 	</bean>
 	
-	<!-- New default, previous project had changed to below -->
-	<bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
-
-	<!-- DefaultAnnotationHandlerMapping and AnnotationMethodHandlerAdapter are default -->
-	<!-- REMOVING FOR ASTROCYTE
-	<bean class="org.springframework.web.portlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-	-->
-		<!-- Global property editors registration. You can do that locally with @InitBinder. -->
-		<!--<property name="webBindingInitializer">
-			<bean
-				class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
-				<property name="propertyEditorRegistrars">
-					<list>
-						<ref bean="propertyEditorRegistrar" />
-					</list>
-				</property>
-				<property name="conversionService">
-					<ref bean="conversionService" />
-				</property>
-			</bean>
-		</property>
-	</bean> -->
+	<!-- Should be default... -->
 	
-	<!-- REMOVING FOR ASTROCYTE
-    <bean id="propertyEditorRegistrar"
-          class="com.toyota.portal.mvc.editors.CustomPropertyEditorRegistrar" />
-    <bean id="conversionService"
-          class="com.toyota.portal.mvc.formatters.CustomFormattingConversionServiceFactoryBean" />
-    -->
-     
-    <!-- BELOW WAS COMMENTED OUT IN SAMPLE -->
-	<!-- uncomment if you want to add custom spring HandlerInterceptors -->
-	<!-- 
-	<bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-		<property name="interceptors">
-			<list>
-				<ref bean="yourCustomInterceptor" />
-			</list>
-		</property>
-	</bean>
-	-->
+	<bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+ 	
 		
 </beans>

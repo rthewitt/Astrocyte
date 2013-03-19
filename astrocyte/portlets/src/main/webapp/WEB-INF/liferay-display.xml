@@ -3,6 +3,7 @@
 
 <display>
 	<category name="Astrocyte">
-		<portlet id="astrolife"></portlet>
+		<portlet id="Astrolife"></portlet>
+		<portlet id="CourseDeployer"></portlet>
 	</category>
 </display>

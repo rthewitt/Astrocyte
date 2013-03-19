@@ -78,6 +78,10 @@ public class AstrocyteUtils {
 		return obj;
 	}
 	
+	public static String getCourseNameFromCourseUUI(String courseUUID) {
+		return courseUUID.split("-")[0];
+	}
+	
 	// TODO reroute through auto-commit form in JSP after JSON web-service
 	public static String getExternalTutorialDescriptionAsString(String URI) {
 		DefaultHttpClient client = new DefaultHttpClient();

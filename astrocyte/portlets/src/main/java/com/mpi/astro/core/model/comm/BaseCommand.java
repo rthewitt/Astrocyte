@@ -15,7 +15,7 @@ public abstract class BaseCommand implements Command {
 	
 	protected static MyelinAction action;
 	
-	protected String courseName;
+	protected String courseUUID;
 	
 	protected EduService eduService;
 	
@@ -26,9 +26,9 @@ public abstract class BaseCommand implements Command {
 	}
 	
 	// some commands, like update, will differ only in this regard
-	protected BaseCommand(MyelinAction action, String courseName) {
+	protected BaseCommand(MyelinAction action, String courseUUID) {
 		this.action = action;
-		this.courseName = courseName;
+		this.courseUUID = courseUUID;
 	}
 	
 	protected static MyelinAction getAction() {

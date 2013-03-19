@@ -17,8 +17,8 @@ public class UpdateCommand extends BaseCommand implements Command {
 	}
 	
 	// remember, prototype will be needed, BRANCH for default or something
-	public UpdateCommand(String courseName, String commitRef, String studentId) {
-		super(MyelinAction.UPDATE_STUDENT, courseName);
+	public UpdateCommand(String courseUUID, String commitRef, String studentId) {
+		super(MyelinAction.UPDATE_STUDENT, courseUUID);
 		this.commitRef = commitRef;
 		this.studentId = studentId;
 	}
@@ -36,7 +36,7 @@ public class UpdateCommand extends BaseCommand implements Command {
 		if(studentId != null) ctx.put("student", studentId);
 		
 		ctx.put("prototype", ""); // may be needed for students if PROTO is not a branch
-		ctx.put("courseName", this.courseName);
+		ctx.put("courseUUID", this.courseUUID);
 		return ctx;
 	}
 

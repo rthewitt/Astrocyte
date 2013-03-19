@@ -1,12 +1,12 @@
-package com.mpi.astro.core.controller;
+package com.mpi.astro.portlet.staff.astrolife;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.RenderRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,37 +15,39 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.annotation.ActionMapping;
+import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 import com.mpi.astro.core.model.admin.TutorialViewDescriptor;
 import com.mpi.astro.core.model.builder.CodeTutorialBuilder;
 import com.mpi.astro.core.model.builder.TutorialBuilder;
 import com.mpi.astro.core.model.edu.Course;
-import com.mpi.astro.core.model.edu.Lesson;
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.StudentCourse;
+import com.mpi.astro.core.model.edu.Syllabus;
 import com.mpi.astro.core.model.edu.Tutorial;
 import com.mpi.astro.core.service.edu.EduService;
 import com.mpi.astro.core.util.AstrocyteUtils;
+import com.mpi.astro.portlet.BaseAstroPortlet;
 
 @Controller
-@RequestMapping("/enrollment/")
-public class EduController {
+@RequestMapping("VIEW")
+public class AstroLifePortlet extends BaseAstroPortlet {
 	
-	private static final Logger logger = LoggerFactory.getLogger(EduController.class);
-
+	private static final Logger logger = LoggerFactory.getLogger(AstroLifePortlet.class);
+	
 	@Autowired
-	private EduService eduService ;
+	private EduService eduService;
 	
-	@RequestMapping(method=RequestMethod.GET,value="view")
+	
+	@RenderMapping
 	public ModelAndView overview() {
-		
-		logger.debug("Education Landing page");
+		logger.debug("Astrolife view render");
 		ModelAndView mav = new ModelAndView();
 		
-		List<Course> courses = eduService.getAllCourses();
+		List<Course> courses = eduService.getAllCourseDefinitions();
 		logger.debug("Course count: " + courses.size());
 		mav.addObject("courses", courses);
 		
@@ -63,8 +65,9 @@ public class EduController {
 	
 	// Added this annotation in my attempt to initiate a conversation.  I'd like one context per request with reattachment
 	// Primarily because I don't know how to get an Interceptor from Spring - would that even work with Stateless requests?
+//	@RequestMapping(method=RequestMethod.GET,value="edit-student") // No longer using webmvc, instead mvc-portlet
 	@Transactional
-	@RequestMapping(method=RequestMethod.GET,value="edit-student")
+	@RenderMapping(params="edit=student")
 	public ModelAndView editStudent(@RequestParam(value="id",required=false) Long id) {		
 		
 		logger.debug("Received request to edit student id : "+id);				
@@ -79,7 +82,7 @@ public class EduController {
  		
  		Set<Course> currentCourses = student.getCourses();
  		
- 		List<Course> availableCourses = eduService.getAllCourses();
+ 		List<Course> availableCourses = eduService.getAllCourseDefinitions();
  		for(Iterator<Course> iter = availableCourses.iterator(); iter.hasNext();) {
  			Course c = iter.next();
  			if(currentCourses.contains(c)) iter.remove();
@@ -93,7 +96,7 @@ public class EduController {
 	}
 	
 	@Transactional
-	@RequestMapping(method=RequestMethod.GET,value="edit-tutorial")
+	@RenderMapping(params="edit=tutorial")
 	public ModelAndView editTutorial(@RequestParam(value="id",required=false) Long id) {		
 		
 		logger.debug("Received request to edit tutorial id : "+id);				
@@ -113,30 +116,28 @@ public class EduController {
 		return mav;
 	}
 	
-	@RequestMapping(method=RequestMethod.GET,value="edit-course")
+	@RenderMapping(params="edit=course")
 	public ModelAndView editCourse(@RequestParam(value="id",required=false) Long id) {		
 		
 		logger.debug("Received request to edit course id : "+id);				
 		ModelAndView mav = new ModelAndView();		
  		mav.setViewName("edu/edit-course");
  		Course course = null;
- 		if (id == null) {
- 			course = new Course();
- 		} else {
- 			course = eduService.getCourse(id);
- 		}
+ 		
+ 		if(id == null) id = 0L;
+ 		course = eduService.getCourseDefinition(id);
  		
  		mav.addObject("course", course);
 		return mav;
 	}
 	
-	@Transactional
-	@RequestMapping(method=RequestMethod.POST,value="edit-student") 
-	public String saveStudent(@ModelAttribute Student detachedStudent, 
-			HttpServletRequest request, HttpServletResponse response) {
+	@Transactional 
+	@ActionMapping(params="edit=student")
+	public void saveStudent(@ModelAttribute Student detachedStudent, 
+			ActionRequest request, ActionResponse response) {
 		logger.debug("Received postback on student "+detachedStudent);
 		
-		// Come back to this, can't figure out why no associations existed
+		// TODO determine if this was ever resolved.  Search logs.
 		for(StudentCourse xx : detachedStudent.getCourseAssociations()) {
 			logger.debug("FINALLY one found in the detached object...");
 		}
@@ -145,13 +146,12 @@ public class EduController {
 		// Reattaching to persistenceContext
 		Student student = eduService.save(detachedStudent);
 		
-		for(StudentCourse xx : student.getCourseAssociations()) {
-			logger.debug("Well, at least there was one here");
-		}
-		
-		// Could this have been done through the ModelAttribute somehow?
+		// This is no longer allowed as we're dealing with definitions
+		/*
 		String addInput = request.getParameter("add-courses");
 		if(addInput != null && ! addInput.isEmpty()) {
+			
+			
 			String[] adds = request.getParameter("add-courses").split(",");
 			
 			for(String s : adds) {
@@ -160,41 +160,38 @@ public class EduController {
 				if(!student.isEnrolled(cc)) {
 					eduService.enrollStudent(student, cc);
 					eduService.save(cc); // student saved further down
-					}
+					} 
 				    
 				logger.debug("Course " + cc.getName() + " added");
 			}
 			
 		} else logger.debug("No course addition requests for student");
 		
-		eduService.save(student);
-		
-		return "redirect:view";
+		eduService.save(student); */
 	}
 	
 	@Transactional
-	@RequestMapping(method=RequestMethod.POST,value="edit-course") 
-	public String saveCourse(@ModelAttribute Course course) {
+	@ActionMapping(params="edit=course") 
+	public void saveCourse(@ModelAttribute Course course) {
 		logger.debug("Received postback on course " + course);		
 		eduService.save(course);
-		return "redirect:view";
 	}
 	
-	@RequestMapping(method=RequestMethod.POST,value="edit-tutorial") 
-	public String saveTutorial(@ModelAttribute Tutorial tut, HttpServletRequest request) {
+	@ActionMapping(params="edit=tutorial") 
+	public void saveTutorial(@ModelAttribute Tutorial tut, ActionRequest request) {
 		logger.debug("Received postback on tutorial " + tut);		
 		
 		logger.debug("LESSONS CONTAINED IN TUTORIAL " + tut.getId() + "\n" +
 				tut.getLessons().size() + " lessons");
 		eduService.save(tut);
-		return "redirect:view";
 	}
 	
 	// TODO refactor builder -> service layer with Spring injection
 	// But do note, you don't want a singleton.
-	@RequestMapping(method=RequestMethod.POST, value="new-tutorial")
-	public String createTutorial(@ModelAttribute TutorialViewDescriptor container, 
-			HttpServletRequest request) {
+	// I don't remember switching this over, have I used it in the JSP?
+	@ActionMapping(params="import=tutorial")
+	public void createTutorial(@ModelAttribute TutorialViewDescriptor container, 
+			ActionRequest request, ActionResponse response) {
 		Tutorial newTut = null;
 		
 		TutorialBuilder builder = new CodeTutorialBuilder();
@@ -208,42 +205,25 @@ public class EduController {
 		String jsonStr =  AstrocyteUtils
 				.getExternalTutorialDescriptionAsString(container.getDescriptionFile());
 		
+		// TODO this breaks because httpclient throws errors.  Handle all exceptions in portlet!
 		if(jsonStr == null) {
-			logger.error("Problem getting JSON string in controller, was null");
-			return "edu/failure"; // does this work?
+			String temporaryError = "Problem getting JSON string in controller, was null";
+			logger.error(temporaryError);
+			response.setRenderParameter("astrolifeError", temporaryError);
 		}
 		builder.buildLessons(jsonStr);
 		
 		newTut = builder.getTutorial();
 		newTut.setDescription(container.getDescription());
 		eduService.save(newTut);
-		
-		return "redirect:view";
 	}
 	
-	// using for testing jms producer
-	@RequestMapping(value = "test-produce", method=RequestMethod.GET)
-	public String testProduce() {
-		return "redirect:view";
+	@RenderMapping(params="astrolifeError")
+	public ModelAndView bigProblemLittlePortlet(RenderRequest request) {
+		String errorText = 
+				(request.getParameter("astrolifeError") != null ? request.getParameter("astrolifeError") :
+					"A problem occured during previous action.");
+		logger.debug("Error in astrolife portlet: " + errorText);
+		return new ModelAndView("edu/failure").addObject("errorText", errorText);
 	}
-	 
-	
-	@RequestMapping(value = "generate-course", method=RequestMethod.POST)
-	public String generateCourse(@RequestParam("select-course") String courseIdParam, 
-			@RequestParam("select-tutorial") String tutorialIdParam,
-			HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
-		long courseId = Long.parseLong(courseIdParam);
-		long tutorialId = Long.parseLong(tutorialIdParam);
-		
-		eduService.initializeCourse(courseId, tutorialId);
-		
-		return "redirect:/course/" + courseId + "/";
-	}
-	
-	@RequestMapping(value = "test-redirect", method=RequestMethod.GET)
-	public String testRedirect() {
-		return "/test/redirect";
-	}
-	
 }

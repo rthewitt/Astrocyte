@@ -21,9 +21,6 @@
 	<portlet:renderURL var="editTutorial">
 		<portlet:param name="edit" value="tutorial"></portlet:param>
 	</portlet:renderURL>
-	<portlet:actionURL var="deployCourse">
-		<portlet:param name="deploy" value="course"></portlet:param>
-	</portlet:actionURL>
 
 	<body>
 		<h1>Students</h1>
@@ -54,24 +51,5 @@
 		</c:forEach>
 		<br /><br />
 		<a href="<%= editTutorial %>"> Add Tutorial</a>
-		<br /><br />
-	
-	<!-- TODO Not yet converted to Liferay actionUrl!-->
-		<form name="generateForm" id="generate-form" method="post" action="${deployCourse}">
-			<label for="select-course">Select a Course</label>
-			<select name="select-course" id="select-course">
-				<c:forEach items="${courses}" var="course">
-					<option value="${course.id}">${course.name}</option>
-				</c:forEach>
-			</select>
-			<br /><br />
-			<label for="select-tutorial">Select a Tutorial</label>
-			<select name="select-tutorial" id="select-tutorial">
-				<c:forEach items="${tutorials}" var="tutorial">
-					<option value="${tutorial.id}">${tutorial.name}</option>
-				</c:forEach>
-			</select>
-			<input type="submit" value="Prepare Course">
-		</form>
 	</body>
 </html>

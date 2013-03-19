@@ -4,23 +4,16 @@ import java.io.Serializable;
 
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 
 @Embeddable
 public class StudentCourseId implements Serializable {
-	
-	// I am using transient on the getters one level up, but I'm using field-based discovery
-	// so it seems unnecessary.  However this is an embedded object
-	// Should I make these fields transient as well?
 
-	private static final long serialVersionUID = -8869705074497650857L;
-	
-	// Book example places the objects in the enclosing class, uses just id.
-	// Does the ManyToOne translate through the hierarchy appropriately?
+	private static final long serialVersionUID = 4402550863814822171L;
+
 	@ManyToOne
 	private Student student;
 	@ManyToOne
-	private Course course;
+	private CourseInstance course;
 	
 	public Student getStudent() {
 		return student;
@@ -30,11 +23,11 @@ public class StudentCourseId implements Serializable {
 		this.student = student;
 	}
 	
-	public Course getCourse() {
+	public CourseInstance getCourse() {
 		return course;
 	}
 	
-	public void setCourse(Course course) {
+	public void setCourse(CourseInstance course) {
 		this.course = course;
 	}
 	

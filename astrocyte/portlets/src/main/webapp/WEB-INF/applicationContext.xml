@@ -76,17 +76,13 @@
    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
    
    <!-- EDU -->
-   <bean id="studentDao" class="com.mpi.astro.core.dao.StudentDao" />
-   <bean id="courseDao" class="com.mpi.astro.core.dao.CourseDao" />
-   <bean id="tutorialDao" class="com.mpi.astro.core.dao.TutorialDao" />
-   <!-- I could probably have simply added logic to eduService for save/delete -->
-   <bean id="enrollmentDao" class="com.mpi.astro.core.dao.StudentCourseDao" />
-   <!-- How was this used if no bean was defined?  Annotation @Repository have an effect? -->
-   <!-- <bean id="tmpDao" class="com.mpi.astro.dao.CourseTutorialDao" /> -->
-   
-   
    <!-- Add this back in if there's a problem.  Shouldn't be a problem though... 3/15/2013.  Above may be unecessary... -->
+   <!-- <bean id="enrollmentDao" class="com.mpi.astro.core.dao.StudentCourseDao" /> -->
+   <!-- <bean id="courseDao" class="com.mpi.astro.core.dao.CourseDao" /> -->
+   <!-- <bean id="tutorialDao" class="com.mpi.astro.core.dao.TutorialDao" /> -->
    <!-- <bean id="eduService" class="com.mpi.astro.core.service.edu.EduService" /> -->
+   <!-- <bean id="studentDao" class="com.mpi.astro.core.dao.StudentDao" /> -->
+   <!-- <bean id="tmpDao" class="com.mpi.astro.dao.CourseTutorialDao" /> -->
    
    
    <!-- Move to separate context file for readability.  JMS -->

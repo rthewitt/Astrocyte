@@ -1,12 +1,9 @@
 package com.mpi.astro.core.service.edu;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -20,6 +17,7 @@ import com.mpi.astro.core.model.comm.Command;
 import com.mpi.astro.core.model.comm.InitCommand;
 import com.mpi.astro.core.model.comm.UpdateCommand;
 import com.mpi.astro.core.model.edu.Course;
+import com.mpi.astro.core.model.edu.CourseInstance;
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.Tutorial;
 import com.mpi.astro.core.service.jms.JmsMessageProducer;
@@ -34,7 +32,12 @@ public class MyelinService {
 	@Autowired
 	private JmsMessageProducer jmsDispatcher;
 	
-	// TODO expand prototype instead of just repo location
+	/*
+	 The methods below accept Course interface, which is not necessarily correct.
+	 However it is technically correct because CourseImpl implements CourseInstance
+	 returns the UUID as the name.  Consider the prolonged use cases for these interfaces.
+	*/
+	
 	public void dispatchInit(Course c, Tutorial tut, Set<Student> students) {
 		Command com = new InitCommand(c.getName(), tut.getPrototype(), students);
 		dispatchCommand(com);

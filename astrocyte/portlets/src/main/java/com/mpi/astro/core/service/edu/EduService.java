@@ -1,5 +1,6 @@
 package com.mpi.astro.core.service.edu;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -11,11 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.core.dao.CourseDao;
+import com.mpi.astro.core.dao.CourseInstanceDao;
 import com.mpi.astro.core.dao.CourseTutorialDao;
 import com.mpi.astro.core.dao.StudentCourseDao;
 import com.mpi.astro.core.dao.StudentDao;
 import com.mpi.astro.core.dao.TutorialDao;
+import com.mpi.astro.core.model.builder.CourseFactory;
 import com.mpi.astro.core.model.edu.Course;
+import com.mpi.astro.core.model.edu.CourseInstance;
 import com.mpi.astro.core.model.edu.CourseTutorial;
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.StudentCourse;
@@ -38,9 +42,14 @@ public class EduService {
 	@Autowired
 	private CourseDao courseDao;
 	@Autowired
+	private CourseInstanceDao courseInstanceDao;
+	@Autowired
 	private StudentCourseDao enrollmentDao;
 	@Autowired
 	private CourseTutorialDao tmpCTDao; 
+	
+	@Autowired
+	private CourseFactory courseFactory;
 	
 	@Autowired
 	private MyelinService myelinService;
@@ -51,24 +60,36 @@ public class EduService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(EduService.class);
 
-	/**
-	 * Retrieve course for the given id
-	 * @param courseId
-	 * @return course object
-	 */
-	public Course getCourse(long courseId) {
-		return courseDao.find(courseId);
+	public Course getCourseDefinition(long courseId) {
+		return courseId != 0L ? courseDao.find(courseId):
+			courseFactory.createDefinition();
 	}
 	
-	public Course getCourseByName(String courseName) {
+	public CourseInstance getDeployedCourse(long courseId) {
+		return courseInstanceDao.find(courseId);
+	}
+	
+	public CourseInstance getDeployedCourse(String courseUUID) {
+		return courseInstanceDao.find(courseUUID);
+	}
+	
+	public List<CourseInstance> getAllDeployedCourses() {
+		return courseInstanceDao.getCourses();
+	}
+	
+	public Course getCourseDefinitionByName(String courseName) {
 		return courseDao.findByName(courseName);
 	}
 	
-	public List<Student> getStudentsForCourse(long courseId) {
-		return courseDao.getStudentsForCourse(courseId);
+	public List<Student> getStudentsForCourse(long instanceId) {
+		return courseInstanceDao.getStudentsForCourseById(instanceId);
 	}
 	
-	public List<Course> getAllCourses() {
+	public List<Student> getStudentsForCourse(String uuid) {
+		return courseInstanceDao.getStudentsForCourseByUUID(uuid);
+	}
+	
+	public List<Course> getAllCourseDefinitions() {
 		return courseDao.getCourses();
 	}
 	
@@ -104,6 +125,10 @@ public class EduService {
 		return courseDao.save(c);
 	}
 	
+	public CourseInstance save(CourseInstance c) {
+		return courseInstanceDao.save(c);
+	}
+	
 	public Tutorial save(Tutorial t) {
 		return tutorialDao.save(t);
 	}
@@ -116,15 +141,26 @@ public class EduService {
 		return tmpCTDao.save(association);
 	}
 	
-	public Tutorial getCurrentTutorialForStudent(Student student, Course course) {
+	public Tutorial getCurrentTutorialForStudent(Student student, CourseInstance course) {
 		// currently uses two separate queries.  Consider composite if necessary
 		return enrollmentDao.getCurrentTutorialForStudent(student, course);
 	}
 	
-	// If this works, decide if Dao is actually necessary or not
-	// I would rather not treat associations as first-order persistent objects
+	// TODO this is going to be a mess
+	public List<Tutorial> getTutorialListForCourse(Course course) {
+		List<Tutorial> tuts = new ArrayList<Tutorial>();
+		// These will be ordered soon enough.
+		Set<CourseTutorial> ta = course.getTutAssociations();
+		
+		for(CourseTutorial a : ta)
+			tuts.add(a.getTutorial());
+		
+		return tuts;
+	}
+	
+	// Why Should not the student/course be saved?!
 	@Transactional
-	public void enrollStudent(Student student, Course course) {
+	public void enrollStudent(Student student, CourseInstance course) {
 		StudentCourse enrollment = new StudentCourse();
 		enrollment.setStudent(student);
 		enrollment.setCourse(course);
@@ -138,42 +174,66 @@ public class EduService {
 	
 	// also consider using git build-in email functionality
 	public void notifyProfessorPullRequest() {
-		// TODO update database?
+		throw new RuntimeException("Notification not implemented!");
+		// update database?
 		// if school has their own ec2 instance / site / control hub, send data to it?
 	}
 		
 //		============ CREATE A SEPARATE SERVICE FOR ADMIN LEVEL TASKS ================
 		
-		// TODO create Syllabus object and CourseFactory to set up 
-		// repositories / tags prior to initialization
+		// Remember that we want the course repository created during creation.
+		// perhaps a strategy in the factory?
 		@Transactional
-		public void initializeCourse(long courseId, long tutorialId) {
+		public void deployCourse(Course def) {
+			deployCourse(def, null, 0L);
+		}
+		
+		@Transactional
+		public void deployCourse(Course def, List<String> studentIds) {
+			deployCourse(def, studentIds, 0L);
+		}
+		
+		@Transactional
+		public void deployCourse(Course def, List<String> studentIds, long tutId) {
+			if(tutId == 0L) throw new IllegalArgumentException("Not enough students to deploy this type of course.");
 			
-			final Course course = getCourse(courseId);
-			Tutorial tutorial = getTutorial(tutorialId);
-			
-			CourseTutorial association = new CourseTutorial(); // testing constructor
-			association.setCourse(course);
-			association.setTutorial(tutorial);
-			course.addTutorialAssociation(association);
-			tutorial.addCourseAssociation(association);
+			Tutorial tut = getTutorial(tutId);
+			// TODO figure out just how bad this CourseTutorial assoc is going to be with two course objects
+			//=========TEMPORARY==============
+			CourseTutorial association = new CourseTutorial();
+			association.setCourse(def);
+			association.setTutorial(tut);
+			def.addTutorialAssociation(association);
+			tut.addCourseAssociation(association);
 			
 			save(association);
-			save(course);
-			save(tutorial);
+			save(tut);
+			def = save(def);
+			//=================================
+			CourseInstance course = courseFactory.createCourse(def);
 			
-//			Set<Student> students = new HashSet<Student>(getStudentsForCourse(courseId));
+			if(studentIds != null) {
+				for(String id : studentIds) {
+					Student student = getStudent(Long.valueOf(id));
+					enrollStudent(student, course);
+					save(student);
+				}
+				course = save(course);
+			}
 			Set<Student> students = course.getStudentsInCourse();
 			
 			logger.debug("About to dispatch with student array length: " + students.size());
-			myelinService.dispatchInit(course, tutorial, students);
+			// TODO change this so that myelinService dispatches with the first tutorial in list
+			// TODO change tutorials to ordered list.  Consider module based non-ordered
+			myelinService.dispatchInit(course, tut, students);
 		}
 		
-		public StudentStatus getStudentStatus(Student student, Course course) {
+		public StudentStatus getStudentStatus(Student student, CourseInstance course) {
 			return enrollmentDao.getStudentStatus(student, course);
 		}
 	
-		public boolean isEligibleForAdvance(Student student, Course course) {
+		// TODO verify holds up to changes
+		public boolean isEligibleForAdvance(Student student, CourseInstance course) {
 			StudentStatus current = enrollmentDao.getStudentStatus(student, course);
 			Tutorial currentTut = enrollmentDao.getCurrentTutorialForStudent(student, course);
 			boolean canAdvance = current.getLessonNum() < currentTut.getNumSteps();
@@ -183,7 +243,7 @@ public class EduService {
 		}
 		
 		@Transactional
-		public void advanceStudentForCourse(Student student, Course course) {
+		public void advanceStudentForCourse(Student student, CourseInstance course) {
 //			StudentStatus current = enrollmentDao.getStudentStatus(student, course);  // will used later as vehicle
 			
 			// TODO provide conditional.  If another tutorial exists, move on and zero out lessonNum in DB
@@ -194,27 +254,27 @@ public class EduService {
 		}
 		
 	    // When lesson becomes available for a student, as determined by workflow
-		public boolean deployLesson(long courseId, Student student, String commitRef) {
+		public boolean deployLesson(long instanceId, Student student, String commitRef) {
 			
-			Course course = getCourse(courseId);
-			Tutorial tut = enrollmentDao.getCurrentTutorialForStudent(student, course);
+			CourseInstance enrolledCourse = getDeployedCourse(instanceId);
+			Tutorial tut = enrollmentDao.getCurrentTutorialForStudent(student, enrolledCourse);
 			
 			if(tut == null) {
 				logger.error(String.format("Cannot update, student %s for course %s with id %s",
-						student.getId(), getCourse(courseId).getName(), courseId) );
+						student.getId(), getCourseDefinition(instanceId).getName(), instanceId) );
 				return false;
 			}
 			
 			logger.info("requesting update for student " + student.getId());
 			
-			myelinService.requestStudentMerge(course, tut.getPrototype(), 
+			myelinService.requestStudentMerge(enrolledCourse, tut.getPrototype(), 
 					commitRef, student.getStudentId().toString());
 			return true;
 		}
 		
 		// When lesson becomes available for an entire class, as determined by workflow
 		public boolean deployLesson(long courseId, long tutorialId, String commitRef) {
-			Course course = getCourse(courseId);
+			Course course = getCourseDefinition(courseId);
 			if(course == null) return false;
 			
 			Tutorial tut = getTutorial(tutorialId);
@@ -228,6 +288,10 @@ public class EduService {
 			courseDao.clearForTest();
 			enrollmentDao.clearForTest();
 			tmpCTDao.clearForTest(); 
+		}
+		
+		public String testMethod() {
+			return "eduService says hello";
 		}
 	
 }

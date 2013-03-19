@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.core.model.edu.Course;
+import com.mpi.astro.core.model.edu.CourseInstance;
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.StudentStatus;
 import com.mpi.astro.core.util.AstrocyteConstants;
@@ -21,7 +22,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 	protected String advanceStatus = null;
 	
 	public AdvanceCommand(Map<String, String> context) {
-		super(MyelinAction.ADVANCE_STUDENT, context.get("courseName"));
+		super(MyelinAction.ADVANCE_STUDENT, context.get("courseUUID"));
 		this.studentId = context.get("studentId");
 		this.commit = context.get("commit");
 		this.statusTag = context.get("checkpoint");
@@ -38,19 +39,23 @@ public class AdvanceCommand extends BaseCommand implements Command {
 	public void execute() {
 		
 		Student student = eduService.getStudentEager(Long.parseLong(this.studentId));
+		 
+		String courseName = AstrocyteUtils.getCourseNameFromCourseUUI(this.courseUUID);
+		Course course = eduService.getCourseDefinitionByName(courseName);
+		CourseInstance enrolledCourse = eduService.getDeployedCourse(this.courseUUID);
 		
-		// TODO either change thalamus to use courseId, or force courseName to be unique 
-		// guarantee transfer without changes to string
-		Course course = eduService.getCourseByName(this.courseName);
+		 	
 		
 		// Consider throwing an error here
 		if(course == null || !student.getCourses().contains(course)) {
 			logger.error("Problem advancing student "+student.getId()+" for course "+course.getName()+
 					"\nThis will likely lead to data inconsistency!");
 			return;
-		}
-			
-		StudentStatus current = eduService.getStudentStatus(student, course);
+		} else if(!course.equals(enrolledCourse.getCourseDefinition()))
+			logger.warn("Course UUID no longer matches instance prototype. Data integrity may be violated.");
+		
+		
+		StudentStatus current = eduService.getStudentStatus(student, enrolledCourse);
 		
 		if("request".equals(this.advanceStatus)) {
 			
@@ -65,11 +70,11 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			switch(student.getState()) {
 			case WORKING:
 				if(course.getWorkflow() == COURSE_WORKFLOW.PASSIVE) {
-					if(eduService.isEligibleForAdvance(student, course)) {
+					if(eduService.isEligibleForAdvance(student, enrolledCourse)) {
 						student.setState(STUDENT_STATE.ADVANCING);
 						// determine if entityManager should be flushed.
 						eduService.save(student);
-						eduService.deployLesson(course.getId(), student, 
+						eduService.deployLesson(enrolledCourse.getId(), student, 
 								AstrocyteUtils.getCheckpointStr(current.getLessonNum()+1));
 						logger.info("Deployment request made for student " + student.getId());
 					} else logger.info("Tutorial finished.  Unroll next if available...");
@@ -100,7 +105,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 				return;
 			}
 			// Move more of this logic into the service layer, use custom exceptions
-			eduService.advanceStudentForCourse(student, course);
+			eduService.advanceStudentForCourse(student, enrolledCourse);
 			student.setState(STUDENT_STATE.WORKING); // consider intermediate for ajax ping from client
 			eduService.save(student);
 			logger.info("Student " + student.getId() + " advanced to lesson " + claimedStatus);

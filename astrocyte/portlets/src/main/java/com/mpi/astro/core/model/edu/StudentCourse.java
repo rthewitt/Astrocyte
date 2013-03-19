@@ -92,11 +92,11 @@ public class StudentCourse implements Serializable {
 	}
 	
 	@Transient
-	public Course getCourse() {
+	public CourseInstance getCourse() {
 		return getPk().getCourse();
 	}
 	
-	public void setCourse(Course course) {
+	public void setCourse(CourseInstance course) {
 		getPk().setCourse(course);
 	}
 	

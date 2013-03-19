@@ -19,8 +19,8 @@ public class InitCommand extends BaseCommand implements Command {
 	protected String prototype;
 	
 	// TODO make sure prototype is handled appropriately, should be more than a string
-	public InitCommand(String courseName, String repo, Set<Student> students) {
-		super(MyelinAction.INITIALIZE, courseName);
+	public InitCommand(String courseUUID, String repo, Set<Student> students) {
+		super(MyelinAction.INITIALIZE, courseUUID);
 		this.prototype = repo;
 		this.students = students;
 	}
@@ -35,7 +35,7 @@ public class InitCommand extends BaseCommand implements Command {
 		
 		Map<String, Object> ctx = new HashMap<String, Object>();
 		
-		ctx.put("courseName", this.courseName);
+		ctx.put("courseUUID", this.courseUUID);
 		
 		List<Map<String, String>> stArr = new ArrayList<Map<String, String>>();
 		

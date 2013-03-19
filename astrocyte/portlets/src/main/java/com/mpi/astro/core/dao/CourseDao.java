@@ -32,13 +32,14 @@ public class CourseDao {
 		return entityManager.createQuery("select c from Course c").getResultList();
 	}
 	
+	/* Should now be moved into CourseInstanceDao
 	@SuppressWarnings("unchecked")
 	public List<Student> getStudentsForCourse(Long id) {
 		
 		return (List<Student>) entityManager.createQuery("select s " +
 				"from Student s join s.courseAssociations sc where sc.pk.course.id = :c_id")
 			.setParameter("c_id", id).getResultList();
-	}
+	} */
 	
 	@Transactional
 	public Course save(Course course) {

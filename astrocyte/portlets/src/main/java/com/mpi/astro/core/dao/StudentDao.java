@@ -64,8 +64,6 @@ public class StudentDao {
 		}		
 	}	
 	
-	// Why would Denis add this? What benefit does it yield?
-	// Does not appear to be used, probably for illustration purposes
 	public List<Student> findAll() {
 		return entityManager.createNamedQuery(Student.SQL_FIND_ALL, Student.class).getResultList();
 	}

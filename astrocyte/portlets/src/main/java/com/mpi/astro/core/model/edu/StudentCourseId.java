@@ -12,7 +12,7 @@ public class StudentCourseId implements Serializable {
 
 	@ManyToOne
 	private Student student;
-	@ManyToOne
+	@ManyToOne(targetEntity=BaseCourseInstance.class)
 	private CourseInstance course;
 	
 	public Student getStudent() {

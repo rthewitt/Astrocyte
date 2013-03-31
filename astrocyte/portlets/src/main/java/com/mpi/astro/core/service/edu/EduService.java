@@ -2,6 +2,7 @@ package com.mpi.astro.core.service.edu;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +26,8 @@ import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.StudentCourse;
 import com.mpi.astro.core.model.edu.StudentStatus;
 import com.mpi.astro.core.model.edu.Tutorial;
+import com.mpi.astro.core.util.AstrocyteConstants;
+import com.mpi.astro.core.util.AstrocyteUtils;
 import com.mpi.astro.core.util.PropertiesUtil;
 
 // TODO add Transactional annotation to service methods as necessary.
@@ -36,7 +39,7 @@ import com.mpi.astro.core.util.PropertiesUtil;
 public class EduService {
 	
 	@Autowired
-	private StudentDao studentDao;
+	private StudentDao studentDao; 
 	@Autowired
 	private TutorialDao tutorialDao;
 	@Autowired
@@ -65,9 +68,10 @@ public class EduService {
 			courseFactory.createDefinition();
 	}
 	
+	/* Consider re-adding if entityManager.find is more efficient than query
 	public CourseInstance getDeployedCourse(long courseId) {
 		return courseInstanceDao.find(courseId);
-	}
+	} */
 	
 	public CourseInstance getDeployedCourse(String courseUUID) {
 		return courseInstanceDao.find(courseUUID);
@@ -81,6 +85,7 @@ public class EduService {
 		return courseDao.findByName(courseName);
 	}
 	
+	@Deprecated
 	public List<Student> getStudentsForCourse(long instanceId) {
 		return courseInstanceDao.getStudentsForCourseById(instanceId);
 	}
@@ -184,22 +189,28 @@ public class EduService {
 		// Remember that we want the course repository created during creation.
 		// perhaps a strategy in the factory?
 		@Transactional
-		public void deployCourse(Course def) {
-			deployCourse(def, null, 0L);
+		public CourseInstance deployCourse(Course def) {
+			return deployCourse(def, null, 0L);
 		}
 		
 		@Transactional
-		public void deployCourse(Course def, List<String> studentIds) {
-			deployCourse(def, studentIds, 0L);
+		public CourseInstance deployCourse(Course def, List<String> studentIds) {
+			return deployCourse(def, studentIds, 0L);
 		}
 		
 		@Transactional
-		public void deployCourse(Course def, List<String> studentIds, long tutId) {
+		public CourseInstance deployCourse(Course def, List<String> studentIds, long tutId) {
 			if(tutId == 0L) throw new IllegalArgumentException("Not enough students to deploy this type of course.");
 			
+			Student[] portalUsers = new Student[studentIds.size()];
+			
 			Tutorial tut = getTutorial(tutId);
-			// TODO figure out just how bad this CourseTutorial assoc is going to be with two course objects
-			//=========TEMPORARY==============
+			
+			// test lazy solution:
+			
+			def = save(def);
+			
+			
 			CourseTutorial association = new CourseTutorial();
 			association.setCourse(def);
 			association.setTutorial(tut);
@@ -209,13 +220,14 @@ public class EduService {
 			save(association);
 			save(tut);
 			def = save(def);
-			//=================================
+			
 			CourseInstance course = courseFactory.createCourse(def);
 			
 			if(studentIds != null) {
-				for(String id : studentIds) {
-					Student student = getStudent(Long.valueOf(id));
+				for(int x=0; x<studentIds.size(); x++) {
+					Student student = getStudent(Long.valueOf(studentIds.get(x)));
 					enrollStudent(student, course);
+					portalUsers[x] = student;
 					save(student);
 				}
 				course = save(course);
@@ -223,9 +235,9 @@ public class EduService {
 			Set<Student> students = course.getStudentsInCourse();
 			
 			logger.debug("About to dispatch with student array length: " + students.size());
-			// TODO change this so that myelinService dispatches with the first tutorial in list
-			// TODO change tutorials to ordered list.  Consider module based non-ordered
 			myelinService.dispatchInit(course, tut, students);
+			
+			return course;
 		}
 		
 		public StudentStatus getStudentStatus(Student student, CourseInstance course) {
@@ -254,14 +266,14 @@ public class EduService {
 		}
 		
 	    // When lesson becomes available for a student, as determined by workflow
-		public boolean deployLesson(long instanceId, Student student, String commitRef) {
+		public boolean deployLesson(String instanceId, Student student, String commitRef) {
 			
 			CourseInstance enrolledCourse = getDeployedCourse(instanceId);
 			Tutorial tut = enrollmentDao.getCurrentTutorialForStudent(student, enrolledCourse);
 			
 			if(tut == null) {
 				logger.error(String.format("Cannot update, student %s for course %s with id %s",
-						student.getId(), getCourseDefinition(instanceId).getName(), instanceId) );
+						student.getId(), getDeployedCourse(instanceId).getName(), instanceId) );
 				return false;
 			}
 			
@@ -272,9 +284,32 @@ public class EduService {
 			return true;
 		}
 		
+		/**
+		 * This is a placeholder workflow whereby students will be "started", flags will
+		 * be set up for course management and links established for source.  Currently
+		 * it's a temporary bridge to go from InitializeCourse -> InitializeVMPool
+		 */
+		public void initializeStudentStatuses(String courseUUID) {
+			
+			List<Student> students = getStudentsForCourse(courseUUID);
+			List<String> studentIds = new ArrayList<String>();
+			for(Student student : students) {
+				studentIds.add(student.getStudentId());
+			}
+			
+			String append = "-initialPool"; // make property
+			int maxLen = 64 - append.length();
+			String token = courseUUID.length() < maxLen ? courseUUID+append :
+				courseUUID.substring(0, maxLen)+append;
+			
+			String initRef = AstrocyteUtils.getCheckpointStr(AstrocyteConstants.INITIAL);
+				
+			myelinService.dispatchVMRequest(courseUUID, initRef, studentIds, token);
+		}
+		
 		// When lesson becomes available for an entire class, as determined by workflow
-		public boolean deployLesson(long courseId, long tutorialId, String commitRef) {
-			Course course = getCourseDefinition(courseId);
+		public boolean deployLesson(String courseUUID, long tutorialId, String commitRef) {
+			CourseInstance course = getDeployedCourse(courseUUID);
 			if(course == null) return false;
 			
 			Tutorial tut = getTutorial(tutorialId);

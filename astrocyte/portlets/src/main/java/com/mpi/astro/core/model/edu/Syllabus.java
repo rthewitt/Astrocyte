@@ -22,21 +22,12 @@ import com.mpi.astro.core.util.AstrocyteConstants.COURSE_WORKFLOW;
 
 @Entity
 @Table(name="COURSE")
-public class Syllabus implements Serializable, Course {
+public class Syllabus extends BaseCourseDefinition implements Serializable, Course {
 
 	private static final long serialVersionUID = 2594594478717652373L;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "COURSE_ID", unique = true, nullable = false)
-	private Long id;
 	
 	@Column(name = "COURSE_NAME", nullable = false)
 	private String name;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "WORKFLOW", nullable = false)
-	private COURSE_WORKFLOW workflow = COURSE_WORKFLOW.PASSIVE;
 	
 	@Column(name = "COURSE_DESC", nullable = false)
 	private String description;
@@ -47,18 +38,10 @@ public class Syllabus implements Serializable, Course {
 	@OneToMany(mappedBy = "pkey.course")
 	private Set<CourseTutorial> tutAssociations = new HashSet<CourseTutorial>(0);
 	
-	@OneToMany(mappedBy="tutorial", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="syllabus", targetEntity=BaseCourseInstance.class, fetch=FetchType.LAZY)
 	private List<CourseInstance> deployedCourses = new ArrayList<CourseInstance>(0);
 	
 	public Syllabus() {
-	}
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -67,14 +50,6 @@ public class Syllabus implements Serializable, Course {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public COURSE_WORKFLOW getWorkflow() {
-		return this.workflow;
-	}
-	
-	public void setWorkflow(COURSE_WORKFLOW wf) {
-		this.workflow = wf;
 	}
 
 	public String getDescription() {

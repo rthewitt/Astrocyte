@@ -1,9 +1,7 @@
 package com.mpi.astro.portlet.staff.deployer;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -20,9 +18,13 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 import scala.actors.threadpool.Arrays;
 
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.theme.ThemeDisplay;
 import com.mpi.astro.core.model.edu.Course;
+import com.mpi.astro.core.model.edu.CourseInstance;
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.Tutorial;
+import com.mpi.astro.core.service.edu.AstroService;
 import com.mpi.astro.core.service.edu.EduService;
 import com.mpi.astro.portlet.BaseAstroPortlet;
 
@@ -35,6 +37,8 @@ public class CourseDeployerPortlet extends BaseAstroPortlet {
 	
 	@Autowired
 	EduService eduService;
+	@Autowired
+	AstroService astroService;
 
 	@RenderMapping
 	public ModelAndView deployView() {
@@ -74,7 +78,29 @@ public class CourseDeployerPortlet extends BaseAstroPortlet {
 			String enrollStudents = request.getParameter("enroll-students");
 			// ==========================================================
 			
-			eduService.deployCourse(def, (List<String>)Arrays.asList(enrollStudents.split(",")));
+			List<String> studentIds = (List<String>)Arrays.asList(enrollStudents.split(","));
+			
+			CourseInstance deployed = eduService.deployCourse(def, studentIds, tutorialId);
+			/*
+			int numUsers = enrolledUsers.length;
+			String[][] names = new String[numUsers][2];
+			String userIds[] = new String[numUsers];
+			for(int i = 0; i<numUsers; i++) {
+				userIds[i] = enrolledUsers[i].getStudentId();
+				names[i][0] = enrolledUsers[i].getFirstName();
+				names[i][1] = enrolledUsers[i].getLastName();
+			} */
+			List<Student> enrolledUsers = eduService.getStudentsForCourse(deployed.getCourseUUID());
+			long currentUserId = Long.valueOf(request.getRemoteUser());
+			ThemeDisplay themeDisplay  =(ThemeDisplay)request.getAttribute(WebKeys.THEME_DISPLAY);
+			try {
+				astroService.createCommunityForCourseInstance(themeDisplay, 
+						enrolledUsers.toArray(new Student[enrolledUsers.size()]), deployed);
+			} catch(Exception e) {
+				logger.error("Course was deployed, but there was an error creating Lifery group.", e);
+				response.setRenderParameter("astrolifeError", "Course was deployed, but there was an error creating Lifery group.");
+				return;
+			}
 			
 			response.setRenderParameter("astrolifeError", "Your course has been deployed. (Action under development)");
 		}

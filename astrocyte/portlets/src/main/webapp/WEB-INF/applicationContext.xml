@@ -12,12 +12,8 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-2.5.xsd" >
-
-	<!-- Root Context: defines shared resources visible to all other web components -->
 	
 	<context:component-scan base-package="com.mpi.astro.core" />
-    <!-- 	<context:exclude-filter type="regex" expression="com\.mpi\.astro\.portlet.*"/>
- 	</context:component-scan> -->
  	
     <context:annotation-config/>
     <!--<mvc:annotation-driven />-->
@@ -37,12 +33,6 @@
 	
     <import resource="db.xml" />
     
-    <!-- 
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="250000"/>
-	</bean> -->
-    
-
     <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
         <property name="resourceLoaderPath" value="/WEB-INF/resources/templates/velocity/" />
     </bean>
@@ -74,15 +64,6 @@
 	</bean>
 
    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
-   
-   <!-- EDU -->
-   <!-- Add this back in if there's a problem.  Shouldn't be a problem though... 3/15/2013.  Above may be unecessary... -->
-   <!-- <bean id="enrollmentDao" class="com.mpi.astro.core.dao.StudentCourseDao" /> -->
-   <!-- <bean id="courseDao" class="com.mpi.astro.core.dao.CourseDao" /> -->
-   <!-- <bean id="tutorialDao" class="com.mpi.astro.core.dao.TutorialDao" /> -->
-   <!-- <bean id="eduService" class="com.mpi.astro.core.service.edu.EduService" /> -->
-   <!-- <bean id="studentDao" class="com.mpi.astro.core.dao.StudentDao" /> -->
-   <!-- <bean id="tmpDao" class="com.mpi.astro.dao.CourseTutorialDao" /> -->
    
    
    <!-- Move to separate context file for readability.  JMS -->

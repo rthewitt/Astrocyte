@@ -8,9 +8,8 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mpi.astro.core.model.edu.BaseCourseDefinition;
 import com.mpi.astro.core.model.edu.Course;
-import com.mpi.astro.core.model.edu.Student;
-import com.mpi.astro.core.model.edu.StudentStatus;
 
 @Repository
 public class CourseDao {
@@ -19,27 +18,19 @@ public class CourseDao {
 	public EntityManager entityManager;
 	
 	public Course find(Long id) {
-		return entityManager.find(Course.class, id);
+		return (Course)entityManager.find(BaseCourseDefinition.class, id);
+//		return entityManager.find(Course.class, id);
 	}
 	
 	public Course findByName(String courseName) {
-		return (Course)entityManager.createQuery("select c from Course c where c.name = :name")
+		return (Course)entityManager.createQuery("select c from com.mpi.astro.core.model.edu.Course c where c.name = :name")
 		.setParameter("name", courseName).getSingleResult();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<Course> getCourses() {
-		return entityManager.createQuery("select c from Course c").getResultList();
+		return entityManager.createQuery("select c from com.mpi.astro.core.model.edu.Course c").getResultList();
 	}
-	
-	/* Should now be moved into CourseInstanceDao
-	@SuppressWarnings("unchecked")
-	public List<Student> getStudentsForCourse(Long id) {
-		
-		return (List<Student>) entityManager.createQuery("select s " +
-				"from Student s join s.courseAssociations sc where sc.pk.course.id = :c_id")
-			.setParameter("c_id", id).getResultList();
-	} */
 	
 	@Transactional
 	public Course save(Course course) {

@@ -1,17 +1,13 @@
 package com.mpi.astro.core.model.edu;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,19 +15,17 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mpi.astro.core.service.edu.EduService;
 import com.mpi.astro.core.util.AstrocyteConstants.STUDENT_STATE;
 
 import edu.emory.mathcs.backport.java.util.Collections;
-
+// A mismatch earlier suggests that equality for Students is broken.
+// TODO look into equals method
 @Entity
 @Table( name = "STUDENT" )
-// Understand this addition.  What was the initial problem?
 @NamedQueries(
 		@NamedQuery(name=Student.SQL_FIND_ALL, query="select o from Student o")
 )
@@ -88,19 +82,19 @@ public class Student implements Serializable {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<Course> getCourses() {
-		Set<Course> courses = new HashSet<Course>();
+	public Set<CourseInstance> getCourses() {
+		Set<CourseInstance> courses = new HashSet<CourseInstance>();
 		for(StudentCourse enrollment : this.getCourseAssociations())
 			courses.add(enrollment.getCourse());
 		return Collections.unmodifiableSet(courses);
 	}
 	
-	public boolean isEnrolled(Course course) {
+	public boolean isEnrolled(CourseInstance course) {
 		logger.debug("Course "+course.getName()+" not found in convenience map, checking associations.");
 		
 		boolean enrolled = false;
 		for(StudentCourse sc : courseAssociations)
-			if(sc.getCourse().getId() == course.getId()) enrolled = true;
+			if(sc.getCourse().getCourseUUID().equals(course.getCourseUUID())) enrolled = true;
 		logger.debug("Student " + this.id + (enrolled ? " was" : " was NOT") + " enrolled in " + course.getName());
 		return enrolled;
 	}
@@ -108,16 +102,18 @@ public class Student implements Serializable {
 	// TODO determine safety of equality of Courses as keys given scope of identity.
 	public void addCourseAssociation(StudentCourse enrollment) {
 		this.courseAssociations.add(enrollment);
-		Course coursePart = enrollment.getCourse();
+		CourseInstance coursePart = enrollment.getCourse();
 	}
 
 	public Long getId() {
 		return id;
 	}
 	
-	// May wish to separate this as an aspect
+	// TODO persists this, I suppose.  The intersection will help tie user/portal users together
 	public String getStudentId() {
-		return id != null ? String.format("%07d", id) : "";
+		return String.format("%s%03d",
+				(lastName.length() > 4 ? lastName.toLowerCase().substring(0, 5) : lastName),
+				this.id);
 	}
 
 	public void setId(Long id) {

@@ -2,10 +2,8 @@ package com.mpi.astro.core.model.edu;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,28 +14,24 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Parent;
-
 import com.mpi.astro.core.util.AstrocyteConstants.COURSE_WORKFLOW;
 
+// This is *technically* a CourseInstanceImpl now.  Refactor when working.
 @Entity
 @Table(name="DEPLOYED_COURSE")
-public class CourseImpl extends BaseCourse implements CourseInstance, Serializable {
+public class CourseImpl extends BaseCourseInstance implements CourseInstance, Serializable {
 	
 	private static final long serialVersionUID = 6094379996028682456L;
 	private static final SimpleDateFormat uuidFormat = new SimpleDateFormat("yyMMddHHmmssZ"); 
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "DEPLOYED_ID", unique = true, nullable = false)
-	private Long id;
 	
-	// Not an id because technically time zones complicate namespace issues
-	@Column(name = "DEPLOYED_UUID", unique = true, nullable = false)
-	private String courseUUID;
+	
 	
 	@Column(name="DEPLOYED_DATE")
 	private Date deployedDate;
@@ -48,16 +42,10 @@ public class CourseImpl extends BaseCourse implements CourseInstance, Serializab
 	 * prototype between course instances.  Embedded will be the parent object, which contains Course information.
 	 * Changing this object will change all live courses which have been deployed. -3/18/2013 -RTH
 	 */
-	@Parent
-	private Course syllabus; // consider making this final somehow. (Hibernate in the way)
+	
 	
 	@OneToMany(mappedBy = "pk.course")
 	private Set<StudentCourse> studAssociations = new HashSet<StudentCourse>(0);
-	
-	// Is this going to be syllabus or instance based?  I vote instance...
-	@Enumerated(EnumType.STRING)
-	@Column(name = "WORKFLOW", nullable = false)
-	private COURSE_WORKFLOW workflow = COURSE_WORKFLOW.PASSIVE;
 	
 	private CourseImpl() {
 	}
@@ -68,19 +56,6 @@ public class CourseImpl extends BaseCourse implements CourseInstance, Serializab
 		this.deployedDate = new Date();
 		this.courseUUID = String.format("%s-%s", syllabus.getName(), 
 				uuidFormat.format(deployedDate));
-	}
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	@Override
-	public String getCourseUUID() {
-		return courseUUID;
 	}
 	
 	public void setDeployedDate(Date d) {
@@ -94,25 +69,6 @@ public class CourseImpl extends BaseCourse implements CourseInstance, Serializab
 	public String getName() {
 		return this.courseUUID;
 	}
-	
-	public COURSE_WORKFLOW getWorkflow() {
-		return this.workflow;
-	}
-	
-	public void setWorkflow(COURSE_WORKFLOW wf) {
-		this.workflow = wf;
-	}
-	
-	// ============ Hibernate required methods ==================
-	private void setSyllabus(Course syllabus) {
-		this.syllabus = syllabus;
-	}
-	
-	private Course getSyllabus() {
-		return this.syllabus;
-	}
-	
-	// ===========================================================
 	
 	public Course getCourseDefinition() {
 		if(this.syllabus != null) {
@@ -136,7 +92,11 @@ public class CourseImpl extends BaseCourse implements CourseInstance, Serializab
 	// Any reason to force unmodifiable?
 	/* Also, would placing annotations on setters increase performance for getting just the
 	   student ids for initialization / generation / future reporting? */
+	/**
+	 * Currently throws lazy loading exception
+	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated // TODO fix this, as it throws lazy looading exception!
 	public Set<Student> getStudentsInCourse() {
 		Set <Student> ret = new HashSet<Student>();
 		for(StudentCourse sc : this.studAssociations)
@@ -181,11 +141,6 @@ public class CourseImpl extends BaseCourse implements CourseInstance, Serializab
 		if (getClass() != obj.getClass())
 			return false;
 		CourseImpl other = (CourseImpl) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
 		if(syllabus == null) {
 			if(other.syllabus != null)
 				return false;

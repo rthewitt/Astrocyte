@@ -1,8 +1,6 @@
 package com.mpi.astro.portlet.staff.astrolife;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -26,7 +24,6 @@ import com.mpi.astro.core.model.builder.TutorialBuilder;
 import com.mpi.astro.core.model.edu.Course;
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.StudentCourse;
-import com.mpi.astro.core.model.edu.Syllabus;
 import com.mpi.astro.core.model.edu.Tutorial;
 import com.mpi.astro.core.service.edu.EduService;
 import com.mpi.astro.core.util.AstrocyteUtils;
@@ -80,7 +77,9 @@ public class AstroLifePortlet extends BaseAstroPortlet {
  			student = eduService.getStudent(id);
  		}
  		
- 		Set<Course> currentCourses = student.getCourses();
+ 		// Below served also to initialize the courseAssociations, not just available
+ 		/*
+ 		Set<CourseInstance> currentCourses = student.getCourses();
  		
  		List<Course> availableCourses = eduService.getAllCourseDefinitions();
  		for(Iterator<Course> iter = availableCourses.iterator(); iter.hasNext();) {
@@ -89,7 +88,7 @@ public class AstroLifePortlet extends BaseAstroPortlet {
  		}
  		// filterForJoinable(currentCourse) // etc
  		
- 		mav.addObject("available", availableCourses);
+ 		mav.addObject("available", availableCourses); */
  		mav.addObject("student", student);
  		
 		return mav;
@@ -168,6 +167,11 @@ public class AstroLifePortlet extends BaseAstroPortlet {
 		} else logger.debug("No course addition requests for student");
 		
 		eduService.save(student); */
+	}
+	
+	@ModelAttribute
+	public Course createUser() {
+	    return eduService.getCourseDefinition(0L);
 	}
 	
 	@Transactional

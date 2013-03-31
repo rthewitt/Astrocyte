@@ -1,6 +1,7 @@
 package com.mpi.astro.core.service.edu;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,8 +16,8 @@ import org.springframework.stereotype.Service;
 import com.mpi.astro.core.model.comm.BaseCommand;
 import com.mpi.astro.core.model.comm.Command;
 import com.mpi.astro.core.model.comm.InitCommand;
+import com.mpi.astro.core.model.comm.ProvisionVMCommand;
 import com.mpi.astro.core.model.comm.UpdateCommand;
-import com.mpi.astro.core.model.edu.Course;
 import com.mpi.astro.core.model.edu.CourseInstance;
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.Tutorial;
@@ -32,24 +33,23 @@ public class MyelinService {
 	@Autowired
 	private JmsMessageProducer jmsDispatcher;
 	
-	/*
-	 The methods below accept Course interface, which is not necessarily correct.
-	 However it is technically correct because CourseImpl implements CourseInstance
-	 returns the UUID as the name.  Consider the prolonged use cases for these interfaces.
-	*/
-	
-	public void dispatchInit(Course c, Tutorial tut, Set<Student> students) {
+	public void dispatchInit(CourseInstance c, Tutorial tut, Set<Student> students) {
 		Command com = new InitCommand(c.getName(), tut.getPrototype(), students);
 		dispatchCommand(com);
 	}
 	
-	public void requestClassMerge(Course c, String prototypeURI, String commitRef) {
+	public void requestClassMerge(CourseInstance c, String prototypeURI, String commitRef) {
 		Command com = new UpdateCommand(c.getName(), commitRef);
 		dispatchCommand(com);
 	}
 	
-	public void requestStudentMerge(Course c, String prototypeURI, String commitRef, String studentId) {
+	public void requestStudentMerge(CourseInstance c, String prototypeURI, String commitRef, String studentId) {
 		Command com = new UpdateCommand(c.getName(), commitRef, studentId);
+		dispatchCommand(com);
+	}
+	
+	public void dispatchVMRequest(String courseUUID, String initRef, List<String> studentIds, String token) {
+		Command com = new ProvisionVMCommand(courseUUID, initRef, studentIds, token);
 		dispatchCommand(com);
 	}
 	

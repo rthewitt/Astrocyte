@@ -8,15 +8,8 @@
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd	
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd" default-autowire="byName">
-
-	<!-- <bean id="placeholderConfig"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:db.properties" />
-	</bean> -->
+		<!-- default-autowire="byName" was required to get EMF to initialize correctly -->
 	
-
-	<!-- The class below will need to be changed when I use a more complicated scenario.
-		I will want to begin using JNDI instead. -->
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="jpaVendorAdapter">
@@ -37,8 +30,6 @@
 	</bean>
 	
 
-	<!-- Adding these properties to txmgr to match my test-context.  Trying to get session
-		so that I can initialize lazy-loaded collections during view processing -->
 	<!-- Did you really know what you were doing or did you just copy this from the interwebz? -->
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 	    <property name="entityManagerFactory" ref="entityManagerFactory"/>

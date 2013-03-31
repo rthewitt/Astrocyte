@@ -30,9 +30,10 @@
 	  var enrolled = '';
 	  $("#temporary-select .ui-selected").each(function(i, strId){
 		  if(i>0) enrolled+=',';
-		  enrolled+=strId.split('-')[1];
+		  enrolled+=strId.id.split('-')[1];
 	  });
-	  $();
+	  $('#enroll-students').val(enrolled);
+	  $('#generate-form').submit();
   }
   	</script>
 	</head>

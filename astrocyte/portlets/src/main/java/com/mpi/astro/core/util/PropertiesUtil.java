@@ -24,6 +24,11 @@ PropertyPlaceholderConfigurer {
 		public final static String PROP_PUBLIC_STUD_DIR = "myelin.public_student.dir";
 		public final static String PROP_PROTO = "myelin.proto";
 		public final static String PROP_PROTO_ID = "myelin.proto.id";
+		
+		
+		public final static String PROP_PORAL_COMPANY_ID = "mpi.portal.company.id";
+		public final static String PROP_DEFAULT_EMAIL_DOMAIN = "mpi.email.domain";
+		
 	
 	
 	private static Map<String, String> propertiesMap;

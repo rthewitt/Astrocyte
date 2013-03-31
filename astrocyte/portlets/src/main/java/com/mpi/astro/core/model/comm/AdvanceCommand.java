@@ -69,12 +69,12 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			
 			switch(student.getState()) {
 			case WORKING:
-				if(course.getWorkflow() == COURSE_WORKFLOW.PASSIVE) {
+				if(enrolledCourse.getWorkflow() == COURSE_WORKFLOW.PASSIVE) {
 					if(eduService.isEligibleForAdvance(student, enrolledCourse)) {
 						student.setState(STUDENT_STATE.ADVANCING);
 						// determine if entityManager should be flushed.
 						eduService.save(student);
-						eduService.deployLesson(enrolledCourse.getId(), student, 
+						eduService.deployLesson(enrolledCourse.getCourseUUID(), student, 
 								AstrocyteUtils.getCheckpointStr(current.getLessonNum()+1));
 						logger.info("Deployment request made for student " + student.getId());
 					} else logger.info("Tutorial finished.  Unroll next if available...");

@@ -12,7 +12,7 @@ public class CourseTutorialId implements Serializable {
 	
 	@ManyToOne
 	private Tutorial tutorial;
-	@ManyToOne
+	@ManyToOne(targetEntity=BaseCourseDefinition.class)
 	private Course course;
 	
 	public Tutorial getTutorial() {

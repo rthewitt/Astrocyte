@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import com.mpi.astro.core.model.arcade.impl.JavaGame;
 import com.mpi.astro.core.model.comm.AdvanceCommand;
 import com.mpi.astro.core.model.comm.InitCommand;
+import com.mpi.astro.core.model.comm.ProvisionVMCommand;
+import com.mpi.astro.core.model.comm.Receipt;
 import com.mpi.astro.core.model.comm.UpdateCommand;
 import com.mpi.astro.core.model.edu.Student;
 
@@ -82,6 +84,27 @@ public class AstrocyteUtils {
 		return courseUUID.split("-")[0];
 	}
 	
+	public static String getCommandIdentifier(String stub) {
+		// TODO finish.  This will be a padding function with
+		// a base identifier to make it recognizable
+		if(stub.length() > 20) return stub.substring(0, 20);
+		else return stub;
+		// was considering padding the String, but so far not necessary
+		// courseUUID works even 
+		/*
+		char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+		StringBuilder sb = new StringBuilder();
+		Random random = new Random();
+		for (int i = 0; i < 20; i++) {
+		    char c = chars[random.nextInt(chars.length)];
+		    sb.append(c);
+		}
+		String output = sb.toString();
+		System.out.println(output);
+//		return id;
+		*/
+	}
+	
 	// TODO reroute through auto-commit form in JSP after JSON web-service
 	public static String getExternalTutorialDescriptionAsString(String URI) {
 		DefaultHttpClient client = new DefaultHttpClient();
@@ -106,6 +129,10 @@ public class AstrocyteUtils {
 		switch(action) {
 		case INITIALIZE:
 			return InitCommand.class;
+		case RECEIPT:
+			return Receipt.class;
+		case PROVISION_VM:
+			return ProvisionVMCommand.class;
 		case UPDATE_CLASS:
 			return UpdateCommand.class;
 		case UPDATE_STUDENT:

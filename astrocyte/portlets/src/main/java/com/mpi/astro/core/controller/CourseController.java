@@ -57,8 +57,8 @@ public class CourseController {
 		// TODO if class update, ref will be resolved with selection so tutorial is known.
 		if(studentId != null && !studentId.isEmpty()) {
 			Student student = eduService.getStudent(Long.parseLong(studentId));
-			eduService.deployLesson(Long.parseLong(courseId), student, ref);
-		} else eduService.deployLesson(Long.parseLong(courseId), 1L, ref);
+			eduService.deployLesson(courseId, student, ref);
+		} else eduService.deployLesson(courseId, 1L, ref);
 		
 		return "Commit ref: " + ref;
 	}

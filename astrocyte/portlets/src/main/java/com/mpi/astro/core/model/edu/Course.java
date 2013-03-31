@@ -12,10 +12,6 @@ public interface Course {
 	public String getName();
 
 	public void setName(String name);
-	
-	public COURSE_WORKFLOW getWorkflow();
-	
-	public void setWorkflow(COURSE_WORKFLOW wf);
 
 	public String getDescription();
 

@@ -17,21 +17,18 @@ public class CourseInstanceDao {
 	@PersistenceContext
 	public EntityManager entityManager;
 	
-	public CourseInstance find(Long id) {
-		return entityManager.find(CourseInstance.class, id);
-	}
-	
 	public CourseInstance find(String courseUUID) {
-		return (CourseInstance)entityManager.createQuery("select c from CourseInstance c where c.courseUUID = :uuid")
+		return (CourseInstance)entityManager.createQuery("select c from com.mpi.astro.core.model.edu.CourseInstance c where c.courseUUID = :uuid")
 		.setParameter("uuid", courseUUID).getSingleResult();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<CourseInstance> getCourses() {
-		return entityManager.createQuery("select c from CourseInstance c").getResultList();
+		return entityManager.createQuery("select c from com.mpi.astro.core.model.edu.CourseInstance c").getResultList();
 	}
 	
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public List<Student> getStudentsForCourseById(Long id) {
 		
 		return (List<Student>) entityManager.createQuery("select s " +
@@ -44,13 +41,13 @@ public class CourseInstanceDao {
 	public List<Student> getStudentsForCourseByUUID(String uuid) {
 		
 		return (List<Student>) entityManager.createQuery("select s " +
-				"from Student s join s.courseAssociations sc where sc.pk.course.uuid = :c_id")
-			.setParameter("c_id", uuid).getResultList();
+				"from Student s join s.courseAssociations sc where sc.pk.course.courseUUID = :c_uuid")
+			.setParameter("c_uuid", uuid).getResultList();
 	}
 	
 	@Transactional
 	public CourseInstance save(CourseInstance course) {
-		if (course.getId() == null) {
+		if (course.getCourseUUID() == null) {
 			entityManager.persist(course);
 			return course;
 		} else {

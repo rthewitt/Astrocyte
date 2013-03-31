@@ -44,7 +44,8 @@ public class CourseFactory {
 		// CodeTutorial extends CourseActivity or something in the future after refactoring.
 		CourseInstance course = new CourseImpl(definition);
 		
-		course.setDescription("Sample course from CourseFactory");
+		// currently not allowed
+//		course.setDescription("Sample course from CourseFactory");
 		
 		List<Tutorial> tutorialProgression = eduService.getTutorialListForCourse(definition);
 		
@@ -53,7 +54,8 @@ public class CourseFactory {
 			throw new RuntimeException("Cannot [yet] create course with "+tutorialProgression.size()+" tutorials");
 		
 		logger.debug("course during building: " + course.getName());
-		logger.debug(eduService.testMethod());
+		course = eduService.save(course);
+		/* No longer necessary due to traversal delegation to definition
 		course = eduService.save(course);
 		
 		for(Tutorial tutorial : tutorialProgression) {
@@ -67,7 +69,7 @@ public class CourseFactory {
 			eduService.save(tutorial);
 		}
 		eduService.save(course);
-		
+		*/
 		return course;
 	}
 }

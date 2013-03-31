@@ -37,7 +37,7 @@ public class StudentCourseDao {
 	
 	@Transactional
 	public StudentCourse save(StudentCourse enrollment) {
-		if (enrollment.getPk().getCourse().getId() == null || enrollment.getPk().getStudent().getId() == null) {
+		if (enrollment.getPk().getCourse().getCourseUUID() == null || enrollment.getPk().getStudent().getId() == null) {
 			entityManager.persist(enrollment);
 			return enrollment;
 		} else {

@@ -13,17 +13,15 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-2.5.xsd" >
 	
-	<context:component-scan base-package="com.mpi.astro.core.controller" />
-	
-	<!-- Was registering URLs, but not with DispatcherServlet if that makes any sense.  Verify -->
+	<!-- <context:component-scan base-package="com.mpi.astro.core.controller" />
 
 	<context:annotation-config/>
     <mvc:annotation-driven />
-    <tx:annotation-driven/>
+    <tx:annotation-driven/> -->
      
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
-     <!-- 
+
     <bean id="astroBridgeBean" class="com.mpi.astro.core.controller.PublicController" />
 	<bean id="urlMapping"  class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
   		<property name="mappings">
@@ -31,6 +29,6 @@
     		<prop key="/bridge">astroBridgeBean</prop>  
   		</props>
   		</property>
-	</bean> -->
+	</bean>
 	
 </beans>

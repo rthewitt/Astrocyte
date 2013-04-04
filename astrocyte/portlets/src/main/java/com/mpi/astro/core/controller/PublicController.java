@@ -1,33 +1,43 @@
 package com.mpi.astro.core.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
 
-import com.mpi.astro.core.service.edu.EduService;
-
-@Controller
-@RequestMapping("/delegate/bridge")
-public class PublicController {
+//@Controller
+//@RequestMapping("/delegate/bridge")
+public class PublicController extends AbstractController {
 	
-	@Autowired
-	EduService eduService;
-	
+//	@Autowired
+//	EduService eduService;
+	/*
 	@RequestMapping(method=RequestMethod.GET, value="hello")
 	public String welcome() {
 		return "Service working correctly";
+	} */
+
+	@Override
+	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		String testLogic = "Your basic controller mapping worked.";
+		response.getOutputStream().write(testLogic.getBytes());
+		response.flushBuffer();
+		return null;
 	}
 	
-	@RequestMapping(method=RequestMethod.GET, value="/bridge/fallback")
-	public String fallback() {
-		return "Fallback working correctly";
-	}
-	
-	@RequestMapping(method=RequestMethod.GET, value="/delegate/bridge/resort")
-	public String lastResort() {
-		return "lastResort working correctly";
-	}
+//	@RequestMapping(method=RequestMethod.GET, value="/bridge/fallback")
+//	public String fallback() {
+//		return "Fallback working correctly";
+//	}
+//	
+//	@RequestMapping(method=RequestMethod.GET, value="/delegate/bridge/resort")
+//	public String lastResort() {
+//		return "lastResort working correctly";
+//	}
 	
 	/*
 	// Testing communication between client / server.

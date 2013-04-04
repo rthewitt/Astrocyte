@@ -32,8 +32,9 @@ public class Syllabus extends BaseCourseDefinition implements Serializable, Cour
 	@Column(name = "COURSE_DESC", nullable = false)
 	private String description;
 	
-	@OneToMany(mappedBy = "pk.course")
-	private Set<StudentCourse> studAssociations = new HashSet<StudentCourse>(0);
+//	This was left over from refactor, and was referenced in hibernate query
+//	@OneToMany(mappedBy = "pk.course")
+//	private Set<StudentCourse> studAssociations = new HashSet<StudentCourse>(0);
 	
 	@OneToMany(mappedBy = "pkey.course")
 	private Set<CourseTutorial> tutAssociations = new HashSet<CourseTutorial>(0);
@@ -66,27 +67,27 @@ public class Syllabus extends BaseCourseDefinition implements Serializable, Cour
 		return this.deployedCourses;
 	}
 	
-	public Set<StudentCourse> getStudAssociations() {
-		return studAssociations;
-	}
-
-	public void setStudAssociations(Set<StudentCourse> studAssociations) {
-		this.studAssociations = studAssociations;
-	}
+//	public Set<StudentCourse> getStudAssociations() {
+//		return studAssociations;
+//	}
+//
+//	public void setStudAssociations(Set<StudentCourse> studAssociations) {
+//		this.studAssociations = studAssociations;
+//	}
 	
 	// Any reason to force unmodifiable?
 	/* Also, would placing annotations on setters increase performance for getting just the
 	   student ids for initialization / generation / future reporting? */
-	public Set<Student> getStudentsInCourse() {
-		Set <Student> ret = new HashSet<Student>();
-		for(StudentCourse sc : this.studAssociations)
-			ret.add(sc.getStudent());
-		return Collections.unmodifiableSet(ret);
-	}
+//	public Set<Student> getStudentsInCourse() {
+//		Set <Student> ret = new HashSet<Student>();
+//		for(StudentCourse sc : this.studAssociations)
+//			ret.add(sc.getStudent());
+//		return Collections.unmodifiableSet(ret);
+//	}
 	
-	public void addStudentAssociation(StudentCourse enrollment) {
-		this.studAssociations.add(enrollment);
-	}
+//	public void addStudentAssociation(StudentCourse enrollment) {
+//		this.studAssociations.add(enrollment);
+//	}
 	
 	public Set<CourseTutorial> getTutAssociations() {
 		return tutAssociations; 

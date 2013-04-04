@@ -90,14 +90,13 @@ public class StudentCourseDao {
 		String query = "select t from Tutorial t " +
 				"inner join t.courseAssociations as ct " +
 				"inner join ct.pkey.course as c " +
-				"inner join c.studAssociations as sci " +
-				// HERE BE BROKEN
-//				"where ct.pkey.course = sci.pk.course.syllabus " +
-				"where ct.pkey.course.id = sci.pk.course.syllabus.id " + // try anyway
+				// I think I was wrong, here's the issue
+				"inner join c.deployedCourses as dep" +
+				"inner join dep.studAssociations as sci " +
+				"where ct.pkey.course = sci.pk.course.syllabus " +
 				"and ct.order = sci.tutorialNum " +
 				"and ct.pkey.tutorial = t " +
 				"and sci = :enrollment";
-				// HERE BE DRAGONS
 		Tutorial lazyTut =  (Tutorial)entityManager.createQuery(query)
 		.setParameter("enrollment", enrollment).getSingleResult();
 		

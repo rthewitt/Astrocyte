@@ -92,7 +92,8 @@ public class StudentCourseDao {
 				"inner join ct.pkey.course as c " +
 				"inner join c.studAssociations as sci " +
 				// HERE BE BROKEN
-				"where ct.pkey.course = sci.pk.course.syllabus " +
+//				"where ct.pkey.course = sci.pk.course.syllabus " +
+				"where ct.pkey.course.id = sci.pk.course.syllabus.id " + // try anyway
 				"and ct.order = sci.tutorialNum " +
 				"and ct.pkey.tutorial = t " +
 				"and sci = :enrollment";

@@ -23,10 +23,7 @@ public class PublicController extends AbstractController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		String testLogic = "Your basic controller mapping worked.";
-		response.getOutputStream().write(testLogic.getBytes());
-		response.flushBuffer();
-		return null;
+		return new ModelAndView("public/hello");
 	}
 	
 //	@RequestMapping(method=RequestMethod.GET, value="/bridge/fallback")

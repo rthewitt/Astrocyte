@@ -34,7 +34,9 @@
 		<servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
     	<init-param>
       		<param-name>servlet-class</param-name>
-      		<param-value>com.mpi.astro.core.controller.PublicController</param-value>
+      		<!-- This will allow limited (albeit partially broken) Spring functionaly -->
+      		<!-- details: http://longgoldenears.blogspot.com/2008/03/portaldelegateservlet-servlet-session.html -->
+      		<param-value>org.springframework.web.servlet.DispatcherServlet</param-value>
     	</init-param>
     	<init-param>
       		<param-name>sub-context</param-name>
@@ -42,6 +44,7 @@
 	    </init-param>
 	    <load-on-startup>1</load-on-startup>   
  	</servlet>
+	
    
 	<servlet>
 		<servlet-name>view-servlet</servlet-name>

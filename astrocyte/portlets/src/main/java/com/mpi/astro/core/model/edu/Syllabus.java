@@ -32,10 +32,6 @@ public class Syllabus extends BaseCourseDefinition implements Serializable, Cour
 	@Column(name = "COURSE_DESC", nullable = false)
 	private String description;
 	
-//	This was left over from refactor, and was referenced in hibernate query
-//	@OneToMany(mappedBy = "pk.course")
-//	private Set<StudentCourse> studAssociations = new HashSet<StudentCourse>(0);
-	
 	@OneToMany(mappedBy = "pkey.course")
 	private Set<CourseTutorial> tutAssociations = new HashSet<CourseTutorial>(0);
 	
@@ -61,33 +57,13 @@ public class Syllabus extends BaseCourseDefinition implements Serializable, Cour
 		this.description = description;
 	}
 	
-	// May also want restricted to "active"
-	// Business logic may instead later force a single deployment of course
-	public List<CourseInstance> getAllDeployedCourses() {
+	public List<CourseInstance> getDeployedCourses() {
 		return this.deployedCourses;
 	}
 	
-//	public Set<StudentCourse> getStudAssociations() {
-//		return studAssociations;
-//	}
-//
-//	public void setStudAssociations(Set<StudentCourse> studAssociations) {
-//		this.studAssociations = studAssociations;
-//	}
-	
-	// Any reason to force unmodifiable?
-	/* Also, would placing annotations on setters increase performance for getting just the
-	   student ids for initialization / generation / future reporting? */
-//	public Set<Student> getStudentsInCourse() {
-//		Set <Student> ret = new HashSet<Student>();
-//		for(StudentCourse sc : this.studAssociations)
-//			ret.add(sc.getStudent());
-//		return Collections.unmodifiableSet(ret);
-//	}
-	
-//	public void addStudentAssociation(StudentCourse enrollment) {
-//		this.studAssociations.add(enrollment);
-//	}
+	public void setDeployedCourses(List<CourseInstance> deployedCourses) {
+		this.deployedCourses = deployedCourses;
+	}
 	
 	public Set<CourseTutorial> getTutAssociations() {
 		return tutAssociations; 

@@ -94,8 +94,6 @@ public class Student implements Serializable {
 	}
 	
 	public boolean isEnrolled(CourseInstance course) {
-		logger.debug("Course "+course.getName()+" not found in convenience map, checking associations.");
-		
 		boolean enrolled = false;
 		for(StudentCourse sc : courseAssociations)
 			if(sc.getCourse().getCourseUUID().equals(course.getCourseUUID())) enrolled = true;

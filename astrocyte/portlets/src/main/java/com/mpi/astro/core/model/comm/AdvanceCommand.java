@@ -61,7 +61,8 @@ public class AdvanceCommand extends BaseCommand implements Command {
 		
 		if("request".equals(this.advanceStatus)) {
 			
-			eduService.notifyProfessorPullRequest();
+			// NOT IMPLEMENTED, WILL ERROR OUT
+//			eduService.notifyProfessorPullRequest();
 			
 			if(!(statusTag.matches(AstrocyteConstants.CHECKPOINT_REGEX) &&
 					Integer.parseInt(statusTag.substring(statusTag.lastIndexOf('-'))) == current.getLessonNum() )) {

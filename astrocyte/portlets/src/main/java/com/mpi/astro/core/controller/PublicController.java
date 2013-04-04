@@ -26,6 +26,16 @@ public class PublicController {
 		return "Service working correctly";
 	}
 	
+	@RequestMapping(method=RequestMethod.GET, value="/bridge/fallback")
+	public String fallback() {
+		return "Fallback working correctly";
+	}
+	
+	@RequestMapping(method=RequestMethod.GET, value="/delegate/bridge/resort")
+	public String lastResort() {
+		return "lastResort working correctly";
+	}
+	
 	/*
 	// Testing communication between client / server.
 	// will use ajax from client, unless client is merged into server.  Maybe both cases.

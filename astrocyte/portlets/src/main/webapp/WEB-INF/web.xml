@@ -29,15 +29,13 @@
    
    <!-- Allows for a servlet delegate to sit alongside portlet environment. -->
    <!-- See http://ceanot.blogspot.com/2010/10/liferay-running-servlet-within-portlet.html for details -->
-   <!-- Testing without web.xml portion for log output
 	<servlet>
 		<servlet-name>astrobridge</servlet-name>
 		<servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
     	<init-param>
-      		<param-name>servlet-class</param-name> -->
+      		<param-name>servlet-class</param-name>
       		<!-- This will allow limited (albeit partially broken) Spring functionaly -->
       		<!-- details: http://longgoldenears.blogspot.com/2008/03/portaldelegateservlet-servlet-session.html -->
-      		<!-- 
       		<param-value>org.springframework.web.servlet.DispatcherServlet</param-value>
     	</init-param>
     	<init-param>
@@ -45,7 +43,7 @@
       		<param-value>bridge</param-value>
 	    </init-param>
 	    <load-on-startup>1</load-on-startup>   
- 	</servlet> -->
+ 	</servlet>
 	
    
 	<servlet>

@@ -13,7 +13,7 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-2.5.xsd" >
 	
-	<!-- <context:component-scan base-package="com.mpi.astro.core.controller" /> Possible duplicate --> 
+	<context:component-scan base-package="com.mpi.astro.core.controller" />
 	
 	<!-- Was registering URLs, but not with DispatcherServlet if that makes any sense.  Verify -->
 

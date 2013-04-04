@@ -21,7 +21,7 @@ public class PublicController {
 	@Autowired
 	EduService eduService;
 	
-	@RequestMapping(method=RequestMethod.GET, value="/delegate/bridge/hello")
+	@RequestMapping(method=RequestMethod.GET, value="hello")
 	public String welcome() {
 		return "Service working correctly";
 	}

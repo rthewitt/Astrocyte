@@ -27,6 +27,22 @@
 	</listener>
    -->
    
+   <!-- Allows for a servlet delegate to sit alongside portlet environment. -->
+   <!-- See http://ceanot.blogspot.com/2010/10/liferay-running-servlet-within-portlet.html for details -->
+	<servlet>
+		<servlet-name>astrobridge</servlet-name>
+		<servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
+    	<init-param>
+      		<param-name>servlet-class</param-name>
+      		<param-value>com.mpi.astro.core.controller.PublicController</param-value>
+    	</init-param>
+    	<init-param>
+      		<param-name>sub-context</param-name>
+      		<param-value>bridge</param-value>
+	    </init-param>
+	    <load-on-startup>1</load-on-startup>   
+ 	</servlet>
+   
 	<servlet>
 		<servlet-name>view-servlet</servlet-name>
 		<servlet-class>org.springframework.web.servlet.ViewRendererServlet</servlet-class>

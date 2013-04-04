@@ -19,10 +19,10 @@ import com.mpi.astro.core.service.arcade.GameProviderService;
 import com.mpi.astro.core.util.AstrocyteConstants;
 
 
-@Controller
-@RequestMapping("/arcade")
+//@Controller
+//@RequestMapping("/arcade")
 public class ArcadeController {
-	
+	/*
 	@Autowired
 	private GameProviderService gameService;
 	
@@ -47,5 +47,5 @@ public class ArcadeController {
 		ModelAndView mav = new ModelAndView("jnlp", modelMap);
 		return mav;
 	}
-	
+	*/
 }

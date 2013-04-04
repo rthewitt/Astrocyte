@@ -22,23 +22,23 @@ public class PublicController {
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public String welcome() {
-		return "Welcome to Myelin Prime";
+		return "Service working correctly";
 	}
 	
 	// Testing communication between client / server.
 	// will use ajax from client, unless client is merged into server.  Maybe both cases.
-	@RequestMapping(value="bridge", method=RequestMethod.GET, produces="application/json")
+	@RequestMapping(value="hello", method=RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public String respondToClient(HttpServletRequest request, HttpServletResponse response) {
 		String mediaJSON = "{}";
-		String id = request.getParameter("student");
+		String sid = request.getParameter("student");
 		String course = request.getParameter("course");
-		if( !(id == null || course == null || StringUtils.isEmpty(id) || StringUtils.isEmpty(course)) ) {
-			Student student = eduService.getStudent(Long.parseLong(id));
+		if( !(sid == null || course == null || StringUtils.isEmpty(sid) || StringUtils.isEmpty(course)) ) {
+			Student student = eduService.getStudentEagerBySID(sid);
 			StringBuilder sb = new StringBuilder();
 			sb.append("{")
 			.append("media: {")
-			.append("\"TODO: IMPLEMENT\"")
+			.append("\"name: "+student.getFirstName()+"\"")
 			.append("}")
 			.append("}");
 		}

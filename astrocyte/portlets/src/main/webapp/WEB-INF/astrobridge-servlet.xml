@@ -21,9 +21,12 @@
     <mvc:annotation-driven />
     <tx:annotation-driven/>
     
-    
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
     
     <!-- Try, at least... -->
+    <!-- 
     <bean id="astroBridge" class="com.mpi.astro.core.controller.PublicController" />
 	<bean id="urlMapping"  class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
   		<property name="mappings">
@@ -31,6 +34,6 @@
     		<prop key="/bridge">astroBridge</prop>  
   		</props>
   		</property>
-	</bean>
+	</bean> -->
 	
 </beans>

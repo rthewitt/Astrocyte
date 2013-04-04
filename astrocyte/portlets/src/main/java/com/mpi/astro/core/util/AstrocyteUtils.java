@@ -80,7 +80,7 @@ public class AstrocyteUtils {
 		return obj;
 	}
 	
-	public static String getCourseNameFromCourseUUI(String courseUUID) {
+	public static String getCourseNameFromCourseUUID(String courseUUID) {
 		return courseUUID.split("-")[0];
 	}
 	

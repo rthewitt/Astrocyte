@@ -21,9 +21,18 @@ public class StudentDao {
 	}
 	
 	// Hibernate.initialize is not appropriate for collections
+	// I don't recall if this actually works with my transactional setup now or is meaningless
 	@Transactional
 	public Student getStudentInitialized(long id) {
 		Student student = find(id);
+		student.getCourses();
+		return student;
+	}
+	
+	@Transactional
+	public Student getStudentInitializedBySID(String studentId) {
+		Student student = (Student)entityManager.createQuery("select p from Student p where p.studentId = :sid")
+			.setParameter("sid", studentId).getSingleResult();
 		student.getCourses();
 		return student;
 	}

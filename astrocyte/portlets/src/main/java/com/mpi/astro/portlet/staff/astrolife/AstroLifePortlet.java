@@ -145,28 +145,8 @@ public class AstroLifePortlet extends BaseAstroPortlet {
 		// Reattaching to persistenceContext
 		Student student = eduService.save(detachedStudent);
 		
-		// This is no longer allowed as we're dealing with definitions
-		/*
-		String addInput = request.getParameter("add-courses");
-		if(addInput != null && ! addInput.isEmpty()) {
-			
-			
-			String[] adds = request.getParameter("add-courses").split(",");
-			
-			for(String s : adds) {
-				Course cc = eduService.getCourse(Long.parseLong(s));
-				logger.debug("Request to add: " + cc.getName());
-				if(!student.isEnrolled(cc)) {
-					eduService.enrollStudent(student, cc);
-					eduService.save(cc); // student saved further down
-					} 
-				    
-				logger.debug("Course " + cc.getName() + " added");
-			}
-			
-		} else logger.debug("No course addition requests for student");
-		
-		eduService.save(student); */
+		student.setStudentId(student.getStudentId()); // This should work correctly
+		eduService.save(student); // is this required?  I forget
 	}
 	
 	@ModelAttribute

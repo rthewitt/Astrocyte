@@ -48,6 +48,10 @@ public class Student implements Serializable {
 	@Column (name = "LAST_NAME")
 	private String lastName;
 	
+	// consider moving this into separate table STUDENT_PORTAL (PORTAL_SN)
+	@Column (name = "STUDENT_SID", unique = true, nullable = true)
+	private String studentId = null;
+	
 	@Enumerated(EnumType.STRING)
 	@Column (name = "CURRENT_STATE")
 	private STUDENT_STATE state = STUDENT_STATE.WORKING;
@@ -109,10 +113,22 @@ public class Student implements Serializable {
 		return id;
 	}
 	
-	// TODO persists this, I suppose.  The intersection will help tie user/portal users together
+	// future will allow for import
 	public String getStudentId() {
+		if(studentId == null) 
+			return lastName != null ? createStudentId() : "";
+		else
+			return this.studentId;
+	}
+	
+	public void setStudentId(String studentId) {
+		this.studentId = studentId;
+	}
+	
+	// TODO fix, nullpointer because called before these values are established, in view.
+	public String createStudentId() {
 		return String.format("%s%03d",
-				(lastName.length() > 4 ? lastName.toLowerCase().substring(0, 5) : lastName),
+				(lastName.length() > 4 ? lastName.toLowerCase().substring(0, 5) : lastName.toLowerCase()),
 				this.id);
 	}
 

@@ -38,21 +38,23 @@ public class AdvanceCommand extends BaseCommand implements Command {
 	@Override
 	public void execute() {
 		
-		Student student = eduService.getStudentEager(Long.parseLong(this.studentId));
+		// no longer a long, is now the studentId / screenname
+		Student student = eduService.getStudentEagerBySID(this.studentId);
 		 
-		String courseName = AstrocyteUtils.getCourseNameFromCourseUUI(this.courseUUID);
+		String courseName = AstrocyteUtils.getCourseNameFromCourseUUID(this.courseUUID);
 		Course course = eduService.getCourseDefinitionByName(courseName);
 		CourseInstance enrolledCourse = eduService.getDeployedCourse(this.courseUUID);
 		
 		 	
 		
 		// Consider throwing an error here
-		if(course == null || !student.getCourses().contains(course)) {
+		// Remember getCourses() fails on equality, due either to hibernate or poor equality override
+		if(course == null || enrolledCourse == null || !student.isEnrolled(enrolledCourse) ||
+				!(course.getId() == enrolledCourse.getCourseDefinition().getId())) {
 			logger.error("Problem advancing student "+student.getId()+" for course "+course.getName()+
 					"\nThis will likely lead to data inconsistency!");
 			return;
-		} else if(!course.equals(enrolledCourse.getCourseDefinition()))
-			logger.warn("Course UUID no longer matches instance prototype. Data integrity may be violated.");
+		}
 		
 		
 		StudentStatus current = eduService.getStudentStatus(student, enrolledCourse);

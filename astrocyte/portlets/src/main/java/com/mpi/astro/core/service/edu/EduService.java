@@ -118,6 +118,10 @@ public class EduService {
 		return studentDao.getStudentInitialized(id);
 	}
 	
+	public Student getStudentEagerBySID(String studentId) {
+		return studentDao.getStudentInitializedBySID(studentId);
+	}
+	
 	public List<Student> getAllStudents() {
 		return studentDao.getStudents();
 	}

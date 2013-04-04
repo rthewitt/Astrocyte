@@ -1,8 +1,16 @@
 package com.mpi.astro.core.controller;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.json.simple.JSONObject;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -21,7 +29,27 @@ public class PublicController extends AbstractController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		return new ModelAndView("public/hello");
+		ObjectMapper mapper = new ObjectMapper();
+		
+		JSONObject obj = new JSONObject();
+		
+		obj.put("name", "test-value");
+		String jsonString = mapper.writeValueAsString(obj);
+		
+		MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
+		
+		MediaType jsonMimeType = MediaType.APPLICATION_JSON;
+
+		if(jsonConverter.canWrite(String.class, jsonMimeType)) {
+			try {
+	            jsonConverter.write(obj, jsonMimeType, new ServletServerHttpResponse(response));
+	        } catch (HttpMessageNotWritableException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		} else return new ModelAndView("edu/failure"); // should not be possible
+        return null;
 	}
 	
 //	@RequestMapping(method=RequestMethod.GET, value="/bridge/fallback")

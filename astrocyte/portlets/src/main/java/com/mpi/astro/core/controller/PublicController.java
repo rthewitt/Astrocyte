@@ -1,5 +1,6 @@
 package com.mpi.astro.core.controller;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,7 +15,7 @@ import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.service.edu.EduService;
 
 @Controller
-@RequestMapping("/delegate/bridge")
+//@RequestMapping("/delegate/bridge")
 public class PublicController {
 	
 	@Autowired
@@ -25,6 +26,7 @@ public class PublicController {
 		return "Service working correctly";
 	}
 	
+	/*
 	// Testing communication between client / server.
 	// will use ajax from client, unless client is merged into server.  Maybe both cases.
 	@RequestMapping(value="hello", method=RequestMethod.GET, produces="application/json")
@@ -44,6 +46,6 @@ public class PublicController {
 		}
 		
 		return mediaJSON;
-	}
+	} */
 	
 }

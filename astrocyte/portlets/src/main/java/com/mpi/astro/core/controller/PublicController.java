@@ -5,8 +5,10 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
@@ -15,11 +17,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+import com.mpi.astro.core.model.edu.Student;
+import com.mpi.astro.core.service.edu.EduService;
+
 @Controller
 public class PublicController extends AbstractController {
 	
-//	@Autowired
-//	EduService eduService;
+	@Autowired
+	EduService eduService;
 	/*
 	@RequestMapping(method=RequestMethod.GET, value="hello")
 	public String welcome() {
@@ -33,7 +38,12 @@ public class PublicController extends AbstractController {
 		
 		JSONObject obj = new JSONObject();
 		
-		obj.put("name", "test-value");
+		String studentId = request.getParameter("student");
+		
+		if(studentId == null || StringUtils.isEmpty(studentId)) return new ModelAndView("edu/failure"); // TODO error
+		
+		Student student = eduService.getStudentEagerBySID(studentId);
+		obj.put("name", student.getFirstName());
 		String jsonString = mapper.writeValueAsString(obj);
 		
 		MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
@@ -48,7 +58,7 @@ public class PublicController extends AbstractController {
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
-		} else return new ModelAndView("edu/failure"); // should not be possible
+		} else return new ModelAndView("edu/failure"); // TODO error
         return null;
 	}
 	

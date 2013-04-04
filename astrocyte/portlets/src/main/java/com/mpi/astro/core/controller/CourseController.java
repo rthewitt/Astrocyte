@@ -17,7 +17,7 @@ import com.mpi.astro.core.service.edu.EduService;
 
 // TODO important - this is really the courseName, change logic, add convenience method to service
 
-@Controller
+//@Controller
 @RequestMapping("/course/{courseId}/")
 public class CourseController {
 	

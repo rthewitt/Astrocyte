@@ -1,14 +1,14 @@
 package com.mpi.astro.core.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.mpi.astro.core.service.edu.EduService;
 
-@Component
-//@RequestMapping("/delegate/bridge")
+@Controller
+@RequestMapping("/delegate/bridge")
 public class PublicController {
 	
 	@Autowired

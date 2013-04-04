@@ -14,7 +14,7 @@ import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.service.edu.EduService;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/delegate/bridge")
 public class PublicController {
 	
 	@Autowired

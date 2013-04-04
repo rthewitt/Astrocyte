@@ -91,7 +91,7 @@ public class StudentCourseDao {
 				"inner join t.courseAssociations as ct " +
 				"inner join ct.pkey.course as c " +
 				// I think I was wrong, here's the issue
-				"inner join c.deployedCourses as dep" +
+				"inner join c.deployedCourses as dep " +
 				"inner join dep.studAssociations as sci " +
 				"where ct.pkey.course = sci.pk.course.syllabus " +
 				"and ct.order = sci.tutorialNum " +

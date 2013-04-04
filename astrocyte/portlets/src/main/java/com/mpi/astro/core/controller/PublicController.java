@@ -1,20 +1,13 @@
 package com.mpi.astro.core.controller;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.service.edu.EduService;
 
-@Controller
+@Component
 //@RequestMapping("/delegate/bridge")
 public class PublicController {
 	

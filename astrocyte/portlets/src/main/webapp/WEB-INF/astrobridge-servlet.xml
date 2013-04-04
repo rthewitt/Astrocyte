@@ -22,6 +22,13 @@
      
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+	
+	<!-- Supposedly this should fail, unless they've fixed Liferay in the meantime -->
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/resources/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
 
     <bean id="astroBridgeBean" class="com.mpi.astro.core.controller.PublicController" />
 	<bean id="urlMapping"  class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

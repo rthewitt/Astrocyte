@@ -46,6 +46,8 @@ public class PublicController extends AbstractController {
 		MediaType jsonMimeType = MediaType.APPLICATION_JSON;
 
 		if(jsonConverter.canWrite(String.class, jsonMimeType)) {
+			// Should allow ajax, I may even be able to dynamically specify the host based on lookup
+			response.setHeader("Access-Control-Allow-Origin", "*");
 			try {
 	            jsonConverter.write(obj, jsonMimeType, new ServletServerHttpResponse(response));
 	        } catch (HttpMessageNotWritableException e) {

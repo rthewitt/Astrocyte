@@ -31,6 +31,6 @@
     		<prop key="/bridge">astroBridgeBean</prop>  
   		</props>
   		</property>
-	</bean> -->
+	</bean>
 	
 </beans>

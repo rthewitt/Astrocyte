@@ -2,4 +2,5 @@
    <session-factory> 
     <!--When JPA is used, configuration is moved to persistence.xml, which specifies Annotation scan -->  
     </session-factory>
+    <property name="show_sql">false</property>
 </hibernate-configuration>

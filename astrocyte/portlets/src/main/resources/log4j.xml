@@ -43,7 +43,7 @@
 	</logger>
 	
 	<logger name="org.hibernate">
-		<level value="warn" />
+		<level value="error" />
 	</logger>
  
 	

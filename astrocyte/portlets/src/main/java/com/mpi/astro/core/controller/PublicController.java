@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.service.edu.EduService;
+import com.mpi.astro.core.util.AstrocyteConstants.STUDENT_STATE;
 
 @Controller
 public class PublicController extends AbstractController {
@@ -29,33 +30,45 @@ public class PublicController extends AbstractController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
+		// see if I can just place a filter somewhere for this, or a spring interceptor
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		
-		JSONObject obj = new JSONObject();
+		
 		
 		String studentId = request.getParameter("student");
 		
 		if(studentId == null || StringUtils.isEmpty(studentId)) return new ModelAndView("edu/failure"); // TODO error
 		
 		Student student = eduService.getStudentEagerBySID(studentId);
-		obj.put("name", student.getFirstName());
-		String jsonString = mapper.writeValueAsString(obj);
 		
-		MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
-		
-		MediaType jsonMimeType = MediaType.APPLICATION_JSON;
+		if(request.getParameter("notified") != null) {
+			
+			if(student.getState() == STUDENT_STATE.NOTIFY_STUDENT)
+				student.setState(STUDENT_STATE.WORKING);
+			
+		} else {
+			
+			ObjectMapper mapper = new ObjectMapper();
+			JSONObject obj = new JSONObject();
+			obj.put("lessonAvailable", (Boolean)(student.getState() == STUDENT_STATE.NOTIFY_STUDENT));
+			String jsonString = mapper.writeValueAsString(obj);
+			
+			MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
+			MediaType jsonMimeType = MediaType.APPLICATION_JSON;
 
-		if(jsonConverter.canWrite(String.class, jsonMimeType)) {
-			// Should allow ajax, I may even be able to dynamically specify the host based on lookup
-			response.setHeader("Access-Control-Allow-Origin", "*");
-			try {
-	            jsonConverter.write(obj, jsonMimeType, new ServletServerHttpResponse(response));
-	        } catch (HttpMessageNotWritableException e) {
-	            e.printStackTrace();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-		} else return new ModelAndView("edu/failure"); // TODO error
+			if(jsonConverter.canWrite(String.class, jsonMimeType)) {
+				// Should allow ajax, I may even be able to dynamically specify the host based on lookup
+				
+				try {
+		            jsonConverter.write(obj, jsonMimeType, new ServletServerHttpResponse(response));
+		        } catch (HttpMessageNotWritableException e) {
+		            e.printStackTrace();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+			} else return new ModelAndView("edu/failure"); // TODO error
+		}
+		response.setStatus(HttpServletResponse.SC_OK);
         return null;
 	}
 	

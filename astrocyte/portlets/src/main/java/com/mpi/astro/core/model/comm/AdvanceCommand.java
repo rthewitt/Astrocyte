@@ -109,7 +109,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			}
 			// Move more of this logic into the service layer, use custom exceptions
 			eduService.advanceStudentForCourse(student, enrolledCourse);
-			student.setState(STUDENT_STATE.WORKING); // consider intermediate for ajax ping from client
+			student.setState(STUDENT_STATE.NOTIFY_STUDENT); // consider intermediate for ajax ping from client
 			eduService.save(student);
 			logger.info("Student " + student.getId() + " advanced to lesson " + claimedStatus);
 		}

@@ -16,7 +16,8 @@ public class AstrocyteConstants {
 	public static enum STUDENT_STATE {
 		WORKING,
 		ADVANCING,
-		APPROVAL
+		APPROVAL,
+		NOTIFY_STUDENT
 	}
 	
 	public static enum COURSE_WORKFLOW {

@@ -75,7 +75,7 @@
   	
     <servlet-mapping>
         <servlet-name>dispatch</servlet-name>
-        <url-pattern>/temp/*</url-pattern>
+        <url-pattern>/manage/*</url-pattern>
     </servlet-mapping>
     
     <!-- 

@@ -1,9 +1,14 @@
 package com.myelin.client.controller;
 
+import static com.myelin.client.util.GlialProps.SERVER_GIT_DIR;
+import static com.myelin.client.util.GlialProps.SSH_DIR;
+import static com.myelin.client.util.GlialProps.SSH_KEY;
+import static com.myelin.client.util.GlialProps.SSH_PASS;
+import static com.myelin.client.util.GlialProps.SSH_USER;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -37,8 +42,7 @@ import com.jcraft.jsch.Logger;
 import com.jcraft.jsch.Session;
 import com.myelin.client.util.GlialProps;
 import com.myelin.client.util.JSchCommonsLogger;
-
-import static com.myelin.client.util.GlialProps.*;
+import com.myelin.client.util.SessionUtil;
 
 public class JGitController extends HttpServlet {
 	
@@ -110,6 +114,10 @@ public class JGitController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		
+		SessionUtil.ensureSession(request, response);
+		
 		HttpSession session = request.getSession();
 		
 		// TODO handle expired sessions
@@ -125,8 +133,10 @@ public class JGitController extends HttpServlet {
 		
 		String action = null;
 		
-		if(!request.getParameterMap().containsKey(ACTION)) return; // TODO handle this better
-		else action = request.getParameter(ACTION);
+		if(!request.getParameterMap().containsKey(ACTION)) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		} else action = request.getParameter(ACTION);
 		
 		try {
 			if("update".equals(action)) 
@@ -141,18 +151,16 @@ public class JGitController extends HttpServlet {
 				System.out.println("OUT: init called");
 				initLocalRepository(session, courseRepo, courseFolder);
 			}
-			else sendResponse(response, "Failure", "Operation not (yet) supported");
+			else {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}
+			response.setStatus(HttpServletResponse.SC_OK);
 			
 		} catch(GitAPIException ge) {
 			ge.printStackTrace();
 			jschLogger.error("Problem in JGitController", ge);
 			throw new ServletException(ge);
 		}
-	}
-	
-	private void sendResponse(HttpServletResponse response, String title, String message) throws IOException {
-		PrintWriter out = response.getWriter();
-		out.println(String.format("<html><head><title>%s</title></head><body><h2>%s</h2></body></html>", title, message));
 	}
 	
 	

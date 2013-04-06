@@ -23,6 +23,9 @@ public class GlialProps {
 	public static String SSH_KEY = "private-key";
 	public static String SSH_PASS = "password";
 	
+	public static String STUDENT_ID = null;
+	public static String COURSE_UUID = null;
+	
 	public static String SERVER_GIT_DIR = "/home/myelin/git-repositories";
 	
 	private static final Logger log = LoggerFactory.getLogger(GlialProps.class);
@@ -45,6 +48,9 @@ public class GlialProps {
 			SSH_PASS = props.getProperty("ssh.pass");
 			
 			SERVER_GIT_DIR = props.getProperty("server.git");
+			
+			STUDENT_ID = props.getProperty("student.sid", null);
+			COURSE_UUID = props.getProperty("course.uuid", null);
 		}
 	}
 	

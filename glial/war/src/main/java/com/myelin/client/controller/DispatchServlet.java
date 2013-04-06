@@ -1,15 +1,15 @@
 package com.myelin.client.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.eclipse.jgit.util.StringUtils;
+
+import com.myelin.client.util.SessionUtil;
 
 public class DispatchServlet extends HttpServlet {
 	
@@ -18,16 +18,24 @@ public class DispatchServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		if(session.getAttribute("userId") == null || 
-				StringUtils.isEmptyOrNull(session.getAttribute("userId").toString()) ||
-				session.getAttribute("courseName") == null ||
-				StringUtils.isEmptyOrNull(session.getAttribute("courseName").toString()) ) {
-			showLoginForm("Please Login:", response.getWriter());
-			return;
-		} else
-			System.out.println("Attempting forward to main.jsp");
-			request.getRequestDispatcher("/jsp/main.jsp").forward(request, response);
+		
+		if(!SessionUtil.ensureSession(request, response)) return;
+		
+		String need = request.getParameter("return");
+		String info = "";
+		if( need != null) {
+			if("student".equals(need)) {
+				info = request.getSession().getAttribute("userId").toString();
+			}
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setHeader("Content-Type", "application/json");
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			response.getOutputStream().write(
+					String.format("{\"%s\":\"%s\"}", need, info).getBytes()
+					);
+		} else {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
 	}
 	
 	@Override
@@ -41,25 +49,9 @@ public class DispatchServlet extends HttpServlet {
 			request.getSession().setAttribute("courseName", request.getParameter("courseName"));
 			doGet(request, response);
 		} else
-			showLoginForm("Error!", response.getWriter());
+			SessionUtil.showLoginForm("Error!", response.getWriter());
 	}
 	
-	private void showLoginForm(String message, PrintWriter wrt) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("<html>\n")
-		.append("<head><title>Login</title><head>\n")
-		.append("<body>\n")
-		.append("<span class='message'>" + message + "</span><br />\n")
-		.append("<form method='POST' action='login'>\n")
-		.append("<label for='userId'>User Id: </label>")
-		.append("<input id='user-id' name='userId' /><br />\n")
-		.append("<label for='courseName'>Course: </label>")
-		.append("<input id='course-name' name='courseName' /><br />\n")
-		.append("<input type='submit' value='Login' />\n")
-		.append("</form>\n")
-		.append("</html>\n");
-		
-		wrt.println(sb.toString());
-	}
+	
 	
 }

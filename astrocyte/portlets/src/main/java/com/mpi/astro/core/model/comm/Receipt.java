@@ -22,13 +22,16 @@ public class Receipt extends BaseCommand implements Command {
 	protected boolean status = false; // fallback
 	protected String message = "";
 	
-	public Receipt(Map<String, String> context) {
-		super(MyelinAction.RECEIPT, context.get("courseUUID"));
-		this.originalCommand = MyelinAction.valueOf(context.get("type"));
+	Map<String, Object> fullContext = null;
+	
+	public Receipt(Map<String, Object> context) {
+		super(MyelinAction.RECEIPT, (String)context.get("courseUUID"));
+		this.originalCommand = MyelinAction.valueOf((String)context.get("type"));
 //		status = Boolean.valueOf(context.get("status"));
-		this.status = "success".equals(context.get("status").toLowerCase()) ? true : false;
+		this.status = "success".equals(((String)context.get("status")).toLowerCase()) ? true : false;
 		if(!status && context.containsKey("message"))
-			this.message = context.get("message");
+			this.message = (String)context.get("message");
+		this.fullContext = context;
 	}
 
 	/*
@@ -51,6 +54,18 @@ public class Receipt extends BaseCommand implements Command {
 		switch(this.originalCommand) {
 		case INITIALIZE:
 			eduService.initializeStudentStatuses(courseUUID);
+			break;
+		case PROVISION_VM:
+			try {
+				Map<String, Object> instanceMap = (Map<String, Object>)fullContext.get("instanceMap");
+				for(String studentId : instanceMap.keySet()) {
+					Map<String, String> instanceDesc = (Map<String, String>)instanceMap.get(studentId);
+					eduService.associateStudentVM(studentId, instanceDesc.get("host"), instanceDesc.get("location"));
+				}
+			} catch(Exception e) {
+				logger.error("Problem associating student VM", e);
+			}
+			break;
 		}
 	}
 

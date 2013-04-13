@@ -11,6 +11,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.mpi.astro.core.util.AstrocyteConstants.COURSE_WORKFLOW;
 
@@ -32,6 +33,9 @@ abstract class BaseCourseInstance implements CourseInstance {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "WORKFLOW", nullable = false)
 	private COURSE_WORKFLOW workflow = COURSE_WORKFLOW.PASSIVE;
+	
+	@OneToMany(mappedBy = "currentCourse")
+	private Set<StudentVM> mappings;
 	
 	private static final String CANNOT_MODIFY_DEFINITION = "Cannot manipulate a deployed course flow or definition" +
 			"\ntry modifying the global definition.";
@@ -71,5 +75,11 @@ abstract class BaseCourseInstance implements CourseInstance {
 	}
 	public void setTutAssociations(Set<CourseTutorial> tutAssociations) {
 		throw new UnsupportedOperationException(CANNOT_MODIFY_DEFINITION);
+	}
+	public Set<StudentVM> getMappings() {
+		return this.mappings;
+	}
+	public void setMappings(Set<StudentVM> mappings) {
+		this.mappings = mappings;
 	}
 }

@@ -70,7 +70,6 @@ public class AstroService {
 		
 		logger.debug("Community created : " + courseGroup.getName());
 		
-		// TODO branch logic to test if user already exists in liferay.
 		// TODO bridge databases and users (Astro, Liferay) without losing flexibility
 		long[] lrIds = new long[students.length];
 		for(int i=0;i<students.length; i++) {
@@ -146,6 +145,12 @@ public class AstroService {
             long companyId, String screenName, String firstName,
             String lastName, boolean male, String jobTitle, long[] roleIds) throws PortalException, SystemException {
 		
+		User check = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
+		if(check != null) {
+			logger.debug(String.format("Student with screenName %s already exists in portal with id: %s.",
+					screenName, check.getUserId()));
+			return check;
+		}
 		
 //		long creatorUserId = 0;
         boolean autoPassword = false;

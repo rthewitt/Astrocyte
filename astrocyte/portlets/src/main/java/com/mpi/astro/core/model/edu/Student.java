@@ -59,6 +59,9 @@ public class Student implements Serializable {
 	// Do not allow cascading until you understand why it breaks everything here.  (Cycle or different contexts)
 	@OneToMany(mappedBy = "pk.student") // , cascade=CascadeType.ALL
 	private Set<StudentCourse> courseAssociations = new HashSet<StudentCourse>(0);
+	
+	@OneToMany(mappedBy = "vPk.student") // , cascade=CascadeType.ALL
+	private Set<StudentVM> machineMappings = new HashSet<StudentVM>(0);
 
 	public Student() {
 	}
@@ -75,6 +78,14 @@ public class Student implements Serializable {
 	
 	public void setState(STUDENT_STATE state) {
 		this.state = state;
+	}
+	
+	public Set<StudentVM> getMachineMappings() {
+		return this.machineMappings;
+	}
+	
+	public void setMachineMappings(Set<StudentVM> assoc) {
+		this.machineMappings = assoc;
 	}
 	
 	public Set<StudentCourse> getCourseAssociations() {
@@ -104,7 +115,13 @@ public class Student implements Serializable {
 	// TODO determine safety of equality of Courses as keys given scope of identity.
 	public void addCourseAssociation(StudentCourse enrollment) {
 		this.courseAssociations.add(enrollment);
-		CourseInstance coursePart = enrollment.getCourse();
+//		CourseInstance coursePart = enrollment.getCourse(); // was this an experiment with loading strategy?
+	}
+	
+	// TODO verify these two lines were unnecessary tests for debugging
+	public void addMachineMapping(StudentVM mapping) {
+		this.machineMappings.add(mapping);
+//		CourseInstance coursePart = mapping.getCourse(); // probably doesn't need anything like this, verify
 	}
 
 	public Long getId() {

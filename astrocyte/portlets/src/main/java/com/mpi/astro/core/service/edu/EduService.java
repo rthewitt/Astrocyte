@@ -2,7 +2,6 @@ package com.mpi.astro.core.service.edu;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -15,9 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mpi.astro.core.dao.CourseDao;
 import com.mpi.astro.core.dao.CourseInstanceDao;
 import com.mpi.astro.core.dao.CourseTutorialDao;
+import com.mpi.astro.core.dao.MachineMappingDao;
 import com.mpi.astro.core.dao.StudentCourseDao;
 import com.mpi.astro.core.dao.StudentDao;
 import com.mpi.astro.core.dao.TutorialDao;
+import com.mpi.astro.core.dao.VMDao;
 import com.mpi.astro.core.model.builder.CourseFactory;
 import com.mpi.astro.core.model.edu.Course;
 import com.mpi.astro.core.model.edu.CourseInstance;
@@ -25,7 +26,10 @@ import com.mpi.astro.core.model.edu.CourseTutorial;
 import com.mpi.astro.core.model.edu.Student;
 import com.mpi.astro.core.model.edu.StudentCourse;
 import com.mpi.astro.core.model.edu.StudentStatus;
+import com.mpi.astro.core.model.edu.StudentVM;
 import com.mpi.astro.core.model.edu.Tutorial;
+import com.mpi.astro.core.model.vm.VM;
+import com.mpi.astro.core.model.vm.VMType;
 import com.mpi.astro.core.util.AstrocyteConstants;
 import com.mpi.astro.core.util.AstrocyteUtils;
 import com.mpi.astro.core.util.PropertiesUtil;
@@ -50,6 +54,10 @@ public class EduService {
 	private StudentCourseDao enrollmentDao;
 	@Autowired
 	private CourseTutorialDao tmpCTDao; 
+	@Autowired
+	private VMDao vmDao;
+	@Autowired
+	private MachineMappingDao machineMappingDao;
 	
 	@Autowired
 	private CourseFactory courseFactory;
@@ -140,6 +148,14 @@ public class EduService {
 	
 	public Tutorial save(Tutorial t) {
 		return tutorialDao.save(t);
+	}
+	
+	public VM save(VM vm) {
+		return vmDao.save(vm);
+	}
+	
+	public StudentVM save(StudentVM map) {
+		return machineMappingDao.save(map);
 	}
 	
 	public StudentCourse save(StudentCourse enrollment) {
@@ -319,6 +335,20 @@ public class EduService {
 			Tutorial tut = getTutorial(tutorialId);
 			myelinService.requestClassMerge(course, tut.getPrototype(), commitRef);
 			return true;
+		}
+		
+		@Transactional
+		public void associateStudentVM(String studentId, String host, String location) {
+			Student student = getStudentEagerBySID(studentId);
+			VM machine = new VM(host, location, VMType.AMAZON_EC2);
+			StudentVM mapping = new StudentVM();
+			mapping.setVM(machine);
+			mapping.setStudent(student);
+			student.addMachineMapping(mapping);
+			machine.addStudentAssociation(mapping);
+			save(mapping);
+			save(machine);
+			save(student);
 		}
 		
 		public void clearForTest(){

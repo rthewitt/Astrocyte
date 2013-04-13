@@ -37,8 +37,6 @@ public class StudentCourse implements Serializable {
 
 	private static final long serialVersionUID = 3105539532934783763L;
 	
-	// 1. Why do I need a separate object again?
-	// 2. Does transient on the getters/setters below sensible given reflection?
 	@EmbeddedId
 	private StudentCourseId pk = new StudentCourseId();
 	

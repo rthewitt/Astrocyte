@@ -5,15 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mpi.astro.core.model.vm.VMRole;
 import com.mpi.astro.core.util.MyelinAction;
-import com.mpi.astro.core.util.VMType;
 
 public class ProvisionVMCommand extends BaseCommand implements Command {
 	
 	protected List<String> studentIds = new ArrayList<String>();
 	protected String initRef = null;
 	protected String token = null; // used as idempotent token for AWS request
-	protected VMType imageType = VMType.STUDENT;
+	protected VMRole imageType = VMRole.STUDENT;
 	
 	// remember, prototype will be needed, BRANCH for default or something
 	public ProvisionVMCommand(String courseUUID, String initRef, List<String> studentIds, String token) {

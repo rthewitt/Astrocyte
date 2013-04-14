@@ -352,6 +352,9 @@ public class EduService {
 			StudentVM mapping = new StudentVM();
 			mapping.setVM(machine);
 			mapping.setStudent(student);
+			mapping.setEnrollDate(new Date()); // This is crucial, non-nullable
+			// Leaving it in the service layer because I will clear out when using a VM pool
+			// nulling the value and forcing an update to this field through hibernate
 			student.addMachineMapping(mapping);
 			machine.addStudentAssociation(mapping);
 			save(mapping);

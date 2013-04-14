@@ -183,8 +183,15 @@ public class EduService {
 		return tuts;
 	}
 	
+	// DO NOT CALL with student.getCourses(), equality fails.  TODO Revisit
 	public StudentVM getMappingForStudent(Student student, CourseInstance instance) {
 		return machineMappingDao.getMapping(student, instance);
+	}
+	
+	// Was passing in an unmodifiable copy of the instance previously
+	public StudentVM getMappingForStudent(Student student, String deployedCourseId) {
+		CourseInstance hibernateInstance = getDeployedCourse(deployedCourseId);
+		return machineMappingDao.getMapping(student, hibernateInstance);
 	}
 	
 	public List<StudentVM> getMappingsForStudent(Student student) {

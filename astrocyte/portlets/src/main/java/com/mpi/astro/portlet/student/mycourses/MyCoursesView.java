@@ -70,7 +70,8 @@ public class MyCoursesView extends BaseAstroPortlet {
 		Map<String, VM> myMachines = new HashMap<String, VM>();
 		
 		for(CourseInstance ci : courses) {
-			StudentVM mapping = eduService.getMappingForStudent(student, ci);
+			// equality was failing before due to the way I'm getting these objects.
+			StudentVM mapping = eduService.getMappingForStudent(student, ci.getCourseUUID());
 			// In the near future this will be commonplace, and we'll just need to grab a machine from the pool.
 			if(mapping == null) 
 				throw new ServletException("Machine not found for course "+ci.getCourseUUID()+"!");

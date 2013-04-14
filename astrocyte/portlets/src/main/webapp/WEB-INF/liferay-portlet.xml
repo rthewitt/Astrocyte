@@ -16,6 +16,13 @@
 		<header-portlet-css>/css/staff.css</header-portlet-css>
 		<footer-portlet-javascript>/js/staff.js</footer-portlet-javascript>
 	</portlet>
+	<portlet>
+		<portlet-name>MyCourses</portlet-name>
+		<icon>/icon.png</icon>
+		<instanceable>false</instanceable>
+		<header-portlet-css>/css/staff.css</header-portlet-css>
+		<footer-portlet-javascript>/js/staff.js</footer-portlet-javascript>
+	</portlet>
 	<role-mapper>
 		<role-name>administrator</role-name>
 		<role-link>Administrator</role-link>

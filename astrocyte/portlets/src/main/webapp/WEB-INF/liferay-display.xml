@@ -5,5 +5,6 @@
 	<category name="Astrocyte">
 		<portlet id="Astrolife"></portlet>
 		<portlet id="CourseDeployer"></portlet>
+		<portlet id="MyCourses"></portlet>
 	</category>
 </display>

@@ -30,7 +30,7 @@ public class MachineMappingDao {
 	
 	public StudentVM getMapping(Student student, CourseInstance course) {
 		return (StudentVM)entityManager.createQuery("select vmp from StudentVM vmp " +
-				"where vmp.vPk.student = :student and vmp.vPk.machine.currentCourse = :course")
+				"where vmp.vPk.student = :student and vmp.currentCourse = :course")
 				.setParameter("student", student).setParameter("course", course).getSingleResult();
 	}
 	

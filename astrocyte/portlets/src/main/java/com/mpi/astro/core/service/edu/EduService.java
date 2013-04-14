@@ -346,7 +346,7 @@ public class EduService {
 		}
 		
 		@Transactional
-		public void associateStudentVM(String studentId, String host, String location) {
+		public StudentVM associateStudentVM(String studentId, String host, String location) {
 			Student student = getStudentEagerBySID(studentId);
 			VM machine = new VM(host, location, VMType.AMAZON_EC2);
 			StudentVM mapping = new StudentVM();
@@ -357,6 +357,8 @@ public class EduService {
 			save(mapping);
 			save(machine);
 			save(student);
+			
+			return mapping;
 		}
 		
 		public void clearForTest(){

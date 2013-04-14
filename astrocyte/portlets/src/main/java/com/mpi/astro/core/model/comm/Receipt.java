@@ -4,16 +4,9 @@ import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mpi.astro.core.model.edu.Course;
 import com.mpi.astro.core.model.edu.CourseInstance;
-import com.mpi.astro.core.model.edu.Student;
-import com.mpi.astro.core.model.edu.StudentStatus;
-import com.mpi.astro.core.service.edu.MyelinService;
-import com.mpi.astro.core.util.AstrocyteConstants;
-import com.mpi.astro.core.util.AstrocyteUtils;
+import com.mpi.astro.core.model.edu.StudentVM;
 import com.mpi.astro.core.util.MyelinAction;
-import com.mpi.astro.core.util.AstrocyteConstants.COURSE_WORKFLOW;
-import com.mpi.astro.core.util.AstrocyteConstants.STUDENT_STATE;
 
 public class Receipt extends BaseCommand implements Command {
 	
@@ -60,7 +53,11 @@ public class Receipt extends BaseCommand implements Command {
 				Map<String, Object> instanceMap = (Map<String, Object>)fullContext.get("instanceMap");
 				for(String studentId : instanceMap.keySet()) {
 					Map<String, String> instanceDesc = (Map<String, String>)instanceMap.get(studentId);
-					eduService.associateStudentVM(studentId, instanceDesc.get("host"), instanceDesc.get("location"));
+					StudentVM newMapping = eduService.associateStudentVM(studentId, 
+							instanceDesc.get("host"), instanceDesc.get("location"));
+					CourseInstance courseToAssign = eduService.getDeployedCourse(this.courseUUID);
+					newMapping.setCurrentCourse(courseToAssign);
+					eduService.save(newMapping);
 				}
 			} catch(Exception e) {
 				logger.error("Problem associating student VM", e);

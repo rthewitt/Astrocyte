@@ -34,6 +34,12 @@ public class MachineMappingDao {
 				.setParameter("student", student).setParameter("course", course).getSingleResult();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<StudentVM> getMappingsForStudent(Student student) {
+		return (List<StudentVM>)entityManager.createQuery("select vmp from StudentVM vmp " +
+				"where vmp.vPk.student = :student").setParameter("student", student).getResultList();
+	}
+	
 	@Transactional
 	public StudentVM save(StudentVM mapping) {
 		if (mapping.getVPk().getMachine().getHostName() == null || mapping.getVPk().getStudent().getId() == null) {

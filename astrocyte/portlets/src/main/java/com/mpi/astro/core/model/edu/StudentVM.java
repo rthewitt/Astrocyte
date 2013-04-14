@@ -53,7 +53,7 @@ public class StudentVM implements Serializable {
 	public StudentVMId getVPk() {
 		return this.vPk;
 	}
-	
+		
 	public void setVPk(StudentVMId vPk) {
 		this.vPk = vPk;
 	}

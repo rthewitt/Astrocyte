@@ -183,7 +183,15 @@ public class EduService {
 		return tuts;
 	}
 	
-	// Why Should not the student/course be saved?!
+	public StudentVM getMappingForStudent(Student student, CourseInstance instance) {
+		return machineMappingDao.getMapping(student, instance);
+	}
+	
+	public List<StudentVM> getMappingsForStudent(Student student) {
+		return machineMappingDao.getMappingsForStudent(student);
+	}
+	
+	// TODO move save logic from controller into service layer if possible 
 	@Transactional
 	public void enrollStudent(Student student, CourseInstance course) {
 		StudentCourse enrollment = new StudentCourse();

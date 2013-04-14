@@ -37,6 +37,8 @@ public class VM implements Serializable {
 	@OneToMany(mappedBy = "vPk.machine")
 	private Set<StudentVM> studAssociations = new HashSet<StudentVM>(0);
 	
+	public VM() {}
+	
 	public VM(String hostName, String ip, VMType type) {
 		this.hostName = hostName;
 		this.type = type;

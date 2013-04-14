@@ -17,6 +17,8 @@ public class StudentVMId implements Serializable {
 	@ManyToOne
 	private VM machine;
 	
+	public StudentVMId(){}
+	
 	public Student getStudent() {
 		return student;
 	}

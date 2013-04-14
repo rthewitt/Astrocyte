@@ -349,6 +349,10 @@ public class EduService {
 		public StudentVM associateStudentVM(String studentId, String host, String location) {
 			Student student = getStudentEagerBySID(studentId);
 			VM machine = new VM(host, location, VMType.AMAZON_EC2);
+			// Was having session state issues, foreign key violation on mapping->VM
+			machine = save(machine);
+			student = save(student);
+			
 			StudentVM mapping = new StudentVM();
 			mapping.setVM(machine);
 			mapping.setStudent(student);

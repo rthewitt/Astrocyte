@@ -9,12 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.GroupConstants;
 import com.liferay.portal.model.Layout;
@@ -22,7 +20,6 @@ import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutTypePortlet;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.User;
-import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.OrganizationLocalServiceUtil;
@@ -73,13 +70,18 @@ public class AstroService {
 		// TODO bridge databases and users (Astro, Liferay) without losing flexibility
 		long[] lrIds = new long[students.length];
 		for(int i=0;i<students.length; i++) {
-			try{
+			try{	
+				User check = UserLocalServiceUtil.getUserByScreenName(td.getCompanyId(), students[i].getStudentId());
+				logger.debug(String.format("Student with screenName %s already exists in portal with id: %s.",
+						check.getScreenName(), check.getUserId()));
+			} catch(NoSuchUserException nu) {
+				logger.debug("User "+students[i].getStudentId()+" did not exists in portal, creating...");
 				// Change currentUserId to a system user that corresponds to "Myelin Admin User" - maybe
 				User portalUser = addUser(currentUserId, td.getCompanyId(), students[i], true, "Student", roles);
 				logger.debug("User " + portalUser.getFullName() + " added to Portal with id " + portalUser.getUserId());
 				lrIds[i] = portalUser.getUserId();
 			} catch(Exception se) {
-				logger.error("Problem adding student "+students[i].getId()+"to newly created community." +
+				logger.error("Problem adding student "+students[i].getStudentId()+"to newly created community." +
 						"\nUser has already been enrolled in course.", se);
 			}
 		}
@@ -144,13 +146,6 @@ public class AstroService {
 	protected User addUser( long creatorUserId,
             long companyId, String screenName, String firstName,
             String lastName, boolean male, String jobTitle, long[] roleIds) throws PortalException, SystemException {
-		
-		User check = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
-		if(check != null) {
-			logger.debug(String.format("Student with screenName %s already exists in portal with id: %s.",
-					screenName, check.getUserId()));
-			return check;
-		}
 		
 //		long creatorUserId = 0;
         boolean autoPassword = false;

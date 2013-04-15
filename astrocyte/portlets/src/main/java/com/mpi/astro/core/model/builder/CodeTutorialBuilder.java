@@ -1,14 +1,9 @@
 package com.mpi.astro.core.model.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import com.mpi.astro.core.model.edu.Lesson;
 
 public class CodeTutorialBuilder extends AbstractTutorialBuilder 
 implements TutorialBuilder {
@@ -28,12 +23,27 @@ implements TutorialBuilder {
 	@Override
 	public void buildLessons(String lessonFile) {
 		try {
+			logger.debug("Lesson file string as received by utils: \n" + lessonFile);
+			
 			JSONObject tutorialDef = (JSONObject) new JSONParser().parse(lessonFile);
+			
+			logger.debug("Lesson file as jsonObject:\n" + tutorialDef.toString() + 
+					"\nand as JSONString:\n" + tutorialDef.toJSONString());
+			
 			JSONArray lessonArray = (JSONArray)tutorialDef.get("lessons");
 			for(Object lessonJson : lessonArray) {
-				String media = (String)((JSONObject)lessonJson).get("main");
-				String tmpClientDescription = "{'primaryMedia':'"+media+"'}".replace('\'', '"'); // easier to read
-				tutorial.addLesson(tmpClientDescription);
+				JSONObject debugObj = (JSONObject)((JSONObject)lessonJson).get("main");
+				String media = debugObj.toString();
+				logger.debug("media as casted string from JSONObject :\n" + media);
+				
+				media = debugObj.toJSONString();
+				logger.debug("new version of media as JSONString :\n" + media);
+				
+				JSONObject tmpClientDescription = new JSONObject();
+				tmpClientDescription.put("primaryMedia", media);
+				
+//				String tmpClientDescription = "{'primaryMedia':'"+media+"'}".replace('\'', '"'); // easier to read
+				tutorial.addLesson(tmpClientDescription.toJSONString());
 			}
 		} catch (ParseException e) {
 			logger.error("Trouble parsing tutorial json in CodeTutorialBuilder", e);

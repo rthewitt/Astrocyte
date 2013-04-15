@@ -105,8 +105,8 @@ public class PublicController extends AbstractController {
 		
 		if(jsonConverter.canWrite(String.class, jsonMimeType)) {
 			try {
-				// was obj, leaving jsonString untouched.  Two strategies mixed or problem with SimpleJSON?
-	            jsonConverter.write(jsonString, jsonMimeType, new ServletServerHttpResponse(response));
+				// temporarily reverting to object to verify status request.  Not yet tested with Lesson Media
+	            jsonConverter.write(obj, jsonMimeType, new ServletServerHttpResponse(response));
 	            return true;
 	        } catch (HttpMessageNotWritableException e) {
 	        	logger.error("Can't write message in PublicController", e);

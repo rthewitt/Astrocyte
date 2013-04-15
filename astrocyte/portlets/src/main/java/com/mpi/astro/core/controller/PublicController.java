@@ -8,8 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class PublicController extends AbstractController {
 		
 		Student student = eduService.getStudentEagerBySID(studentId);
 		
-		Object obj = null;
+		JSONObject obj = null;
 		
 		try{
 			if("status".equals(queryType)) {
@@ -67,21 +68,21 @@ public class PublicController extends AbstractController {
 		return null;
 	}
 	
-	private Object handleStatusRequest(HttpServletRequest request,
+	private JSONObject handleStatusRequest(HttpServletRequest request,
 			HttpServletResponse response, Student student) throws JsonGenerationException, JsonMappingException, IOException {
 		if(request.getParameter("notified") != null) {
 			if(student.getState() == STUDENT_STATE.NOTIFY_STUDENT)
 				student.setState(STUDENT_STATE.WORKING);
-			return " "; // bad habit, may not work anyway
+			return new JSONObject();
 		} else {
 			JSONObject obj = new JSONObject();
 			obj.put("lessonAvailable", (Boolean)(student.getState() == STUDENT_STATE.NOTIFY_STUDENT));
-			return obj;			
+			return obj;
 		}
 	}
 	
 	
-	private Object handleMediaRequest(HttpServletRequest request,
+	private JSONObject handleMediaRequest(HttpServletRequest request,
 			HttpServletResponse response, Student student) {
 		if(StringUtils.isEmpty(request.getParameter("courseId")))
 			throw new IllegalArgumentException();
@@ -90,15 +91,22 @@ public class PublicController extends AbstractController {
 		StudentStatus stat = eduService.getStudentStatus(student, course);
 		Tutorial tut = eduService.getCurrentTutorialForStudent(student, course);
 		Lesson lesson = tut.getLessons().get(stat.getLessonNum());
-		return lesson.getClientJSON();
+		JSONParser pp = new JSONParser();
+		JSONObject obj;
+		try {
+			obj = (JSONObject)pp.parse(lesson.getClientJSON());
+		} catch (ParseException e) {
+			return null;
+		}
+		return obj;
 	}
 	
-	private boolean outputJSON(Object obj, HttpServletResponse response) 
+	private boolean outputJSON(JSONObject jsonString, HttpServletResponse response) 
 			throws JsonGenerationException, JsonMappingException, IOException {
 		
-		ObjectMapper mapper = new ObjectMapper();
+//		ObjectMapper mapper = new ObjectMapper();
 		
-		String jsonString = (obj instanceof String) ? (String)obj : mapper.writeValueAsString(obj);
+//		String jsonString = (obj instanceof String) ? (String)obj : mapper.writeValueAsString(obj);
 
 		MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
 		MediaType jsonMimeType = MediaType.APPLICATION_JSON;
@@ -106,7 +114,7 @@ public class PublicController extends AbstractController {
 		if(jsonConverter.canWrite(String.class, jsonMimeType)) {
 			try {
 				// temporarily reverting to object to verify status request.  Not yet tested with Lesson Media
-	            jsonConverter.write(obj, jsonMimeType, new ServletServerHttpResponse(response));
+	            jsonConverter.write(jsonString, jsonMimeType, new ServletServerHttpResponse(response));
 	            return true;
 	        } catch (HttpMessageNotWritableException e) {
 	        	logger.error("Can't write message in PublicController", e);

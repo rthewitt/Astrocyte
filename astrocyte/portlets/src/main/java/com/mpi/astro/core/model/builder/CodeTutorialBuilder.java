@@ -32,11 +32,10 @@ implements TutorialBuilder {
 			
 			JSONArray lessonArray = (JSONArray)tutorialDef.get("lessons");
 			for(Object lessonJson : lessonArray) {
-				JSONObject debugObj = (JSONObject)((JSONObject)lessonJson).get("main");
-				String media = debugObj.toString();
-				logger.debug("media as casted string from JSONObject :\n" + media);
+				String media = ((JSONObject)lessonJson).get("main").toString();
+//				String  = debugObj.toString();
+				logger.debug("media as string from JSONObject.get() :\n" + media);
 				
-				media = debugObj.toJSONString();
 				logger.debug("new version of media as JSONString :\n" + media);
 				
 				JSONObject tmpClientDescription = new JSONObject();

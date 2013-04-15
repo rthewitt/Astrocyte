@@ -22,16 +22,18 @@ public class DispatchServlet extends HttpServlet {
 		if(!SessionUtil.ensureSession(request, response)) return;
 		
 		String need = request.getParameter("return");
-		String info = "";
+		String student = "";
+		String course = "";
 		if( need != null) {
-			if("student".equals(need)) {
-				info = request.getSession().getAttribute("userId").toString();
+			if("student-info".equals(need)) {
+				student = request.getSession().getAttribute("userId").toString();
+				course = request.getSession().getAttribute("courseName").toString();
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setHeader("Content-Type", "application/json");
 			response.setHeader("Access-Control-Allow-Origin", "*");
 			response.getOutputStream().write(
-					String.format("{\"%s\":\"%s\"}", need, info).getBytes()
+					String.format("{\"student\":\"%s\",\"course\":\"%s\"}", student, course).getBytes()
 					);
 		} else {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

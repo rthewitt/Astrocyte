@@ -37,10 +37,6 @@ public class AstroService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AstroService.class);
 	
-	// Crate community
-	// Add users to community
-	// Create default page
-	// Add layout
 	// Add portlet with journal entry. - this will be a template blog or something.  
 	public void createCommunityForCourseInstance(ThemeDisplay td, Student[] students, CourseInstance course) throws PortalException, SystemException {
 		

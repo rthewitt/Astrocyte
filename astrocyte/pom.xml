@@ -21,6 +21,7 @@
       <!-- This is kept for posterity.  Core will be separated after copy works as portlet -->
       <!--<module>core</module>-->
       <module>portlets</module>
+      <module>themes</module>
    </modules>
 
    <properties>

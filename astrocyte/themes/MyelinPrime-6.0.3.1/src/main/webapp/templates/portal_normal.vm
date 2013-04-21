@@ -1,0 +1,81 @@
+<!doctype html>
+
+#parse ($init)
+
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="#language("lang.dir")" dir="#language("lang.dir")" lang="$w3c_language_id"> <!--<![endif]-->
+
+<head>
+	<title>$the_title - $company_name</title>
+
+	$theme.include($top_head_include)
+</head>
+
+<body class="$css_class">
+
+#if($is_signed_in)
+	#dockbar()
+#end
+
+<div id="wrapper">
+	<a href="#main-content" id="skip-to-content">#language("skip-to-content")</a>
+	<div id="header-container">
+		<header class="wrapper">
+			<h1 id="title">$company_name</h1>
+			
+			#if ($has_navigation)
+				#parse ("$full_templates_path/navigation.vm")
+			#end
+		</header>
+	</div>
+	<div id="content" class="wrapper">
+		<!--<nav class="site-breadcrumbs" id="breadcrumbs">
+			<h1>
+				<span>#language("breadcrumbs")</span>
+			</h1>
+
+			#breadcrumbs()
+		</nav>
+		-->
+
+		#if ($selectable)
+			$theme.include($content_include)
+		#else
+			$portletDisplay.recycle()
+
+			$portletDisplay.setTitle($the_title)
+
+			$theme.wrapPortlet("portlet.vm", $content_include)
+		#end
+	</div>
+	<div id="footer-container">
+		<footer class="wrapper">
+      <h3>Code With Passion</h3>
+      <p class="powered-by">&copy; Myelin Price Interactive. All rights reserved.</p>
+		</footer>
+	</div>
+</div>
+
+<!-- Start of StatCounter Code for Default Guide -->
+<script type="text/javascript">
+var sc_project=7426423; 
+var sc_invisible=1; 
+var sc_security="217e7c80"; 
+</script>
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><div class="statcounter"><a title="tumblr
+tracker" href="http://statcounter.com/tumblr/"
+target="_blank"><img class="statcounter"
+src="http://c.statcounter.com/7426423/0/217e7c80/1/"
+alt="tumblr tracker"></a></div></noscript>
+<!-- End of StatCounter Code for Default Guide -->
+
+</body>
+
+$theme.include($bottom_include)
+
+</html>

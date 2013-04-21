@@ -60,7 +60,7 @@ public class MyCoursesView extends BaseAstroPortlet {
 		try{
 			student = eduService.getStudentEagerBySID(lrStudent.getScreenName());
 		}catch(NoResultException ne){
-			logger.warn(String.format("logged in user %s does not correlate to Astrocyte student!"), lrStudent.getScreenName());
+			logger.warn(String.format("logged in user %s does not correlate to Astrocyte student!", lrStudent.getScreenName()));
 			return null;
 		}
 		

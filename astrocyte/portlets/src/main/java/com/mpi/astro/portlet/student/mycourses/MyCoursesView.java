@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
 import javax.portlet.RenderRequest;
 import javax.servlet.ServletException;
 
@@ -55,15 +56,15 @@ public class MyCoursesView extends BaseAstroPortlet {
 		
 		logger.debug("MyCourses view render, current student sn: " + lrStudent.getScreenName());
 		
-		Student student = eduService.getStudentEagerBySID(lrStudent.getScreenName());
-		
-		if(student == null) {
+		Student student;
+		try{
+			student = eduService.getStudentEagerBySID(lrStudent.getScreenName());
+		}catch(NoResultException ne){
 			logger.warn(String.format("logged in user %s does not correlate to Astrocyte student!"), lrStudent.getScreenName());
-			return null; // change this of course
+			return null;
 		}
 		
-		// TODO add this ONLY if detached loading failure:
-		// eduService.save(student);
+
 		Set<CourseInstance> courses = student.getCourses();
 		logger.debug(String.format("Course count for student %s: %s", student.getStudentId(), courses.size()));
 		

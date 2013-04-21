@@ -45,26 +45,23 @@
 	</portlet:actionURL>
 	
 	<body>
-		<span id="astro-remember" style="background-color:red; font-weight: bold;">jquery should not be in portlet!</span>
 		<form name="generateForm" id="generate-form" method="post" action="${deployCourse}">
 			<input type="hidden" id="enroll-students" name="enroll-students" value=""/>
+			<div id="temporary-comb">
 			<label for="select-course">Select a Course</label>
 			<select name="select-course" id="select-course">
 				<c:forEach items="${courses}" var="course">
 					<option value="${course.id}">${course.name}</option>
 				</c:forEach>
 			</select>
-			
-			<div id="temporary-select">
-			<br /><br />
-			<span style="font-weight: bold;">Temporarily, the tutorial must be selected manually:</span>
-			<br /><br />
-			<label for="select-tutorial">Select a Tutorial</label>
 			<select name="select-tutorial" id="select-tutorial">
 				<c:forEach items="${tutorials}" var="tutorial">
 					<option value="${tutorial.id}">${tutorial.name}</option>
 				</c:forEach>
 			</select>
+			</div>
+			<div id="temporary-select">
+			<label for="select-tutorial">Select a Tutorial</label>
 			<ul id="student-select">
 				<c:forEach items="${students}" var="student">
 					<li class="ui-widget-content" id="student-${student.id}">${student.firstName} ${student.lastName}</li>

@@ -23,8 +23,8 @@
 				VM machine = vMap.get(instance.getCourseUUID());
 		%>
 			<div class="student-course-listing">
-			  <span class="course-title"><%= instance.getCourseUUID() %></span>
-			  <a href="http://<%= machine.getPrivateIP() %>:3131"><%= machine.getHostName() %></a>
+			  <a href="http://<%= machine.getPrivateIP() %>:3131"><h1><%= instance.getCourseUUID().split("-")[0] %></h1></a>
+			  <span class="subnote">Virtual Machine: <a href="http://<%= machine.getPrivateIP() %>" target="_blank"><%= machine.getHostName() %></a></span>
 			</div>
 		<% } %>
 		

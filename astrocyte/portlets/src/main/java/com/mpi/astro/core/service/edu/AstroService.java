@@ -167,7 +167,7 @@ public class AstroService {
 
         Organization mpiOrg =
             OrganizationLocalServiceUtil.getOrganization(
-                companyId, "Myelin Price Interactive");
+                companyId, "MPI");
 
         long[] organizationIds = new long[] {
         		mpiOrg.getOrganizationId()

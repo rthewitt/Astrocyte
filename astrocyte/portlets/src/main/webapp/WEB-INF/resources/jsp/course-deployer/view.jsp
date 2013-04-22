@@ -15,8 +15,8 @@
   		#student-select { list-style-type: none; margin: 0; padding: 0; width: 60%; }
   		#student-select li { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
   	</style>
-  	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
   	<!-- Adding to all portlets
+  	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
   	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script> -->
  	 <script>

@@ -68,15 +68,26 @@ public class PublicController extends AbstractController {
 		return null;
 	}
 	
+	// TODO accept course-instance string, get from service instead of student, VERIFY COURSE
 	private JSONObject handleStatusRequest(HttpServletRequest request,
 			HttpServletResponse response, Student student) throws JsonGenerationException, JsonMappingException, IOException {
+		
+		String courseUUID = request.getParameter("courseUUID");
+		if(StringUtils.isEmpty(courseUUID)) 
+			throw new IllegalArgumentException();
+		
+		CourseInstance course = eduService.getDeployedCourse(courseUUID);
+		
 		if(request.getParameter("notified") != null) {
-			if(student.getState() == STUDENT_STATE.NOTIFY_STUDENT)
-				student.setState(STUDENT_STATE.WORKING);
+			if(eduService.getStateForStudentInCourse(student,  null) == STUDENT_STATE.NOTIFY_STUDENT)
+				eduService.setStateForStudentInCourse(student, course, STUDENT_STATE.WORKING);
 			return new JSONObject();
 		} else {
 			JSONObject obj = new JSONObject();
-			obj.put("lessonAvailable", (Boolean)(student.getState() == STUDENT_STATE.NOTIFY_STUDENT));
+			Boolean isLessonAvailable = 
+					(Boolean)(eduService.
+							getStateForStudentInCourse(student, course) == STUDENT_STATE.NOTIFY_STUDENT);
+			obj.put("lessonAvailable", isLessonAvailable);
 			return obj;
 		}
 	}

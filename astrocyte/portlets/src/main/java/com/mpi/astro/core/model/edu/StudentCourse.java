@@ -8,6 +8,8 @@ import javax.persistence.AssociationOverrides;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -15,6 +17,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.mpi.astro.core.util.AstrocyteConstants;
+import com.mpi.astro.core.util.AstrocyteConstants.STUDENT_STATE;
 
 /**
  * Strategy borrowed from:
@@ -50,6 +53,10 @@ public class StudentCourse implements Serializable {
 	@Column(name = "TUTORIAL_NUM")
 	private Integer tutorialNum = AstrocyteConstants.NOT_STARTED;
 	
+	@Enumerated(EnumType.STRING)
+	@Column (name = "CURRENT_STATE")
+	private STUDENT_STATE state = STUDENT_STATE.WORKING;
+	
 	public StudentCourse() {}
 	
 	public StudentCourseId getPk() {
@@ -58,6 +65,14 @@ public class StudentCourse implements Serializable {
 	
 	public void setPk(StudentCourseId pk) {
 		this.pk = pk;
+	}
+	
+	public STUDENT_STATE getState() {
+		return this.state;
+	}
+	
+	public void setState(STUDENT_STATE state) {
+		this.state = state;
 	}
 	
 	// TODO these integer fields are bad design.  They should be foreign keys, constrained by the database.

@@ -6,8 +6,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,8 +16,6 @@ import javax.persistence.Table;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.mpi.astro.core.util.AstrocyteConstants.STUDENT_STATE;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 // A mismatch earlier suggests that equality for Students is broken.
@@ -52,10 +48,6 @@ public class Student implements Serializable {
 	@Column (name = "STUDENT_SID", unique = true, nullable = true)
 	private String studentId = null;
 	
-	@Enumerated(EnumType.STRING)
-	@Column (name = "CURRENT_STATE")
-	private STUDENT_STATE state = STUDENT_STATE.WORKING;
-	
 	// Do not allow cascading until you understand why it breaks everything here.  (Cycle or different contexts)
 	@OneToMany(mappedBy = "pk.student") // , cascade=CascadeType.ALL
 	private Set<StudentCourse> courseAssociations = new HashSet<StudentCourse>(0);
@@ -70,14 +62,6 @@ public class Student implements Serializable {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
-	}
-	
-	public STUDENT_STATE getState() {
-		return this.state;
-	}
-	
-	public void setState(STUDENT_STATE state) {
-		this.state = state;
 	}
 	
 	public Set<StudentVM> getMachineMappings() {

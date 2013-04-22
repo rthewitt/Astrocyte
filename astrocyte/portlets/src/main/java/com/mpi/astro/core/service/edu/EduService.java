@@ -31,6 +31,7 @@ import com.mpi.astro.core.model.edu.Tutorial;
 import com.mpi.astro.core.model.vm.VM;
 import com.mpi.astro.core.model.vm.VMType;
 import com.mpi.astro.core.util.AstrocyteConstants;
+import com.mpi.astro.core.util.AstrocyteConstants.STUDENT_STATE;
 import com.mpi.astro.core.util.AstrocyteUtils;
 import com.mpi.astro.core.util.PropertiesUtil;
 
@@ -169,6 +170,17 @@ public class EduService {
 	public Tutorial getCurrentTutorialForStudent(Student student, CourseInstance course) {
 		// currently uses two separate queries.  Consider composite if necessary
 		return enrollmentDao.getCurrentTutorialForStudent(student, course);
+	}
+	
+	public STUDENT_STATE getStateForStudentInCourse(Student student, CourseInstance course) {
+		StudentCourse enrollment = enrollmentDao.getEnrollment(student, course);
+		return enrollment.getState();
+	}
+	
+	@Transactional
+	public void setStateForStudentInCourse(Student student, CourseInstance course, STUDENT_STATE state) {
+		StudentCourse enrollment = enrollmentDao.getEnrollment(student, course);
+		enrollment.setState(state);
 	}
 	
 	// TODO this is going to be a mess

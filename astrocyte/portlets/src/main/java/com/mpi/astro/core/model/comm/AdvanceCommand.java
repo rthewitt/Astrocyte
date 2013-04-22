@@ -58,6 +58,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 		
 		
 		StudentStatus current = eduService.getStudentStatus(student, enrolledCourse);
+		STUDENT_STATE currentState = eduService.getStateForStudentInCourse(student, enrolledCourse);
 		
 		if("request".equals(this.advanceStatus)) {
 			
@@ -70,11 +71,11 @@ public class AdvanceCommand extends BaseCommand implements Command {
 				// TODO throw exception
 			}
 			
-			switch(student.getState()) {
+			switch(currentState) {
 			case WORKING:
 				if(enrolledCourse.getWorkflow() == COURSE_WORKFLOW.PASSIVE) {
 					if(eduService.isEligibleForAdvance(student, enrolledCourse)) {
-						student.setState(STUDENT_STATE.ADVANCING);
+						eduService.setStateForStudentInCourse(student, enrolledCourse, STUDENT_STATE.ADVANCING);
 						// determine if entityManager should be flushed.
 						eduService.save(student);
 						eduService.deployLesson(enrolledCourse.getCourseUUID(), student, 
@@ -90,7 +91,7 @@ public class AdvanceCommand extends BaseCommand implements Command {
 			case ADVANCING:
 			case APPROVAL:
 			default:
-				System.out.println("Cannot advance " + student.getStudentId() + " with state " + student.getState());
+				System.out.println("Cannot advance " + student.getStudentId() + " with state " + currentState);
 				return;
 			}
 			
@@ -103,13 +104,13 @@ public class AdvanceCommand extends BaseCommand implements Command {
 				logger.warn("Confirmation receipt not accepted after advance of " + this.studentId + " to " + this.statusTag);
 				return;
 			}
-			if(student.getState() != STUDENT_STATE.ADVANCING) {
-				System.out.println("Receipt for " + this.studentId + " discarded, student in state " + student.getState().toString());
+			if(currentState != STUDENT_STATE.ADVANCING) {
+				System.out.println("Receipt for " + this.studentId + " discarded, student in state " + currentState.toString());
 				return;
 			}
 			// Move more of this logic into the service layer, use custom exceptions
 			eduService.advanceStudentForCourse(student, enrolledCourse);
-			student.setState(STUDENT_STATE.NOTIFY_STUDENT); // consider intermediate for ajax ping from client
+			eduService.setStateForStudentInCourse(student, enrolledCourse, STUDENT_STATE.NOTIFY_STUDENT);
 			eduService.save(student);
 			logger.info("Student " + student.getId() + " advanced to lesson " + claimedStatus);
 		}

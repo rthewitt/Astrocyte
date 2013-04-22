@@ -328,6 +328,33 @@ body #banner .logo a {
 
 /* ---------- Extras ---------- */
 
+#portlet_status {
+	border: 0;
+	background-color: #fff;
+}
+
+#portlet_status .portlet-topper {
+	display: none;
+}
+
+#portlet_status .taglib-text {
+	text-decoration:none;
+}
+
+.portlet-login, .portlet-login .navigation {
+	border: 0;
+	background-color: #fff;
+}
+
+.portlet-login .navigation {
+	padding: 0px;
+}
+
+.portlet-login .taglib-text {
+	text-decoration: none;
+}
+
+
 .portlet-borderless-bar {
 	-moz-border-radius: 20px;
 	-moz-box-shadow: inset 0 1px 3px #000;

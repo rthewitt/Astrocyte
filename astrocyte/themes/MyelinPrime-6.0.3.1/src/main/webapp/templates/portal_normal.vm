@@ -12,6 +12,10 @@
 	<title>$the_title - $company_name</title>
 
 	$theme.include($top_head_include)
+	
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 </head>
 
 <body class="$css_class">
@@ -24,7 +28,12 @@
 	<a href="#main-content" id="skip-to-content">#language("skip-to-content")</a>
 	<div id="header-container">
 		<header class="wrapper">
-			<h1 id="title">$company_name</h1>
+		<div style="position:absolute">
+		<div>
+			<h1 id="title">Myelin Price</h1>
+			<div><span style="float:right; margin-top: 0px; padding-top: 0px; line-height: 0;"><h3 style="margin-top: 2px; color: #fff; top: 55px; font-size: 30px;">Interactive</h3></span></div>
+	    </div>
+		</div>
 			
 			#if ($has_navigation)
 				#parse ("$full_templates_path/navigation.vm")

@@ -173,6 +173,9 @@ public class EduService {
 	}
 	
 	public STUDENT_STATE getStateForStudentInCourse(Student student, CourseInstance course) {
+		// attempting to reconcile hibernate inequality
+		student = save(student);
+		course = save(course);
 		StudentCourse enrollment = enrollmentDao.getEnrollment(student, course);
 		return enrollment.getState();
 	}

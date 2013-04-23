@@ -181,6 +181,7 @@ public class EduService {
 	public void setStateForStudentInCourse(Student student, CourseInstance course, STUDENT_STATE state) {
 		StudentCourse enrollment = enrollmentDao.getEnrollment(student, course);
 		enrollment.setState(state);
+		save(enrollment);
 	}
 	
 	// TODO this is going to be a mess

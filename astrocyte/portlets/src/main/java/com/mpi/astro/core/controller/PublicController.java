@@ -71,12 +71,13 @@ public class PublicController extends AbstractController {
 	// TODO accept course-instance string, get from service instead of student, VERIFY COURSE
 	private JSONObject handleStatusRequest(HttpServletRequest request,
 			HttpServletResponse response, Student student) throws JsonGenerationException, JsonMappingException, IOException {
-		
+		logger.debug("status request");
 		String courseUUID = request.getParameter("courseUUID");
 		if(StringUtils.isEmpty(courseUUID)) 
 			throw new IllegalArgumentException();
 		
 		CourseInstance course = eduService.getDeployedCourse(courseUUID);
+		logger.debug((course == null ? "CourseInstance was null" : "CourseInstance uuid: " + course.getCourseUUID()));
 		
 		if(request.getParameter("notified") != null) {
 			if(eduService.getStateForStudentInCourse(student,  null) == STUDENT_STATE.NOTIFY_STUDENT)

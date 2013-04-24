@@ -249,6 +249,7 @@ public class EduService {
 		
 		@Transactional
 		public CourseInstance deployCourse(Course def, List<String> studentIds, long tutId) {
+			// Review the hard-coded fail-safes.  This is no longer valid
 			if(tutId == 0L) throw new IllegalArgumentException("Not enough students to deploy this type of course.");
 			
 			Student[] portalUsers = new Student[studentIds.size()];

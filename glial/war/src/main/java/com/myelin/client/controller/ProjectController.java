@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.util.StringUtils;
 
 import com.myelin.client.util.GlialProps;
+import com.myelin.client.util.SessionUtil;
 
 public class ProjectController extends HttpServlet {
 	
@@ -21,6 +22,10 @@ public class ProjectController extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
+		
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		SessionUtil.ensureSession(request, response);
+		
 		// Was having problems with cache before.  
 		// Provides a simple check, also cleans maven project
 		boolean delete = request.getParameter("delete") != null;

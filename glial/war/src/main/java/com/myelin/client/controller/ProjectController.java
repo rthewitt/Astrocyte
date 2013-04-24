@@ -44,11 +44,11 @@ public class ProjectController extends HttpServlet {
 		File projectRoot = new File(GlialProps.STUDENT_PROJECT+"/"+courseName); // should already exist
 		
 		if("compile-swap".equals(action)) {
-			Process proc = Runtime.getRuntime().exec((delete ? new String[] {"mvn", "-Phtml", "clean", "integration-test"} :
+			Process proc = Runtime.getRuntime().exec((delete ? new String[] {"mvn", "-Duser.home="+GlialProps.MAVEN_USER_HOME,
+					"-Phtml", "clean", "integration-test"} :
 				new String[]{"mvn", "-Phtml", "integration-test"}), null, projectRoot);
 			
 			// TODO consider getting maven err stream if problem, passing back.
-			
 			int status;
 			try {
 				status = proc.waitFor();

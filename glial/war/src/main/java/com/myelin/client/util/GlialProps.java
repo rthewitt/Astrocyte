@@ -23,6 +23,8 @@ public class GlialProps {
 	public static String SSH_KEY = "private-key";
 	public static String SSH_PASS = "password";
 	
+	public static String MAVEN_USER_HOME = "/home/myelin";
+	
 	public static String STUDENT_ID = null;
 	public static String COURSE_UUID = null;
 	
@@ -46,6 +48,8 @@ public class GlialProps {
 			SSH_USER = props.getProperty("ssh.user");
 			SSH_KEY = props.getProperty("ssh.key");
 			SSH_PASS = props.getProperty("ssh.pass");
+			
+			MAVEN_USER_HOME = props.getProperty("maven.user.home");
 			
 			SERVER_GIT_DIR = props.getProperty("server.git");
 			

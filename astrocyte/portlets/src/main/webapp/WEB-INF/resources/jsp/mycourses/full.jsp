@@ -15,16 +15,19 @@
 	
 	<portlet:defineObjects/>
 	<% Map<String, VM> vMap = (Map<String, VM>) request.getAttribute("vMap"); %>
+	<% Map<String, String> coursePages = (Map<String, String>) request.getAttribute("coursePages"); %>
 	<% Set<CourseInstance> courses = (Set<CourseInstance>)request.getAttribute("courses"); %>
 		
-		<h1>My Courses</h1>
+		<h1 id="mycourses-title">My Courses</h1>
 		
 		<% for(CourseInstance instance : courses) {  
 				VM machine = vMap.get(instance.getCourseUUID());
+				String coursePage = coursePages.get(instance.getCourseUUID());
 		%>
 			<div class="student-course-listing">
-			  <a href="http://<%= machine.getPrivateIP() %>:3131"><h1><%= instance.getCourseUUID().split("-")[0] %></h1></a>
-			  <span class="subnote">Virtual Machine: <a href="http://<%= machine.getPrivateIP() %>" target="_blank"><%= machine.getHostName() %></a></span>
+			  <a href="<%= coursePage %>>"><span style="display:inline-block"><h1><%= instance.getCourseUUID().split("-")[0] %></h1></span></a><br />
+			  <span class="subnote">Go directly to code: <a href="http://<%= machine.getPrivateIP() %>:3131"><%= machine.getHostName() %></a></span><br />
+			  <span class="subnote">Verification Link: <a href="http://<%= machine.getPrivateIP() %>" target="_blank"><%= machine.getHostName() %></a></span>
 			</div>
 		<% } %>
 		

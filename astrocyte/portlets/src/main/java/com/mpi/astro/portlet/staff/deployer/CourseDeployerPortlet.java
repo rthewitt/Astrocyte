@@ -94,8 +94,9 @@ public class CourseDeployerPortlet extends BaseAstroPortlet {
 			long currentUserId = Long.valueOf(request.getRemoteUser());
 			ThemeDisplay themeDisplay  =(ThemeDisplay)request.getAttribute(WebKeys.THEME_DISPLAY);
 			try {
-				astroService.createCommunityForCourseInstance(themeDisplay, 
+				long communityId = astroService.createCommunityForCourseInstance(themeDisplay, 
 						enrolledUsers.toArray(new Student[enrolledUsers.size()]), deployed);
+				
 			} catch(Exception e) {
 				logger.error("Course was deployed, but there was an error creating Lifery group.", e);
 				response.setRenderParameter("astrolifeError", "Course was deployed, but there was an error creating Lifery group.");

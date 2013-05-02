@@ -38,7 +38,7 @@ public class AstroService {
 	private static final Logger logger = LoggerFactory.getLogger(AstroService.class);
 	
 	// Add portlet with journal entry. - this will be a template blog or something.  
-	public void createCommunityForCourseInstance(ThemeDisplay td, Student[] students, CourseInstance course) throws PortalException, SystemException {
+	public long createCommunityForCourseInstance(ThemeDisplay td, Student[] students, CourseInstance course) throws PortalException, SystemException {
 		
 		logger.debug("Request to create community for " + students.length + " students: " + course.getName());
 		
@@ -133,6 +133,8 @@ public class AstroService {
                 layout.isPrivateLayout(),
                 layout.getLayoutId(),
                 layout.getTypeSettings());
+		
+		return courseGroup.getGroupId();
 	}
 	
 	protected User addUser(long creatorUserId, long companyId, Student student, boolean male, String jobTitle, long[] roleIds) throws PortalException, SystemException {

@@ -51,5 +51,7 @@
 		</c:forEach>
 		<br /><br />
 		<a href="<%= editTutorial %>"> Add Tutorial</a>
+		
+		<br /><br /><a href=""><img src="/mpi-static/pub/images/big_red_button.png" width="63px" height="58px" /> ABSOLUTELY DO NOT PUSH THIS. (Deletes everything and terminates instances)</a>
 	</body>
 </html>

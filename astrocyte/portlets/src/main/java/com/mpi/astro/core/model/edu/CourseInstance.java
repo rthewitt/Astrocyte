@@ -25,6 +25,8 @@ public interface CourseInstance {
 	
 	public String getCourseUUID();
 	
+	public Long getAstroGroupId();
+	
 	public Course getCourseDefinition();
 	
 	public COURSE_WORKFLOW getWorkflow();

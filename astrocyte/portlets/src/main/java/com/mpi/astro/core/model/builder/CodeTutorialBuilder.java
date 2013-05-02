@@ -31,26 +31,12 @@ implements TutorialBuilder {
 					"\nand as JSONString:\n" + tutorialDef.toJSONString());
 			
 			JSONArray lessonArray = (JSONArray)tutorialDef.get("lessons");
-			for(Object lessonJson : lessonArray) {
-				String media = ((JSONObject)lessonJson).get("main").toString();
-//				String  = debugObj.toString();
-				logger.debug("media as string from JSONObject.get() :\n" + media);
-				
-				logger.debug("new version of media as JSONString :\n" + media);
-				
-				JSONObject tmpClientDescription = new JSONObject();
-				tmpClientDescription.put("primaryMedia", media);
-				
-//				String tmpClientDescription = "{'primaryMedia':'"+media+"'}".replace('\'', '"'); // easier to read
-				tutorial.addLesson(tmpClientDescription.toJSONString());
+			for(Object lessonObj : lessonArray) {
+				// This is where I'll do any sort of internal meta-lesson stripping, should I need it.
+				tutorial.addLesson(((JSONObject)lessonObj).toJSONString());
 			}
 		} catch (ParseException e) {
 			logger.error("Trouble parsing tutorial json in CodeTutorialBuilder", e);
 		}
-		// current example uses only 'main', which would be a URL that opens in a new tab
-		
-		// future versions will describe text selections for each lesson, and the classname
-		// to be applied to that text.  Hovering over and clicking will present video, blog or activity
-		// in either a modal overlay or a new tab, depending on complexity.
 	}
 }

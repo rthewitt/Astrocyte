@@ -19,7 +19,9 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.mpi.astro.core.model.edu.CourseInstance;
@@ -69,15 +71,22 @@ public class MyCoursesView extends BaseAstroPortlet {
 		logger.debug(String.format("Course count for student %s: %s", student.getStudentId(), courses.size()));
 		
 		Map<String, VM> myMachines = new HashMap<String, VM>();
+		Map<String, String> coursePages = new HashMap<String, String>();
 		
 		for(CourseInstance ci : courses) {
 			// equality was failing before due to the way I'm getting these objects.
 			StudentVM mapping = eduService.getMappingForStudent(student, ci.getCourseUUID());
+			// Apparently I could grab it by name (courseUUID) and skip mapping altogether...
+			Group community = null;
+			try {
+				community = GroupLocalServiceUtil.getGroup(ci.getAstroGroupId());
+			} catch (Exception e) {}
 			// In the near future this will be commonplace, and we'll just need to grab a machine from the pool.
-			if(mapping == null) 
-				throw new ServletException("Machine not found for course "+ci.getCourseUUID()+"!");
+			if(mapping == null || community == null) 
+				throw new ServletException("Machine or Group not found for course "+ci.getCourseUUID()+"!");
 			else {
 				myMachines.put(ci.getCourseUUID(), mapping.getVM());
+				coursePages.put(ci.getCourseUUID(), community.getFriendlyURL());
 			}
 		}
 		

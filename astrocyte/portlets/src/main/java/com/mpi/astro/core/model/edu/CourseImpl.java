@@ -31,10 +31,11 @@ public class CourseImpl extends BaseCourseInstance implements CourseInstance, Se
 	private static final long serialVersionUID = 6094379996028682456L;
 	private static final SimpleDateFormat uuidFormat = new SimpleDateFormat("yyMMddHHmmssZ"); 
 	
-	
-	
 	@Column(name="DEPLOYED_DATE")
 	private Date deployedDate;
+	
+	@Column(name="ASTRO_GROUP_ID", unique = true)
+	private Long astroGroupId;
 	
 	/**
 	 * This is the new method of sharing data.  As each course is an implementation of a Syllabus (using Course interface)
@@ -75,6 +76,14 @@ public class CourseImpl extends BaseCourseInstance implements CourseInstance, Se
 			final Course safe = getSyllabus();
 			return safe;
 		} else return null;
+	}
+	
+	public Long getAstroGroupId() {
+		return this.astroGroupId;
+	}
+	
+	public void setAstroGroupId(Long astroGroupId) {
+		this.astroGroupId = astroGroupId;
 	}
 
 	public String getDescription() {

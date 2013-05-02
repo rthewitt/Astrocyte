@@ -70,6 +70,7 @@
 				</ul>
 			</div>
 			<input type="submit" value="Prepare Course" onclick="beforeDeploy(); return false;">
+			<label for="stub-out">Testing Only</label><input id="stub-out" name="stubOut" type="checkbox" />
 		</form>
 	</body>
 </html>

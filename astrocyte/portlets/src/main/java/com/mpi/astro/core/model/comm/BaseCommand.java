@@ -17,12 +17,19 @@ public abstract class BaseCommand implements Command {
 	
 	protected String courseUUID;
 	
+	protected boolean testing;
+	
 	protected EduService eduService;
 	
 	protected BaseCommand() {}
 	
 	public void setServiceReference(EduService service) {
 		this.eduService = service;
+	}
+	
+	// TODO use factory to branch this for stubbing!!!
+	public void setAsTest() {
+		this.testing = true;
 	}
 	
 	// some commands, like update, will differ only in this regard

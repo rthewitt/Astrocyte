@@ -233,22 +233,15 @@ public class EduService {
 		// if school has their own ec2 instance / site / control hub, send data to it?
 	}
 		
-//		============ CREATE A SEPARATE SERVICE FOR ADMIN LEVEL TASKS ================
-		
-		// Remember that we want the course repository created during creation.
-		// perhaps a strategy in the factory?
-		@Transactional
-		public CourseInstance deployCourse(Course def) {
-			return deployCourse(def, null, 0L);
-		}
-		
-		@Transactional
-		public CourseInstance deployCourse(Course def, List<String> studentIds) {
-			return deployCourse(def, studentIds, 0L);
-		}
-		
+		// testing strategy will allow me to stub out before environments are set up.
+	    // Will be a switch in the future to allow depth of stub
 		@Transactional
 		public CourseInstance deployCourse(Course def, List<String> studentIds, long tutId) {
+			return deployCourse(def, studentIds, tutId, false);
+		}
+		
+		@Transactional
+		public CourseInstance deployCourse(Course def, List<String> studentIds, long tutId, boolean testing) {
 			// Review the hard-coded fail-safes.  This is no longer valid
 			if(tutId == 0L) throw new IllegalArgumentException("Not enough students to deploy this type of course.");
 			
@@ -285,7 +278,7 @@ public class EduService {
 			Set<Student> students = course.getStudentsInCourse();
 			
 			logger.debug("About to dispatch with student array length: " + students.size());
-			myelinService.dispatchInit(course, tut, students);
+			myelinService.dispatchInit(course, tut, students, testing);
 			
 			return course;
 		}
@@ -339,7 +332,7 @@ public class EduService {
 		 * be set up for course management and links established for source.  Currently
 		 * it's a temporary bridge to go from InitializeCourse -> InitializeVMPool
 		 */
-		public void initializeStudentStatuses(String courseUUID) {
+		public void initializeStudentStatuses(String courseUUID, boolean testing) {
 			
 			List<Student> students = getStudentsForCourse(courseUUID);
 			List<String> studentIds = new ArrayList<String>();
@@ -354,7 +347,7 @@ public class EduService {
 			
 			String initRef = AstrocyteUtils.getCheckpointStr(AstrocyteConstants.INITIAL);
 				
-			myelinService.dispatchVMRequest(courseUUID, initRef, studentIds, token);
+			myelinService.dispatchVMRequest(courseUUID, initRef, studentIds, token, testing);
 		}
 		
 		// When lesson becomes available for an entire class, as determined by workflow

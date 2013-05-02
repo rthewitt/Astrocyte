@@ -38,6 +38,8 @@ public class ProvisionVMCommand extends BaseCommand implements Command {
 		ctx.put("initRef", initRef);
 		ctx.put("token", token);
 		
+		ctx.put("testing", ((Boolean)testing).toString());
+		
 		if(studentIds != null) ctx.put("studentIds", studentIds);
 		
 		ctx.put("prototype", ""); // will be used for one off tuts and authorship

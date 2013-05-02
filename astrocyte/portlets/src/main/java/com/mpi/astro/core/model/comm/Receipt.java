@@ -2,6 +2,7 @@ package com.mpi.astro.core.model.comm;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mpi.astro.core.model.edu.CourseInstance;
@@ -24,6 +25,10 @@ public class Receipt extends BaseCommand implements Command {
 		this.status = "success".equals(((String)context.get("status")).toLowerCase()) ? true : false;
 		if(!status && context.containsKey("message"))
 			this.message = (String)context.get("message");
+		
+		if(context.containsKey("testing") && Boolean.valueOf((String)context.get("testing")))
+			this.testing = true;
+		
 		this.fullContext = context;
 	}
 
@@ -46,7 +51,7 @@ public class Receipt extends BaseCommand implements Command {
 		
 		switch(this.originalCommand) {
 		case INITIALIZE:
-			eduService.initializeStudentStatuses(courseUUID);
+			eduService.initializeStudentStatuses(courseUUID, testing);
 			break;
 		case PROVISION_VM:
 			try {

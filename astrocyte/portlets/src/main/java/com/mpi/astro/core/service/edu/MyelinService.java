@@ -34,7 +34,12 @@ public class MyelinService {
 	private JmsMessageProducer jmsDispatcher;
 	
 	public void dispatchInit(CourseInstance c, Tutorial tut, Set<Student> students) {
+		dispatchInit(c, tut, students, false);
+	}
+	
+	public void dispatchInit(CourseInstance c, Tutorial tut, Set<Student> students, boolean isTest) {
 		Command com = new InitCommand(c.getName(), tut.getPrototype(), students);
+		if(isTest) com.setAsTest();
 		dispatchCommand(com);
 	}
 	
@@ -49,7 +54,12 @@ public class MyelinService {
 	}
 	
 	public void dispatchVMRequest(String courseUUID, String initRef, List<String> studentIds, String token) {
+		dispatchVMRequest(courseUUID, initRef, studentIds, token, false);
+	}
+	
+	public void dispatchVMRequest(String courseUUID, String initRef, List<String> studentIds, String token, boolean isTest) {
 		Command com = new ProvisionVMCommand(courseUUID, initRef, studentIds, token);
+		if(isTest) com.setAsTest();
 		dispatchCommand(com);
 	}
 	

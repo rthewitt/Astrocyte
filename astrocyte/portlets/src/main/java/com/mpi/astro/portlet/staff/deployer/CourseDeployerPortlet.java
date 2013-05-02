@@ -6,6 +6,7 @@ import java.util.List;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,7 @@ public class CourseDeployerPortlet extends BaseAstroPortlet {
 		@ActionMapping(params="deploy=course")
 		public void generateCourse(@RequestParam("select-course") String courseIdParam, 
 				@RequestParam("select-tutorial") String tutorialIdParam,
+				@RequestParam("stub-out") String stubDeployment,
 				ActionRequest request, ActionResponse response) throws IOException{
 			logger.debug("A request was made to deploy course with id: " + courseIdParam);
 			
@@ -80,7 +82,10 @@ public class CourseDeployerPortlet extends BaseAstroPortlet {
 			
 			List<String> studentIds = (List<String>)Arrays.asList(enrollStudents.split(","));
 			
-			CourseInstance deployed = eduService.deployCourse(def, studentIds, tutorialId);
+			CourseInstance deployed;
+			if(StringUtils.isEmpty(stubDeployment) || "false".equalsIgnoreCase(stubDeployment))
+				deployed = eduService.deployCourse(def, studentIds, tutorialId);
+			else deployed = eduService.deployCourse(def, studentIds, tutorialId, true);
 			/*
 			int numUsers = enrolledUsers.length;
 			String[][] names = new String[numUsers][2];
@@ -96,7 +101,6 @@ public class CourseDeployerPortlet extends BaseAstroPortlet {
 			try {
 				long communityId = astroService.createCommunityForCourseInstance(themeDisplay, 
 						enrolledUsers.toArray(new Student[enrolledUsers.size()]), deployed);
-				
 			} catch(Exception e) {
 				logger.error("Course was deployed, but there was an error creating Lifery group.", e);
 				response.setRenderParameter("astrolifeError", "Course was deployed, but there was an error creating Lifery group.");

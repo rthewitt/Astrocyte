@@ -8,4 +8,6 @@ public interface Command {
 	public String toJsonString();
 	
 	public void execute();
+	
+	public void setAsTest();
 }

@@ -50,6 +50,8 @@ public class InitCommand extends BaseCommand implements Command {
 		
 		ctx.put("students", stArr);
 		
+		ctx.put("testing", ((Boolean)testing).toString());
+		
 		Map<String, String> proto = new HashMap<String, String>();
 		
 		// TODO handle this according to base tags, remove hard-coding

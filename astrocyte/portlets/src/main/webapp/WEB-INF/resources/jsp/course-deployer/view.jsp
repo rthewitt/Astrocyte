@@ -9,11 +9,13 @@
 	<head>
 		<title>Course Deployer</title>
 		 <style>
+		 #generate-form {padding-left:100px;}
   		#feedback { font-size: 1.4em; }
   		#student-select .ui-selecting { background: #FECA40; }
   		#student-select .ui-selected { background: #F39814; color: white; }
   		#student-select { list-style-type: none; margin: 0; padding: 0; width: 60%; }
   		#student-select li { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
+  		.temp-select {margin-bottom: 10px;}
   	</style>
   	<!-- Adding to all portlets
   	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
@@ -49,28 +51,36 @@
 		<form name="generateForm" id="generate-form" method="post" action="${deployCourse}">
 			<input type="hidden" id="enroll-students" name="enroll-students" value=""/>
 			<div id="temporary-comb">
-			<label for="select-course">Select a Course</label>
-			<select name="select-course" id="select-course">
-				<c:forEach items="${courses}" var="course">
-					<option value="${course.id}">${course.name}</option>
-				</c:forEach>
-			</select>
-			<select name="select-tutorial" id="select-tutorial">
-				<c:forEach items="${tutorials}" var="tutorial">
-					<option value="${tutorial.id}">${tutorial.name}</option>
-				</c:forEach>
-			</select>
+			  <div>
+			    <label for="select-course">Select a Course</label><br />
+			    <select class="temp-select" name="select-course" id="select-course">
+				    <c:forEach items="${courses}" var="course">
+					    <option value="${course.id}">${course.name}</option>
+				    </c:forEach>
+			    </select>
+			  </div>
+			  <div>
+			    <label for="select-tutorial">Select a Tutorial</label><br />
+			    <select class="temp-select" name="select-tutorial" id="select-tutorial">
+				    <c:forEach items="${tutorials}" var="tutorial">
+					    <option value="${tutorial.id}">${tutorial.name}</option>
+				    </c:forEach>
+			    </select>
+			  </div>
 			</div>
 			<div id="temporary-select">
-			<label for="select-tutorial">Select a Tutorial</label>
 			<ul id="student-select">
 				<c:forEach items="${students}" var="student">
 					<li class="ui-widget-content" id="student-${student.id}">${student.firstName} ${student.lastName}</li>
 				</c:forEach>
 				</ul>
 			</div>
-			<input type="submit" value="Prepare Course" onclick="beforeDeploy(); return false;">
-			<label for="stub-out">Testing Only</label><input id="stub-out" name="stubOut" type="checkbox" />
+			<div>
+			  <input type="submit" value="Prepare Course" onclick="beforeDeploy(); return false;" style="margin-top: 10px;">
+			  <div 	>
+			    <label for="stub-out">Testing Only</label><input id="stub-out" name="stubOut" value="stub" type="checkbox" style="margin-left: 5px;"/>
+			  </div>
+			</div>
 		</form>
 	</body>
 </html>

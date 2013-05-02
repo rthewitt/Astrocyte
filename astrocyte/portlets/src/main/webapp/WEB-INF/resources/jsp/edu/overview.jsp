@@ -7,6 +7,9 @@
 <html>
 	<head>
 		<title>Astrocyte University</title>
+		<style type="text/css">
+			#danger-button {width:100%; overflow:hidden; margin-top:10px; padding-top: 20px;}
+		</style>
 	</head>
 	
 	<portlet:defineObjects/>
@@ -52,6 +55,7 @@
 		<br /><br />
 		<a href="<%= editTutorial %>"> Add Tutorial</a>
 		
-		<br /><br /><a href=""><img src="/mpi-static/pub/images/big_red_button.png" width="63px" height="58px" /> ABSOLUTELY DO NOT PUSH THIS. (Deletes everything and terminates instances)</a>
+		<div id="danger-button"><a href=""><img src="/mpi-static/pub/images/big_red_button.png" width="63px" height="58px" /></a></div>
+		<div style="width:100%;font-weight:bold;">ABSOLUTELY DO NOT PUSH THIS.</div> (Deletes everything and terminates instances)
 	</body>
 </html>

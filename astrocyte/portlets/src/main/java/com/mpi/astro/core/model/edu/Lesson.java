@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Lob;
 
 import org.hibernate.annotations.Parent;
 
@@ -21,6 +22,7 @@ public class Lesson implements Serializable {
 	private Tutorial tutorial;
 	
 	@Column(name = "CLIENT_JSON")
+	@Lob
 	private String clientJSON = "{}";
 	
 	public Lesson() {

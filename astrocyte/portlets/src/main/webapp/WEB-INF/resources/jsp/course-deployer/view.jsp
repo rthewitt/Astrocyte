@@ -10,6 +10,7 @@
 		<title>Course Deployer</title>
 		 <style>
 		 #generate-form {padding-left:100px;}
+		 #generate-form input {margin-bottom: 10px;}
   		#feedback { font-size: 1.4em; }
   		#student-select .ui-selecting { background: #FECA40; }
   		#student-select .ui-selected { background: #F39814; color: white; }
@@ -78,7 +79,7 @@
 			<div>
 			  <input type="submit" value="Prepare Course" onclick="beforeDeploy(); return false;" style="margin-top: 10px;">
 			  <div 	>
-			    <label for="stub-out">Testing Only</label><input id="stub-out" name="stubOut" value="stub" type="checkbox" style="margin-left: 5px;"/>
+			    <label for="stub-out">Testing Only</label><input id="stub-out" name="stub-out" value="stub" type="checkbox" style="margin-left: 5px;"/>
 			  </div>
 			</div>
 		</form>

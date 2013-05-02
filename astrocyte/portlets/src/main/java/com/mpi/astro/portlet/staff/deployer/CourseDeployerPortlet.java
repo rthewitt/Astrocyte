@@ -67,7 +67,7 @@ public class CourseDeployerPortlet extends BaseAstroPortlet {
 		@ActionMapping(params="deploy=course")
 		public void generateCourse(@RequestParam("select-course") String courseIdParam, 
 				@RequestParam("select-tutorial") String tutorialIdParam,
-				@RequestParam("stub-out") String stubDeployment,
+				@RequestParam(value="stub-out", required=false) String stubDeployment,
 				ActionRequest request, ActionResponse response) throws IOException{
 			logger.debug("A request was made to deploy course with id: " + courseIdParam);
 			

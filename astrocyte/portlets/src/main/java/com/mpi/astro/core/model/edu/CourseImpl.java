@@ -63,6 +63,11 @@ public class CourseImpl extends BaseCourseInstance implements CourseInstance, Se
 		this.deployedDate = d;
 	}
 	
+	@Override
+	public void associateWithPortal(String identifier) {
+		this.setAstroGroupId(Long.valueOf(identifier));
+	}
+	
 	public Date getDeployedDate() {
 		return this.deployedDate;
 	}

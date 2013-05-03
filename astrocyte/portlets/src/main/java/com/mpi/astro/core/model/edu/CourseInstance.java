@@ -42,4 +42,6 @@ public interface CourseInstance {
 	public Set<Student> getStudentsInCourse();
 	
 	public void addStudentAssociation(StudentCourse enrollment);
+	
+	public void associateWithPortal(String identifier);
 }

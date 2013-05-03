@@ -92,6 +92,7 @@ public class MyCoursesView extends BaseAstroPortlet {
 		
 		return new ModelAndView("mycourses/full")
 		.addObject("courses", courses)
+		.addObject("coursePages", coursePages)
 		.addObject("vMap", myMachines);
 	}
 	
